@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
-import { PortfolioTable } from './PortfolioTable';
-import { TransactionModal } from './TransactionModal';
-import { portfolioApi } from './portfolioApi';
+import  PortfolioTable  from './PortfolioTable';
+import  TransactionModal  from './TransactionModal';
+import  portfolioApi  from './portfolioApi';
 import WatchlistManager from '../Hero/WatchlistManager';
-import { PortfolioPerformance } from './PortfolioPerformance';
 import StockDashboard from '../Stock/StockDashboard';
 import TrendingStocks from '../Hero/TrendingStocks';
 import { Portfolio, PortfolioStats } from './Portfolio';
-import { useAuth } from '../hooks/useAuth';
-import { BuyModal } from '../pages/BuyStocks/BuyModal';
+import  useAuth from '../hooks/useAuth';
+import BuyModal  from '../pages/BuyStocks/BuyModal';
 import { TrendingUp, TrendingDown } from 'lucide-react'; // Import icons
 import './portfolioDashboard.css';
 
-export const PortfolioDashboard: React.FC = () => {
+const PortfolioDashboard: React.FC = () => {
   const [portfolio, setPortfolio] = useState<Portfolio[]>([]);
   const [stats, setStats] = useState<PortfolioStats | null>(null);
   const [pageViews, setPageViews] = useState<{ date: string; count: number }[]>([]);
@@ -206,11 +204,11 @@ export const PortfolioDashboard: React.FC = () => {
               return 'color-github-4';
             }
           }}
-          tooltipDataAttrs={(value) => ({
-            'data-tooltip': value
-              ? `${value.date}: ${value.count} page view${value.count !== 1 ? 's' : ''}`
-              : 'No data',
-          })}
+          // tooltipDataAttrs={(value) => ({
+          //   'data-tooltip': value
+          //     ? `${value.date}: ${value.count} page view${value.count !== 1 ? 's' : ''}`
+          //     : 'No data',
+          // })}
           showWeekdayLabels={true}
           onClick={(value) => {
             if (value) {
@@ -270,8 +268,7 @@ export const PortfolioDashboard: React.FC = () => {
           </div>
           <PortfolioTable
             data={portfolio}
-            onBuyClick={(symbol) => handleTransaction('BUY', symbol)}
-            onSellClick={(symbol) => handleTransaction('SELL', symbol)}
+            
           />
         </div>
 
@@ -331,3 +328,5 @@ const calculatePortfolioValue = (portfolio: Portfolio[]) => {
     return total + value; 
   }, 0);
 };
+
+export default PortfolioDashboard;

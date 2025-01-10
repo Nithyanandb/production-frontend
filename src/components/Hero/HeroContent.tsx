@@ -7,21 +7,36 @@ const HeroContent: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   return (
-    <div className="relative w-full z-50 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-4 sm:px-6 lg:px-8 mt-20">
-      {/* Enhanced Grok-style background */}
-      <div className="absolute inset-0">
-        {/* Primary glow effects */}
-        <div className="absolute inset-0">
-          {/* Main glow */}
-          <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[300px] h-[300px] sm:w-[600px] sm:h-[600px] lg:w-[900px] lg:h-[900px] bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-full blur-[60px] sm:blur-[120px] animate-pulse" />
-        </div>
+    <div className="relative w-full z-50 flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-0 sm:px-0 lg:px-0 mt-20">
+      <div className="absolute inset-0 z-0">
+        {/* Animated Gradient */}
+        <motion.div
+          className="absolute inset-0"
+          animate={{
+            background: [
+              'linear-gradient(45deg,rgb(12, 16, 22),rgb(0, 0, 0))',
+            ],
+          }}
+          transition={{ duration: 0, repeat: Infinity, repeatType: 'mirror' }}
+        />
+
+        {/* Subtle Grid Pattern */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '20px 20px',
+          }}
+        />
       </div>
 
       <motion.div
         initial={{ opacity: 0, y: 0 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
-        className="relative max-w-full mx-auto text-center"
+        className="relative max-w-full text-center"
       >
         <motion.h1
           initial={{ opacity: 0, y: 0 }}
@@ -42,11 +57,6 @@ const HeroContent: React.FC = () => {
           <span className="inline-block hover:text-purple-400 transition-colors duration-300">t</span>
           <span className="inline-block hover:text-purple-400 transition-colors duration-300">e</span>
           <span className="inline-block hover:text-purple-400 transition-colors duration-300">r</span>
-          &nbsp;
-          <span className="inline-block hover:text-pink-400 transition-colors duration-300">W</span>
-          <span className="inline-block hover:text-pink-400 transition-colors duration-300">i</span>
-          <span className="inline-block hover:text-pink-400 transition-colors duration-300">t</span>
-          <span className="inline-block hover:text-pink-400 transition-colors duration-300">h</span>
           &nbsp;
           <span className="inline-block py-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 text-transparent bg-clip-text">
             AI intelligence
@@ -103,11 +113,11 @@ const HeroContent: React.FC = () => {
         </motion.div>
       </motion.div>
 
-     {/* AuthModal */}
-          <AuthModal
-            isOpen={isAuthModalOpen}
-            onClose={() => setIsAuthModalOpen(false)}
-          />
+      {/* AuthModal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </div>
   );
 };

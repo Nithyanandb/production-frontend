@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { buyStock, TransactionRequest } from './transactions';
-import { useAuth } from '../../hooks/useAuth';
+import  useAuth  from '../../hooks/useAuth';
 
 interface UseBuyStockProps {
   onSuccess: () => void;
@@ -21,7 +21,7 @@ export function useBuyStock({ onSuccess }: UseBuyStockProps) {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:2000/transaction/buy', {
+      const response = await fetch('https://production-backend-production.up.railway.app/transaction/buy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

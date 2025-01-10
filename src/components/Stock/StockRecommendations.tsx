@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Sparkles, Brain } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { BuyModal } from '../pages/BuyStocks/BuyModal'; // Import the BuyModal component
+import  BuyModal from '../pages/BuyStocks/BuyModal'; // Import the BuyModal component
 
 interface Recommendation {
   symbol: string;
@@ -55,7 +55,7 @@ const StockRecommendations: React.FC<StockRecommendationsProps> = ({ recommendat
     price: number;
   }) => {
     try {
-      const response = await fetch('http://localhost:2000/transaction/buy', {
+      const response = await fetch('https://production-backend-production.up.railway.app/transaction/buy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
