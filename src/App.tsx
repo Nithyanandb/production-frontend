@@ -7,13 +7,15 @@ import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import ProtectedRoute from "./components/routes/ProtectedRoute";
 import AppLayout from './components/Layout/AppLayout';
 import CookieConsent from './CookieConsent';
-import LoadingSpinner from '../src/components/ui/LoadingSpinner'; // Add a loading spinner component
+import LoadingSpinner from '../src/components/ui/LoadingSpinner'; 
 import LearnPage from './components/Header/Navigation/LearnPage';
 import PortfolioDashboard from './components/portfolio/PortfolioDashboard';
 import FundamentalAnalysisPage from './components/Header/Navigation/FundamentalAnalysisPage';
 import TechnicalAnalysisPage from './components/Header/Navigation/TechnicalAnalysisPage';
 import TradingStrategiesPage from './components/Header/Navigation/TradingStrategiesPage';
 import Hero from './components/Hero/Hero';
+import Settings from './components/Header/Settings';
+import Chatbot from './Chatbot';
 
 const Features = React.lazy(() => import('./components/Features/Features'));
 const Security = React.lazy(() => import('./components/Security/Security'));
@@ -88,6 +90,18 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+  {
+    path: '/settings',
+    element: (
+ 
+            <div className="relative">
+              <div className="relative z-10">
+              <Settings />
+              </div>
+            </div>
+
+    ),
+  },
   { path: '/auth/callback', element: <OAuthCallback /> },
   {
     path: '/stock/all',
@@ -116,7 +130,7 @@ const router = createBrowserRouter([
 // Main App component
 function App() {
   return (
-    <div className="global-background min-h-screen">
+    <div className="global-background min-h-screen overflow-hidden">
       <ErrorBoundary>
         <CookieConsent />
         <QueryClientProvider client={queryClient}>
@@ -124,6 +138,7 @@ function App() {
             <MarketProvider>
               <div className="relative min-h-screen bg-black text-white antialiased font-sans">
                 <RouterProvider router={router} />
+                <Chatbot />
               </div>
             </MarketProvider>
           </AuthProvider>

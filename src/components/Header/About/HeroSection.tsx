@@ -10,7 +10,7 @@ const HeroSection: React.FC = () => (
     transition={{ duration: 1.5 }}
     className="relative h-screen flex flex-col items-center justify-center text-center"
   >
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute inset-0 overflow-hidden" >
       <video
         autoPlay
         loop
@@ -21,7 +21,7 @@ const HeroSection: React.FC = () => (
       >
         <source src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-futuristic-devices-99786-large.mp4" type="video/mp4" />
       </video>
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-black/90 to-black" />
+      <div className="absolute inset-0 " />
     </div>
 
     <div className="relative z-10">

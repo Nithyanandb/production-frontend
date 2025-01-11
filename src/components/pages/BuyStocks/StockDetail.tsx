@@ -48,7 +48,17 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
     return () => clearInterval(timer);
   }, []);
 
-  if (loading || !stock) return null;
+  // If stock is not defined, return null or a fallback UI
+  if (loading || !stock) {
+    return (
+      <div className="flex items-center justify-center h-full text-white/60">
+        <div className="text-center">
+          <Globe size={48} className="mx-auto mb-4 opacity-60" />
+          <p className="text-xl">Select a stock to view details</p>
+        </div>
+      </div>
+    );
+  }
 
   const timeFrames = ['1D', '1W', '1M', '3M', '1Y', 'ALL'];
 
@@ -84,11 +94,11 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
         {/* Compact Price Section */}
         <div className="flex items-center gap-4 mb-4">
           <span className="text-4xl font-medium">
-            ${stock.price.toFixed(2)}
+            ${stock.price?.toFixed(2) ?? 'N/A'} {/* Use optional chaining */}
           </span>
           <motion.span
             animate={{
-              color: stock.change >= 0 ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"
+              color: (stock.change || 0) >= 0 ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"
             }}
             className="flex items-center text-lg"
           >
@@ -121,22 +131,6 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
           </div>
         </div>
 
-        {/* Compact Stats Grid */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          {[
-            { icon: <Activity size={16} />, label: 'Volume', value: (stock.change || 0).toLocaleString() },
-            { icon: <TrendingUp size={16} />, label: 'High', value: `₹${(stock.high || 0).toFixed(2)}` },
-            { icon: <BarChart2 size={16} />, label: 'Low', value: `₹${(stock.low || 0).toFixed(2)}` }
-          ].map((stat, index) => (
-            <div key={index} className="bg-white/5 backdrop-blur-sm rounded-xl p-3">
-              <div className="flex items-center gap-1 text-white/60 mb-1 text-xs">
-                {stat.icon}
-                <span className="font-medium">{stat.label}</span>
-              </div>
-              <p className="text-lg font-medium truncate">{stat.value}</p>
-            </div>
-          ))}
-        </div>
 
         {/* Recommendation Trends Section */}
         <div className="bg-black/20 rounded-xl p-4 backdrop-blur-sm">

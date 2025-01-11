@@ -1,49 +1,49 @@
 /* Custom styles for react-calendar-heatmap */
 .react-calendar-heatmap {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .react-calendar-heatmap .color-empty {
-    fill: #161b22;
-  }
-  
-  .react-calendar-heatmap .color-custom-0 {
-    fill: #0e4429;
-  }
-  
-  .react-calendar-heatmap .color-custom-1 {
-    fill: #006d32;
-  }
-  
-  .react-calendar-heatmap .color-custom-2 {
-    fill: #26a641;
-  }
-  
-  .react-calendar-heatmap .color-custom-3 {
-    fill: #39d353;
-  }
-  
-  .react-calendar-heatmap .color-custom-4 {
-    fill: #7ee787;
-  }
-  
-  .react-calendar-heatmap text {
-    font-size: 10px;
-    fill: #8b949e;
-  }
-  
-  .react-calendar-heatmap .react-calendar-heatmap-small-text {
-    font-size: 5px;
-  }
-  
-  .react-calendar-heatmap rect:hover {
-    stroke: #8b949e;
-    stroke-width: 1px;
-  }
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
 
-  /* portfolioDashboard.css */
+.react-calendar-heatmap .color-empty {
+  fill: #161b22;
+}
+
+.react-calendar-heatmap .color-custom-0 {
+  fill: #0e4429;
+}
+
+.react-calendar-heatmap .color-custom-1 {
+  fill: #006d32;
+}
+
+.react-calendar-heatmap .color-custom-2 {
+  fill: #26a641;
+}
+
+.react-calendar-heatmap .color-custom-3 {
+  fill: #39d353;
+}
+
+.react-calendar-heatmap .color-custom-4 {
+  fill: #7ee787;
+}
+
+.react-calendar-heatmap text {
+  font-size: 10px;
+  fill: #8b949e;
+}
+
+.react-calendar-heatmap .react-calendar-heatmap-small-text {
+  font-size: 5px;
+}
+
+.react-calendar-heatmap rect:hover {
+  stroke: #8b949e;
+  stroke-width: 1px;
+}
+
+/* portfolioDashboard.css */
 .grid-container {
   display: grid;
   grid-template-columns: 1fr;
@@ -58,26 +58,40 @@
 
 /* Enhanced styling for the dashboard */
 .activity-card {
-  @apply bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 
-         transition-all duration-300 hover:bg-white/10;
+  background-color: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.activity-card:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .activity-heatmap {
-  @apply grid grid-cols-[repeat(53,1fr)] gap-1;
+  display: grid;
+  grid-template-columns: repeat(53, 1fr);
+  gap: 0.25rem;
 }
 
 .activity-cell {
-  @apply w-3 h-3 rounded-sm transition-colors duration-200;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 0.125rem;
+  transition: background-color 0.2s ease;
 }
 
 /* Custom color scheme for heatmap */
-.activity-level-0 { @apply bg-white/5; }
-.activity-level-1 { @apply bg-blue-900/50; }
-.activity-level-2 { @apply bg-blue-700/50; }
-.activity-level-3 { @apply bg-blue-500/50; }
-.activity-level-4 { @apply bg-blue-300/50; }
+.activity-level-0 { background-color: rgba(255, 255, 255, 0.05); }
+.activity-level-1 { background-color: rgba(0, 109, 50, 0.5); }
+.activity-level-2 { background-color: rgba(38, 166, 65, 0.5); }
+.activity-level-3 { background-color: rgba(57, 211, 83, 0.5); }
+.activity-level-4 { background-color: rgba(126, 231, 135, 0.5); }
 
 /* Enhanced chart styling */
 .activity-chart {
-  @apply h-[300px] w-full;
+  height: 300px;
+  width: 100%;
 }

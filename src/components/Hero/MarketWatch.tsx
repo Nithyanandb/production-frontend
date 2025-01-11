@@ -1,103 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Newspaper, TrendingUp, Globe2, AlertTriangle, Building2, Landmark, Flag, ArrowRight } from 'lucide-react';
+import { Newspaper, TrendingUp, Globe2, Building2, Landmark, Flag, ArrowRight, X } from 'lucide-react';
+import axios from 'axios';
 
 interface NewsItem {
   id: string;
   title: string;
   description: string;
-  category: 'market' | 'company' | 'politics' | 'national' | 'global';
+  category: 'market' | 'company' | 'politics' | 'national' | 'global' | 'technology' | 'business' | 'top news';
   timestamp: string;
   source: string;
-  imageUrl: string;
-  impact: 'high' | 'medium' | 'low';
-  change: string;
-  price: string;
   image: string;
 }
 
 const MarketWatch: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
-  const newsItems: NewsItem[] = [
-    {
-      id: '1',
-      title: 'NVIDIA (NVDA) Breaks All-Time High',
-      description: 'AI chip demand drives unprecedented growth in semiconductor sector',
-      category: 'market',
-      timestamp: '12m ago',
-      source: 'Market Analysis',
-      impact: 'high',
-      change: '+5.8%',
-      price: '$892.54',
-      image: 'https://s.yimg.com/ny/api/res/1.2/_d42m0jLue6vo6zd6l9Jrw--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyNDI7aD04Mjc-/https://media.zenfs.com/en/quartz.com/ec40acff2e3174cd10b1e7e4210a7b95',
-      imageUrl: ''
-    },
-    {
-      id: '2',
-      title: 'Reliance Industries Expands Digital Portfolio',
-      description: 'Major acquisition in AI and cloud computing space',
-      category: 'company',
-      timestamp: '1h ago',
-      source: 'Economic Times',
-      impact: 'high',
-      change: '+3.2%',
-      price: '₹2,890.45',
-      image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop',
-      imageUrl: ''
-    },
-    {
-      id: '3',
-      title: 'RBI Announces New Crypto Regulations',
-      description: 'Central bank unveils framework for digital asset trading',
-      category: 'national',
-      timestamp: '2h ago',
-      source: 'Financial Express',
-      impact: 'medium',
-      change: '-1.2%',
-      price: '₹82.45',
-      image: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?q=80&w=1000&auto=format&fit=crop',
-      imageUrl: ''
-    },
-    {
-      id: '4',
-      title: 'Tech Mahindra AI Innovation Hub',
-      description: 'New R&D center focuses on enterprise AI solutions',
-      category: 'company',
-      timestamp: '3h ago',
-      source: 'Tech Today',
-      impact: 'medium',
-      change: '+2.8%',
-      price: '₹1,245.30',
-      image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000&auto=format&fit=crop',
-      imageUrl: ''
-    },
-    {
-      id: '5',
-      title: 'Global Markets Rally on Fed Pivot',
-      description: 'International markets respond to US Federal Reserve policy shift',
-      category: 'global',
-      timestamp: '4h ago',
-      source: 'Reuters',
-      impact: 'high',
-      change: '+1.8%',
-      price: '$4,782.20',
-      image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1000&auto=format&fit=crop',
-      imageUrl: ''
-    },
-    {
-      id: '6',
-      title: 'New Trade Policy Boosts Export Sector',
-      description: 'Government announces incentives for manufacturing exports',
-      category: 'politics',
-      timestamp: '5h ago',
-      source: 'Business Standard',
-      impact: 'medium',
-      change: '+0.9%',
-      price: '₹425.60',
-      image: 'https://images.unsplash.com/photo-1566473965997-3de9c817e938?q=80&w=1000&auto=format&fit=crop',
-      imageUrl: ''
-    }
-  ];
+  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+  const imageRefs = useRef<(HTMLImageElement | null)[]>([]);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const response = await axios.get('https://finnhub.io/api/v1/news', {
+          params: {
+            category: 'general',
+            token: 'cu147s1r01qjiern2jmgcu147s1r01qjiern2jn0' // Replace with your actual API key
+          }
+        });
+
+        // Fetch different slices of the news data
+        const slice1 = response.data.slice(13, 17); // Fetch items from index 13 to 16
+        const slice2 = response.data.slice(21, 22); // Fetch items from index 21 to 21
+        const slice3 = response.data.slice(25, 27); // Fetch items from index 25 to 26
+        const slice4 = response.data.slice(33, 34); // Fetch items from index 33 to 33
+        const slice5 = response.data.slice(39, 40); // Fetch items from index 39 to 39
+
+        // Combine the slices into a single array
+        const combinedNews = [...slice1, ...slice2, ...slice3, ...slice4, ...slice5];
+
+        const mappedNews = combinedNews.map((item: any) => ({
+          id: item.id.toString(),
+          title: item.headline,
+          description: item.summary,
+          category: item.category, // Use the category directly from the API
+          timestamp: new Date(item.datetime * 1000).toLocaleTimeString(),
+          source: item.source,
+          image: item.image,
+        }));
+
+        setNewsItems(mappedNews);
+      } catch (error) {
+        console.error('Error fetching news:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const img = entry.target as HTMLImageElement;
+            img.src = img.dataset.src!;
+            observer.unobserve(img);
+          }
+        });
+      },
+      {
+        rootMargin: '0px 0px 100px 0px', // Load images 100px before they enter the viewport
+      }
+    );
+
+    imageRefs.current.forEach((img) => {
+      if (img) observer.observe(img);
+    });
+
+    return () => {
+      imageRefs.current.forEach((img) => {
+        if (img) observer.unobserve(img);
+      });
+    };
+  }, [newsItems]);
 
   const filters = [
     { id: 'all', label: 'Top Stories', icon: Newspaper },
@@ -106,26 +95,39 @@ const MarketWatch: React.FC = () => {
     { id: 'politics', label: 'Politics', icon: Landmark },
     { id: 'national', label: 'India', icon: Flag },
     { id: 'global', label: 'Global', icon: Globe2 },
-    
   ];
 
   const filteredNews = activeFilter === 'all' 
     ? newsItems 
     : newsItems.filter(item => item.category === activeFilter);
 
+  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = event.target as HTMLImageElement;
+    target.src = 'https://placehold.co/400x200?text=Image+Not+Available'; // Updated fallback URL
+  };
+
+  const openModal = (news: NewsItem) => {
+    setSelectedNews(news);
+  };
+
+  const closeModal = () => {
+    setSelectedNews(null);
+  };
+
+  if (loading) {
+    return <div className="text-white text-center py-8">Loading...</div>;
+  }
+
   return (
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      {/* Updated premium glass effect with Apple-like gradient */}
-      <div className="absolute inset-0 " />
+      <div className="absolute inset-0" />
 
-      {/* Header section with Apple-like typography */}
       <div className="relative flex items-center justify-between py-8">
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-semibold tracking-tight text-white">Market Watch</h2>
         </div>
       </div>
 
-      {/* Updated filter tabs with Apple-like design */}
       <div className="relative flex gap-4 mb-8 overflow-x-auto hide-scrollbar">
         {filters.map(filter => (
           <motion.button
@@ -144,7 +146,6 @@ const MarketWatch: React.FC = () => {
         ))}
       </div>
 
-      {/* Updated news grid without borders */}
       <AnimatePresence mode="wait">
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
@@ -159,64 +160,96 @@ const MarketWatch: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className="group relative bg-white/[0.03] hover:bg-white/[0.06] 
-                 rounded-[5px] transition-all duration-300 overflow-hidden"
+                 rounded-[5px] transition-all duration-300 overflow-hidden cursor-pointer"
+              onClick={() => openModal(news)}
             >
-              {/* Image with gradient overlay */}
+              {/* Image with hover overlay */}
               <div className="relative w-full h-40">
                 <img 
-                  src={news.image} 
+                  ref={(el) => (imageRefs.current[index] = el)}
+                  data-src={news.image} 
                   alt={news.title}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  onLoad={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.opacity = '1';
+                  }}
+                  onError={handleImageError}
+                  style={{ opacity: 0, transition: 'opacity 0.3s ease-in-out' }}
+                  loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black" />
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <span className="text-white text-lg font-medium">View Details</span>
+                </div>
               </div>
 
               {/* Content section */}
               <div className="p-4">
                 <div className="flex justify-between items-start mb-2">
                   <span className="text-xs font-medium text-white/60">{news.timestamp}</span>
-                  {news.impact && (
-                    <span className={`px-2 py-0.5 text-xs font-medium ${
-                      news.impact === 'high' ? 'bg-blue-500/20 text-blue-300' :
-                      news.impact === 'medium' ? 'bg-purple-500/20 text-purple-300' :
-                      'bg-green-500/20 text-green-300'
-                    }`}>
-                      {news.impact.toUpperCase()}
-                    </span>
-                  )}
                 </div>
 
                 <h3 className="text-lg font-medium text-white mb-2 leading-tight">{news.title}</h3>
-                <p className="text-sm text-white/70 mb-3 line-clamp-2">{news.description}</p>
 
-                {/* Updated metrics display */}
-                {news.change && (
-                  <div className="flex items-center gap-3 mb-3 font-medium">
-                    <span className={`text-sm ${
-                      news.change.startsWith('+') ? 'text-green-400' : 'text-red-400'
-                    }`}>
-                      {news.change}
-                    </span>
-                    {news.price && (
-                      <span className="text-sm text-white/80">{news.price}</span>
-                    )}
-                  </div>
-                )}
-
-                {/* Updated footer without border */}
                 <div className="flex justify-between items-center pt-3">
                   <span className="text-xs font-medium text-white/60">{news.source}</span>
-                  <motion.button
-                    whileHover={{ x: 5 }}
-                    className="flex items-center gap-1.5 text-blue-300 text-sm font-medium"
-                  >
-                    Read More <ArrowRight className="w-3.5 h-3.5" />
-                  </motion.button>
                 </div>
               </div>
             </motion.div>
           ))}
         </motion.div>
+      </AnimatePresence>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {selectedNews && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            onClick={closeModal}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-black/90 rounded-xl max-w-2xl w-full overflow-hidden border border-white/10 shadow-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="p-6 border-b border-white/10 flex justify-between items-center">
+                <h2 className="text-xl font-semibold text-white">{selectedNews.title}</h2>
+                <button
+                  onClick={closeModal}
+                  className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6">
+                <div className="relative h-64 mb-6">
+                  <img
+                    src={selectedNews.image}
+                    alt={selectedNews.title}
+                    className="w-full h-full object-cover rounded-lg"
+                    onError={handleImageError}
+                    loading="lazy"
+                  />
+                </div>
+                <p className="text-gray-300 mb-4">{selectedNews.description}</p>
+                <div className="text-sm text-gray-400">
+                  <span>Source: {selectedNews.source}</span>
+                  <span className="mx-2">•</span>
+                  <span>{selectedNews.timestamp}</span>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

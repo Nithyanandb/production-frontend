@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CheckIcon, X as CloseIcon } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
-import  useAuth  from '../hooks/useAuth';
+import useAuth from '../hooks/useAuth';
 import { cn } from '../../utils/cn';
 import SecureConnection from './SecureConnection';
 
@@ -64,6 +64,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     setError(null);
 
     try {
+      // Validate inputs
+      if (!email || !password || (authMode === 'register' && !name)) {
+        throw new Error('Please fill in all fields.');
+      }
+
       if (authMode === 'login') {
         await login({ email, password });
       } else {
@@ -86,12 +91,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  // Handle modal close with page refresh
+  const handleClose = () => {
+    onClose(); // Close the modal
+    window.location.reload(); // Refresh the page
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 flex items-center justify-center bg-black backdrop-blur-xl z-[9999]"
-          style={{ zIndex: 9999, width: "100vw", height: "100vh" }} // Full viewport width and height
+          className="fixed inset-0 flex items-center justify-center bg-black/90 backdrop-blur-xl z-[9999]"
+          style={{ zIndex: 9999, width: "100vw", height: "100vh" }}
         >
           {/* Background Overlay */}
           <div className="absolute inset-0 bg-black/90 backdrop-blur-xl">
@@ -108,7 +119,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           {(isAuthenticating || success) ? (
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               className="relative z-10 text-center space-y-8"
             >
@@ -138,38 +149,36 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </motion.div>
           ) : (
             <motion.div
-              initial={{ scale: 1 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 1 }}
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
               className={cn(
-                "relative z-0 w-full h-full rounded-2xl overflow-hidden flex", // Full height and width
+                "relative z-0 w-full h-full rounded-2xl overflow-hidden flex",
                 "bg-black backdrop-blur-0",
-                (isAuthenticating || success) && "opacity-0" // Removed pointer-events-none
+                (isAuthenticating || success) && "opacity-0"
               )}
             >
               {/* Left Side: Background Image */}
               <div
-  className="w-1/2 h-full bg-cover bg-center" // Removed backdrop-blur-0
-  style={{
-    backgroundImage: `url('https://images.unsplash.com/photo-1732823267576-38b408c43809?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwzNDB8fHxlbnwwfHx8fHw%3D')`,
-  }}
->
-  <div className="absolute inset-0 bg-black/50 flex items-end p-8">
-    <div className="text-white">
-      <h2 className="text-4xl font-bold mb-2">Welcome</h2>
-      <p className="text-lg">Join us and explore.</p>
-    </div>
-  </div>
-</div>
+                className="w-1/2 h-full bg-cover bg-center"
+                style={{
+                  backgroundImage: `url('https://images.unsplash.com/photo-1732823267576-38b408c43809?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwzNDB8fHxlbnwwfHx8fHw%3D')`,
+                }}
+              >
+                <div className="absolute inset-0 bg-black/50 flex items-end p-8">
+                  <div className="text-white">
+                    <h2 className="text-4xl font-bold mb-2">Welcome</h2>
+                    <p className="text-lg">Join us and explore.</p>
+                  </div>
+                </div>
+              </div>
 
               {/* Right Side: Login/Register Form */}
-              <div
-                className="w-1/2 h-full flex items-center justify-center p-12 relative z-10" // Added relative and z-10
-              >
+              <div className="w-1/2 h-full flex items-center justify-center p-12 relative z-10">
                 <div className="w-full max-w-md">
                   {/* Close Button */}
                   <button
-                    onClick={onClose}
+                    onClick={handleClose} // Use handleClose instead of onClose
                     className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
                   >
                     <CloseIcon className="w-6 h-6" />
@@ -187,8 +196,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   {/* Subtitle */}
                   <motion.p
                     initial={{ y: 0, opacity: 0 }}
-                    animate={{ y: 0, opacity: 10 }}
-                    transition={{ delay: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
                     className="text-white/60 mb-8"
                   >
                     {authMode === 'login'
@@ -221,9 +230,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
                   {/* Form */}
                   <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Name Input (for register mode) */}
+                    {authMode === 'register' && (
+                      <div>
+                        <label className="block text-sm font-medium text-white mb-1.5">
+                          Name
+                        </label>
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className={cn(
+                            "w-full bg-white/5 rounded-lg px-4 py-2.5 text-white",
+                            "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50",
+                            "transition-all duration-200 ease-in-out"
+                          )}
+                          placeholder="Enter your name"
+                          required
+                        />
+                      </div>
+                    )}
+
                     {/* Email Input */}
                     <div>
-                      <label className="block z-20 text-sm font-medium text-white mb-1.5">
+                      <label className="block text-sm font-medium text-white mb-1.5">
                         Email
                       </label>
                       <input
@@ -231,17 +261,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className={cn(
-                          "w-full z-20 bg-white/5 rounded-lg px-4 py-2.5 text-white",
+                          "w-full bg-white/5 rounded-lg px-4 py-2.5 text-white",
                           "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50",
                           "transition-all duration-200 ease-in-out"
                         )}
+                        placeholder="Enter your email"
                         required
                       />
                     </div>
 
                     {/* Password Input */}
                     <div>
-                      <label className="block z-20 text-sm font-medium text-white mb-1.5">
+                      <label className="block text-sm font-medium text-white mb-1.5">
                         Password
                       </label>
                       <input
@@ -249,10 +280,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className={cn(
-                          "w-full z-20 bg-white/5 rounded-lg px-4 py-2.5 text-white",
+                          "w-full bg-white/5 rounded-lg px-4 py-2.5 text-white",
                           "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50",
                           "transition-all duration-200 ease-in-out"
                         )}
+                        placeholder="Enter your password"
                         required
                       />
                     </div>
@@ -261,8 +293,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     <motion.button
                       type="submit"
                       disabled={isLoading}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       className={cn(
                         "w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2.5 rounded-lg font-medium",
                         "hover:from-blue-600 hover:to-blue-700 transition-all duration-200",

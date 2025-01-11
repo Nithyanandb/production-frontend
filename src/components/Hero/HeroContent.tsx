@@ -43,6 +43,9 @@ const HeroContent: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-white tracking-tight leading-[1.1] mb-8"
+          style={{
+            filter: 'drop-shadow(0 4px 8px rgba(59, 130, 246, 0.4))',
+          }}
         >
           <span className="inline-block hover:text-blue-400 transition-colors duration-300">T</span>
           <span className="inline-block hover:text-blue-400 transition-colors duration-300">r</span>
@@ -68,6 +71,9 @@ const HeroContent: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.8 }}
           className="text-base sm:text-lg md:text-xl text-white/60 mb-8 sm:mb-10 max-w-[540px] mx-auto leading-relaxed"
+          style={{
+            filter: 'drop-shadow(0 2px 4px rgba(255, 255, 255, 0.2))',
+          }}
         >
           Experience the future of trading with real-time AI insights. Make data-driven decisions with confidence.
         </motion.p>
@@ -84,6 +90,9 @@ const HeroContent: React.FC = () => {
             whileTap={{ scale: 0.98 }}
             onClick={() => setIsAuthModalOpen(true)}
             className="px-6 py-3 sm:px-8 sm:py-4 bg-white rounded-2xl text-black text-sm sm:text-base font-medium tracking-wide flex items-center gap-2 hover:bg-white/90 transition-all duration-300 w-full sm:w-auto"
+            style={{
+              filter: 'drop-shadow(0 4px 8px rgba(255, 255, 255, 0.3))',
+            }}
           >
             Start Free
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -93,6 +102,9 @@ const HeroContent: React.FC = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="px-6 py-3 sm:px-8 sm:py-4 bg-white/[0.03] rounded-2xl text-white text-sm sm:text-base font-medium tracking-wide backdrop-blur-xl border border-white/[0.05] hover:bg-white/[0.08] transition-all duration-300 w-full sm:w-auto"
+            style={{
+              filter: 'drop-shadow(0 4px 8px rgba(255, 255, 255, 0.2))',
+            }}
           >
             Watch Demo
           </motion.button>
@@ -104,6 +116,9 @@ const HeroContent: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
           className="mt-8 sm:mt-12 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-white/40 text-xs sm:text-sm"
+          style={{
+            filter: 'drop-shadow(0 2px 4px rgba(255, 255, 255, 0.1))',
+          }}
         >
           <span>Real-time analysis</span>
           <span>•</span>

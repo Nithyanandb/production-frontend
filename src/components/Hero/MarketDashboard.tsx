@@ -56,7 +56,6 @@ const MarketDashboard: React.FC = () => {
 
   const timeframes = ['1D', '1W', '1M', '3M', '1Y'];
 
-
   // Indices Data
   const indices = [
     { name: 'Dow Jones', value: '42,738.63', change: '+346.36 (0.82%)' },
@@ -79,11 +78,11 @@ const MarketDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black">
-      {/* Premium gradient background */}
+    <div className="relative min-h-screen overflow-hidden">
+      
       <div className="absolute inset-0" />
 
-      <div className="relative max-w-[400px] mx-auto  sm:p-6 lg:p-0">
+      <div className="relative max-w-[400px] mx-auto sm:p-6 lg:p-0">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <motion.button
@@ -96,11 +95,10 @@ const MarketDashboard: React.FC = () => {
           </motion.button>
         </div>
 
-      
         {/* Indices Table */}
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-white mb-3">Indices</h2>
-          <div className="">
+          <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead>
                 <tr>
@@ -126,66 +124,95 @@ const MarketDashboard: React.FC = () => {
   <div className="flex items-center justify-between mb-3">
     <div className="p-0">
       <h2 className="text-xl font-semibold p-2 text-white mb-3">Key Indicators</h2>
-      <table className="min-w-full">
-        <thead>
-          <tr>
-            <th className="px-2 py-2 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Name</th>
-            <th className="px-2 py-2 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">LTP</th>
-            <th className="px-2 py-2 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Change</th>
-            <th className="px-2 py-2 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Change %</th>
-          </tr>
-        </thead>
-        <tbody>
-          {keyIndicators.map((indicator, i) => (
-            <tr key={i} className="hover:bg-white/[0.05] transition-colors">
-              <td className="px-4 py-4 whitespace-nowrap text-sm text-white">{indicator.name}</td>
-              <td className="px-4 py-4 whitespace-nowrap text-sm text-white">{indicator.ltp}</td>
-              <td className={`px-4 py-4 whitespace-nowrap text-sm ${
-                indicator.change.startsWith('-') ? 'text-rose-400' : 'text-green-400'
-              }`}>
-                {indicator.change}
-              </td>
-              <td className={`px-4 py-4 whitespace-nowrap text-sm ${
-                indicator.changePercent.startsWith('-') ? 'text-rose-400' : 'text-green-400'
-              }`}>
-                {/* Ensure the percent symbol is inline with the number */}
-                <span>{indicator.changePercent}</span>
-              </td>
+      {/* Desktop Table */}
+      <div className="hidden sm:block overflow-x-auto">
+        <table className="min-w-full">
+          <thead>
+            <tr>
+              <th className="px-2 py-2 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Name</th>
+              <th className="px-2 py-2 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">LTP</th>
+              <th className="px-2 py-2 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Change</th>
+              <th className="px-2 py-2 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Change %</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {keyIndicators.map((indicator, i) => (
+              <tr key={i} className="hover:bg-white/[0.05] transition-colors">
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-white">{indicator.name}</td>
+                <td className="px-4 py-4 whitespace-nowrap text-sm text-white">{indicator.ltp}</td>
+                <td className={`px-4 py-4 whitespace-nowrap text-sm ${
+                  indicator.change.startsWith('-') ? 'text-rose-400' : 'text-green-400'
+                }`}>
+                  {indicator.change}
+                </td>
+                <td className={`px-4 py-4 whitespace-nowrap text-sm ${
+                  indicator.changePercent.startsWith('-') ? 'text-rose-400' : 'text-green-400'
+                }`}>
+                  <span>{indicator.changePercent}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      
+    {/* Mobile Card Layout (for screens less than 500px) */}
+<div className="sm:hidden">
+  <div className="grid grid-cols-2 gap-2">
+    {keyIndicators.map((indicator, i) => (
+      <div key={i} className="p-4 bg-white/[0.05] rounded-lg hover:bg-white/[0.1] transition-colors">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-medium text-white">{indicator.name}</span>
+          <span className="text-sm text-white">{indicator.ltp}</span>
+        </div>
+        <div className="flex justify-between items-center mt-2">
+          <span className={`text-sm ${
+            indicator.change.startsWith('-') ? 'text-rose-400' : 'text-green-400'
+          }`}>
+            {indicator.change}
+          </span>
+          <span className={`text-sm ${
+            indicator.changePercent.startsWith('-') ? 'text-rose-400' : 'text-green-400'
+          }`}>
+            {indicator.changePercent}
+          </span>
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
     </div>
   </div>
 </div>
-{/* Cryptocurrency Section */}
-<div className="mb-6">
-  <h2 className="text-xl font-semibold text-white mb-3">Top Cryptos</h2>
-  <div className="">
-    <table className="min-w-full">
-      <thead>
-        <tr>
-          <th className="px-4 py-4 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Pair</th>
-          <th className="px-4 py-4 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Vol</th>
-          <th className="px-4 py-4 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Change</th>
-        </tr>
-      </thead>
-      <tbody>
-        {cryptocurrencies.map((crypto, index) => (
-          <tr key={index} className="hover:bg-white/[0.05] transition-colors">
-            <td className="px-4 py-4 whitespace-nowrap text-sm text-white">{crypto.pair}</td>
-            <td className="px-4 py-4 whitespace-nowrap text-sm text-white">{crypto.vol}</td>
-            <td className={`px-4 py-4 whitespace-nowrap text-sm ${
-              crypto.change.startsWith('-') ? 'text-rose-400' : 'text-green-400'
-            }`}>
-              {crypto.change}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</div>
+
+        {/* Cryptocurrency Section */}
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-white mb-3">Top Cryptos</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr>
+                  <th className="px-4 py-4 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Pair</th>
+                  <th className="px-4 py-4 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Vol</th>
+                  <th className="px-4 py-4 text-left text-sm font-medium text-gray-400 uppercase tracking-wider">Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cryptocurrencies.map((crypto, index) => (
+                  <tr key={index} className="hover:bg-white/[0.05] transition-colors">
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-white">{crypto.pair}</td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-white">{crypto.vol}</td>
+                    <td className={`px-4 py-4 whitespace-nowrap text-sm ${
+                      crypto.change.startsWith('-') ? 'text-rose-400' : 'text-green-400'
+                    }`}>
+                      {crypto.change}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         {/* Quick Links at the Bottom */}
         <div className="mt-6 space-y-2">
@@ -193,7 +220,7 @@ const MarketDashboard: React.FC = () => {
             <motion.button
               key={i}
               whileHover={{ x: 4 }}
-              className="w-full flex items-center justify-between p-2  hover:bg-white/[0.04]transition-all duration-300 group"
+              className="w-full flex items-center justify-between p-2 hover:bg-white/[0.04] transition-all duration-300 group"
             >
               <span className="text-sm font-medium text-white">{link}</span>
               <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />

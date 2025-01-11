@@ -3,86 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* CSS Variables */
-:root {
-  --background-dark: #0d1117; /* GitHub's dark background color */
-  --card-dark: #161b22; /* GitHub's card background color */
-  --text-primary: #c9d1d9; /* GitHub's primary text color */
-  --text-secondary: #8b949e; /* GitHub's secondary text color */
-  --accent-blue: #58a6ff; /* GitHub's accent blue color */
-  --border-color: #30363d; /* GitHub's border color */
-}
 
-/* Dark Theme */
-.dark {
-  color-scheme: dark;
-  background-color: var(--background-dark);
-  color: var(--text-primary);
-}
-
-/* Global Background */
-.global-background {
-  background-color: var(--background-dark);
-  background-image: none; /* Remove the image for a cleaner look */
-}
-
-/* Optional: Add a subtle gradient overlay for depth */
-.global-background::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at center, rgba(88, 166, 255, 0.05) 0%, transparent 70%);
-  z-index: -1;
-}
-
-/* Card Styling */
-.card-dark {
-  background-color: var(--card-dark);
-  border: 1px solid var(--border-color);
-  border-radius: 6px; /* GitHub's border radius */
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05); /* Subtle shadow */
-}
-
-/* Tailwind Layers - Base */
-@layer base {
-  body {
-    @apply bg-[var(--background-dark)] text-[var(--text-primary)] antialiased;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply text-[var(--text-primary)];
-  }
-
-  p {
-    @apply text-[var(--text-secondary)];
-  }
-
-  a {
-    @apply text-[var(--accent-blue)] hover:underline;
-  }
-}
-
-/* Tailwind Layers - Components */
-@layer components {
-  .glass-card {
-    @apply bg-[var(--card-dark)] backdrop-blur-lg border border-[var(--border-color)] rounded-lg;
-  }
-
-  .glass-button {
-    @apply bg-[var(--card-dark)] hover:bg-[var(--background-dark)] backdrop-blur-lg border border-[var(--border-color)] rounded-md px-4 py-2 text-[var(--text-primary)] transition-all duration-300;
-  }
-
-  .github-navbar {
-    @apply bg-[var(--card-dark)] border-b border-[var(--border-color)] p-4;
-  }
-
-  .github-sidebar {
-    @apply bg-[var(--card-dark)] border-r border-[var(--border-color)] p-4;
-  }
-}
 
 /* Tailwind Layers - Utilities */
 @layer utilities {
@@ -105,10 +26,6 @@
   animation: float 6s ease-in-out infinite;
 }
 
-/* Gradient Text */
-.gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[var(--accent-blue)] to-purple-500;
-}
 
 /* Custom Scrollbar */
 .custom-scrollbar {
@@ -138,10 +55,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Optional: Add this if you want even smoother transitions */
-* {
-  transition: all 0.25s ease-out;
-}
+
 
 /* Gradient Animation */
 @keyframes gradient {
@@ -180,10 +94,4 @@ html {
   scroll-behavior: smooth;
   transition: scroll-behavior 0.8s cubic-bezier(0.65, 0, 0.35, 1);
 }
-
-/* Add Smooth Transition for All Animations */
-* {
-  transition-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
-}
-
 

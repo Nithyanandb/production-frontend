@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
-  CartesianGrid, Area, AreaChart, ComposedChart, Bar
+  Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  CartesianGrid, Area, ComposedChart, Bar
 } from 'recharts';
-import { useQuery } from '@tanstack/react-query';
-import { Globe, TrendingUp, Activity } from 'lucide-react';
+import { Globe, Activity } from 'lucide-react';
 
 interface MarketGraphProps {
   symbol: string;

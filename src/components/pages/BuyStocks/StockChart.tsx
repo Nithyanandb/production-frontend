@@ -83,7 +83,7 @@ export const StockChart: React.FC<StockChartProps> = ({
       key={symbol}
       initial={{ opacity: 0, y: 0 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative h-[400px] bg-black/40 backdrop-blur-xl rounded-2xl p-6"
+      className="relative h-[412px] bg-black/40 backdrop-blur-xl rounded-2xl pr-8 py-10"
     >
       {/* Header with price change */}
       <div className="flex items-center justify-between mb-6">

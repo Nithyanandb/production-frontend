@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import { Search, ArrowUp, ArrowDown, Globe, DollarSign, Check } from 'lucide-react';
-import  BuyModal from './BuyModal';
+import BuyModal from './BuyModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header/Header';
 import { StockDetail } from './StockDetail';
 import { symbols } from '../../Stock/StocksPage/symbols';
 import LoadingSpinner from '../../ui/LoadingSpinner';
+import emailjs from 'emailjs-com';
+import useAuth from '../../hooks/useAuth';
+import { useLocation } from 'react-router-dom';
 
 export const BuyStocks: React.FC = () => {
+  const { user } = useAuth();
   const [stocks, setStocks] = useState(symbols);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,56 +21,89 @@ export const BuyStocks: React.FC = () => {
   const [priceChanges, setPriceChanges] = useState<Record<string, number>>({});
   const [stockDetailLoading, setStockDetailLoading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [email, setEmail] = useState(user?.email || '');
+  const location = useLocation();
+  const [isPending, startTransition] = useTransition();
 
-  const handleTransactionSuccess = () => {
-    setShowSuccessPopup(true);
-    setTimeout(() => {
-      setShowSuccessPopup(false);
-    }, 3000);
-  };
+  // Set user email on component mount or when user changes
+  useEffect(() => {
+    if (user) {
+      setEmail(user.email || '');
+    }
+  }, [user]);
 
+  // Handle selected stock from navigation state
+  useEffect(() => {
+    if (location.state?.selectedStock) {
+      startTransition(() => {
+        setSelectedStock(location.state.selectedStock);
+        setSelectedStockDetail(location.state.selectedStock);
+      });
+    }
+  }, [location.state]);
+
+  // Initialize EmailJS
+  useEffect(() => {
+    try {
+      emailjs.init('eyK87ZsxW822cQvyN'); // Replace with your EmailJS User ID
+    } catch (error) {
+      console.error('Failed to initialize EmailJS:', error);
+    }
+  }, []);
+
+  // Simulate loading stocks
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
-      setStocks(symbols);
-      setLoading(false);
+      startTransition(() => {
+        setStocks(symbols);
+        setLoading(false);
+      });
     }, 4000);
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(timer); // Cleanup timer
   }, []);
 
+  // Simulate live price updates
   useEffect(() => {
     const interval = setInterval(() => {
-      setStocks((prevStocks) =>
-        prevStocks.map((stock) => {
-          const change = (Math.random() - 0.5) * 2;
-          const newPrice = (stock.price || 100) + change;
+      startTransition(() => {
+        setStocks((prevStocks) =>
+          prevStocks.map((stock) => {
+            const change = (Math.random() - 0.5) * 2;
+            const newPrice = (stock.price || 100) + change;
 
-          setPriceChanges((prev) => ({
-            ...prev,
-            [stock.symbol]: change,
-          }));
+            setPriceChanges((prev) => ({
+              ...prev,
+              [stock.symbol]: change,
+            }));
 
-          return {
-            ...stock,
-            price: newPrice,
-            change,
-            changePercent: (change / (stock.price || 100)) * 100,
-          };
-        })
-      );
+            return {
+              ...stock,
+              price: newPrice,
+              change,
+              changePercent: (change / (stock.price || 100)) * 100,
+            };
+          })
+        );
+      });
     }, 5000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // Cleanup interval
   }, []);
 
+  // Handle stock selection
   const handleStockSelect = async (stock: typeof symbols[0]) => {
     setStockDetailLoading(true);
-    setSelectedStockDetail(stock);
+    startTransition(() => {
+      setSelectedStockDetail(stock);
+    });
 
     try {
       const detailedStock = { ...stock };
-      setSelectedStockDetail(detailedStock);
+      startTransition(() => {
+        setSelectedStockDetail(detailedStock);
+      });
     } catch (error) {
       console.error('Failed to load stock details:', error);
       setError('Failed to load stock details');
@@ -75,6 +112,52 @@ export const BuyStocks: React.FC = () => {
     }
   };
 
+  // Handle successful transaction
+  const handleTransactionSuccess = async (stock: typeof symbols[0], quantity: number, totalPrice: number) => {
+    // Validate totalPrice
+    if (typeof totalPrice !== 'number' || isNaN(totalPrice)) {
+      console.error('Invalid totalPrice:', totalPrice);
+      return;
+    }
+
+    // Show success popup
+    startTransition(() => {
+      setShowSuccessPopup(true);
+    });
+    setTimeout(() => {
+      startTransition(() => {
+        setShowSuccessPopup(false);
+      });
+    }, 3000);
+
+    // Send email notification
+    if (user?.email) {
+      try {
+        const templateParams = {
+          to_email: user.email,
+          stock_symbol: stock.symbol,
+          stock_name: stock.name,
+          quantity: quantity,
+          total_price: totalPrice.toFixed(2),
+        };
+
+        await emailjs.send(
+          'service_box535f', // Replace with your EmailJS Service ID
+          'template_l4fugpk', // Replace with your EmailJS Template ID
+          templateParams
+        );
+
+        console.log('Email notification sent successfully!');
+      } catch (error) {
+        console.error('Failed to send email notification:', error);
+      }
+    } else {
+      console.error('User email not found.');
+      alert('User email not found. Please update your email in settings.');
+    }
+  };
+
+  // Filter stocks based on search term
   const filteredStocks = stocks.filter(
     (stock) =>
       stock.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -184,14 +267,31 @@ export const BuyStocks: React.FC = () => {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            className="fixed bottom-8 right-8 z-50"
+            className="fixed inset-0 flex items-center justify-center z-50"
           >
-            <div className="bg-green-500 text-white px-6 py-4 rounded-xl shadow-xl flex items-center gap-3">
-              <div className="bg-white/20 rounded-full p-1">
-                <Check className="w-4 h-4" />
+            <div className="bg-black/50 backdrop-blur-sm fixed inset-0" /> 
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              className="bg-white/90 backdrop-blur-lg rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 border border-white/20"
+            >
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className="bg-green-500/10 rounded-full p-3">
+                  <Check className="w-8 h-8 text-green-500" />
+                </div>
+                <h2 className="text-2xl font-semibold text-gray-900">Success!</h2>
+                <p className="text-gray-600">
+                  Transaction completed successfully! A notification has been sent to your email.
+                </p>
+                <button
+                  onClick={() => setShowSuccessPopup(false)}
+                  className="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                >
+                  Close
+                </button>
               </div>
-              <span>Transaction completed successfully!</span>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -200,7 +300,9 @@ export const BuyStocks: React.FC = () => {
         <BuyModal
           stock={selectedStock}
           onClose={() => setSelectedStock(null)}
-          onSuccess={handleTransactionSuccess}
+          onSuccess={(quantity, totalPrice) =>
+            handleTransactionSuccess(selectedStock, quantity, totalPrice)
+          }
         />
       )}
     </div>

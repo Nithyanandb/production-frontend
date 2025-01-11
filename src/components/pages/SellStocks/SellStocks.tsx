@@ -1,29 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useTransition } from 'react';
 import { Search, ArrowUp, ArrowDown, Globe, DollarSign, Check } from 'lucide-react';
-import SellModal  from './SellModal';
+import SellModal from './SellModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header/Header';
 import LoadingSpinner from '../../ui/LoadingSpinner';
-import  useAuth from '@/components/hooks/useAuth';
-import  StockDetail from './StockDetail';
-import PortfolioTable  from '../../portfolio/PortfolioTable';
+import useAuth from '@/components/hooks/useAuth';
+import StockDetail from './StockDetail';
+import PortfolioTable from '../../portfolio/PortfolioTable';
 import { formatMoney, formatPercent, Portfolio } from '@/components/portfolio/Portfolio';
+import emailjs from 'emailjs-com';
 
 export const SellStocks: React.FC = () => {
+  const { user, token } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStock, setSelectedStock] = useState<Portfolio | null>(null);
   const [selectedStockDetail, setSelectedStockDetail] = useState<Portfolio | null>(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [portfolio, setPortfolio] = useState<Portfolio[]>([]); // Initialize as an array
-  const { user, token } = useAuth();
+  const [portfolio, setPortfolio] = useState<Portfolio[]>([]);
+  const [isPending, startTransition] = useTransition();
+
+  // Initialize EmailJS
+  useEffect(() => {
+    try {
+      emailjs.init('eyK87ZsxW822cQvyN'); // Replace with your EmailJS User ID
+    } catch (error) {
+      console.error('Failed to initialize EmailJS:', error);
+    }
+  }, []);
 
   // Fetch portfolio data on component mount
   useEffect(() => {
     const fetchPortfolio = async () => {
       try {
-        const response = await fetch('https://production-backend-production.up.railway.app/portfolio', {
+        const response = await fetch('http://localhost:2000/portfolio', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -58,20 +69,60 @@ export const SellStocks: React.FC = () => {
     fetchPortfolio();
   }, [token]);
 
-  const handleTransactionSuccess = () => {
-    setShowSuccessPopup(true);
+  // Handle successful transaction
+  const handleTransactionSuccess = async (stock: Portfolio, quantity: number, totalPrice: number) => {
+    // Validate totalPrice
+    if (typeof totalPrice !== 'number' || isNaN(totalPrice)) {
+      console.error('Invalid totalPrice:', totalPrice);
+      return;
+    }
+
+    // Show success popup
+    startTransition(() => {
+      setShowSuccessPopup(true);
+    });
     setTimeout(() => {
-      setShowSuccessPopup(false);
+      startTransition(() => {
+        setShowSuccessPopup(false);
+      });
     }, 3000);
+
+    // Send email notification
+    if (user?.email) {
+      try {
+        const templateParams = {
+          to_email: user.email,
+          stock_symbol: stock.symbol,
+          stock_name: stock.name,
+          quantity: quantity,
+          total_price: totalPrice.toFixed(2),
+        };
+
+        await emailjs.send(
+          'service_box535f', // Replace with your EmailJS Service ID
+          'template_l4fugpk', // Replace with your EmailJS Template ID
+          templateParams
+        );
+
+        console.log('Email notification sent successfully!');
+      } catch (error) {
+        console.error('Failed to send email notification:', error);
+      }
+    } else {
+      console.error('User email not found.');
+      alert('User email not found. Please update your email in settings.');
+    }
   };
 
+  // Handle stock selection
   const handleStockSelect = (stock: Portfolio) => {
     setSelectedStockDetail(stock);
   };
 
+  // Handle selling stock
   const handleSell = async (symbol: string, quantity: number) => {
     try {
-      const response = await fetch('https://production-backend-production.up.railway.app/transaction/sell', {
+      const response = await fetch('http://localhost:2000/transaction/sell', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +151,7 @@ export const SellStocks: React.FC = () => {
         }).filter((holding) => holding.quantity > 0) // Remove stocks with 0 quantity
       );
 
-      handleTransactionSuccess();
+      handleTransactionSuccess(selectedStockDetail!, quantity, selectedStockDetail!.currentPrice * quantity);
     } catch (error) {
       console.error('Sell transaction failed:', error);
       setError('Failed to sell stock');
@@ -210,26 +261,38 @@ export const SellStocks: React.FC = () => {
         </div>
       </div>
 
-      {/* Portfolio Table */}
-      <div className="p-8">
-        <h2 className="text-xl font-bold mb-4">Your Portfolio</h2>
-        <PortfolioTable data={portfolio} />
-      </div>
-
+      {/* Success Popup */}
       <AnimatePresence>
         {showSuccessPopup && (
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
-            className="fixed bottom-8 right-8 z-50"
+            className="fixed inset-0 flex items-center justify-center z-50"
           >
-            <div className="bg-green-500 text-white px-6 py-4 rounded-xl shadow-xl flex items-center gap-3">
-              <div className="bg-white/20 rounded-full p-1">
-                <Check className="w-4 h-4" />
+            <div className="bg-black/50 backdrop-blur-sm fixed inset-0" /> {/* Overlay */}
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+              className="bg-white/90 backdrop-blur-lg rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 border border-white/20"
+            >
+              <div className="flex flex-col items-center gap-4 text-center">
+                <div className="bg-green-500/10 rounded-full p-3">
+                  <Check className="w-8 h-8 text-green-500" />
+                </div>
+                <h2 className="text-2xl font-semibold text-gray-900">Success!</h2>
+                <p className="text-gray-600">
+                  Transaction completed successfully! A notification has been sent to your email.
+                </p>
+                <button
+                  onClick={() => setShowSuccessPopup(false)}
+                  className="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                >
+                  Close
+                </button>
               </div>
-              <span>Transaction completed successfully!</span>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -239,7 +302,7 @@ export const SellStocks: React.FC = () => {
         <SellModal
           stock={selectedStock}
           onClose={() => setSelectedStock(null)}
-          onSuccess={handleSell}
+          onSuccess={(quantity) => handleSell(selectedStock.symbol, quantity)}
         />
       )}
     </div>

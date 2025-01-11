@@ -24,7 +24,9 @@ const Header: React.FC = () => {
   const handleProfileClick = () => {
     navigate('/portfolio');
   };
-
+  const handleSettingsClick = () => {
+    navigate('/settings');
+  };
   return (
     <motion.header
       className="fixed top-0 left-0 right-0 z-50"
@@ -34,7 +36,7 @@ const Header: React.FC = () => {
       }}
     >
       <div className="relative bg-black/80">
-        {/* Premium gradient line */}
+        {/*gradient line */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
 
         <div className="container mx-auto px-4 md:px-6">
@@ -87,11 +89,8 @@ const Header: React.FC = () => {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 8, scale: 0.98 }}
                           whileHover={{ scale: 1.01 }}
-                          transition={{
-                            duration: 0,
-                            ease: [0.4, 0, 0.2, 1],
-                          }}
-                          className="absolute right-0 mt-2 w-[280px] py-2 origin-top-right bg-gray-900/90 backdrop-blur-xl"
+                        
+                          className="absolute mt-[20px] right-0 w-[280px] py-4  origin-top-right bg-white backdrop-blur-full rounded-xl"
                         >
                           {user?.roles?.includes('ADMIN') && (
                             <div className="px-4 py-2 mb-1">
@@ -104,14 +103,15 @@ const Header: React.FC = () => {
                           <div className="px-3 py-2">
                             <motion.button
                               onClick={handleProfileClick}
-                              className="w-full p-2 text-[13px] text-white/70 hover:text-white flex items-center gap-3 transition-all duration-200"
+                              className="w-full p-2 text-[13px] text-black/70  hover:text-black/100 flex items-center gap-3 transition-all duration-200"
                             >
                               <Briefcase className="w-[18px] h-[18px] opacity-70" />
                               <span className="font-medium">Portfolio</span>
                             </motion.button>
 
                             <motion.button
-                              className="w-full p-2 text-[13px] text-white/70 hover:text-white flex items-center gap-3 transition-all duration-200"
+                            onClick={handleSettingsClick}
+                              className="w-full p-2 text-[13px] text-black/70  hover:text-black/100 flex items-center gap-3 transition-all duration-200"
                             >
                               <Settings className="w-[18px] h-[18px] opacity-70" />
                               <span className="font-medium">Settings</span>
@@ -123,7 +123,7 @@ const Header: React.FC = () => {
                           <div className="px-3 py-2">
                             <motion.button
                               onClick={logout}
-                              className="w-full p-2 text-[13px] text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-3 transition-all duration-200"
+                              className="w-full p-2 text-[13px] text-black hover:text-red-600 flex items-center gap-3 transition-all duration-200"
                             >
                               <LogOut className="w-[18px] h-[18px] opacity-70" />
                               <span className="font-medium">Sign Out</span>
@@ -156,6 +156,7 @@ const Header: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            
             className="fixed inset-0 z-[90] flex items-center justify-center bg-black/90 backdrop-blur-xl"
           >
             <div className="bg-black/95 p-8 rounded-xl text-center">

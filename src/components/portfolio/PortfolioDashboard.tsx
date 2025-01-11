@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
-import  PortfolioTable  from './PortfolioTable';
-import  TransactionModal  from './TransactionModal';
-import  portfolioApi  from './portfolioApi';
+import PortfolioTable from './PortfolioTable';
+import TransactionModal from './TransactionModal';
+import portfolioApi from './portfolioApi';
 import WatchlistManager from '../Hero/WatchlistManager';
 import StockDashboard from '../Stock/StockDashboard';
 import TrendingStocks from '../Hero/TrendingStocks';
 import { Portfolio, PortfolioStats } from './Portfolio';
-import  useAuth from '../hooks/useAuth';
-import BuyModal  from '../pages/BuyStocks/BuyModal';
-import { TrendingUp, TrendingDown } from 'lucide-react'; // Import icons
+import useAuth from '../hooks/useAuth';
+import BuyModal from '../pages/BuyStocks/BuyModal';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 import './portfolioDashboard.css';
 
 const PortfolioDashboard: React.FC = () => {
@@ -26,30 +26,25 @@ const PortfolioDashboard: React.FC = () => {
   const [buyModalStock, setBuyModalStock] = useState<{ symbol: string; name: string; price: number } | null>(null);
   const { isAuthenticated, user, token } = useAuth();
 
-  // Track previous portfolio value
   const prevPortfolioValueRef = useRef<number>(0);
   const portfolioValue = calculatePortfolioValue(portfolio);
-
-  // Determine if portfolio value has increased or decreased
   const portfolioChange = portfolioValue - prevPortfolioValueRef.current;
   const portfolioChangePercent = ((portfolioChange / prevPortfolioValueRef.current) * 100).toFixed(2);
 
-  // Update previous portfolio value
   useEffect(() => {
     prevPortfolioValueRef.current = portfolioValue;
   }, [portfolioValue]);
 
-  // Track page views
   useEffect(() => {
     if (isAuthenticated) {
-      const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+      const today = new Date().toISOString().split('T')[0];
       const updatedPageViews = [...pageViews];
       const existingEntryIndex = updatedPageViews.findIndex((entry) => entry.date === today);
 
       if (existingEntryIndex !== -1) {
-        updatedPageViews[existingEntryIndex].count += 1; // Increment count for today
+        updatedPageViews[existingEntryIndex].count += 1;
       } else {
-        updatedPageViews.push({ date: today, count: 1 }); // Add new entry for today
+        updatedPageViews.push({ date: today, count: 1 });
       }
 
       setPageViews(updatedPageViews);
@@ -58,7 +53,6 @@ const PortfolioDashboard: React.FC = () => {
     }
   }, [isAuthenticated]);
 
-  // Fetch portfolio data
   useEffect(() => {
     if (isAuthenticated && user && token) {
       fetchData();
@@ -102,8 +96,8 @@ const PortfolioDashboard: React.FC = () => {
     data.forEach((entry) => {
       const date = new Date(entry.date);
       const weekStart = new Date(date);
-      weekStart.setDate(date.getDate() - date.getDay()); // Start of the week (Sunday)
-      const weekKey = weekStart.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+      weekStart.setDate(date.getDate() - date.getDay());
+      const weekKey = weekStart.toISOString().split('T')[0];
 
       if (!weeklyData[weekKey]) {
         weeklyData[weekKey] = 0;
@@ -130,7 +124,7 @@ const PortfolioDashboard: React.FC = () => {
     price: number;
   }) => {
     try {
-      const response = await fetch('https://production-backend-production.up.railway.app/transaction/buy', {
+      const response = await fetch('http://localhost:2000/transaction/buy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -193,22 +187,22 @@ const PortfolioDashboard: React.FC = () => {
               return 'color-empty';
             }
             if (value.count === 0) {
-              return 'color-github-0';
+              return 'color-custom-0';
             } else if (value.count <= 3) {
-              return 'color-github-1';
+              return 'color-custom-1';
             } else if (value.count <= 6) {
-              return 'color-github-2';
+              return 'color-custom-2';
             } else if (value.count <= 9) {
-              return 'color-github-3';
+              return 'color-custom-3';
             } else {
-              return 'color-github-4';
+              return 'color-custom-4';
             }
           }}
-          // tooltipDataAttrs={(value) => ({
-          //   'data-tooltip': value
-          //     ? `${value.date}: ${value.count} page view${value.count !== 1 ? 's' : ''}`
-          //     : 'No data',
-          // })}
+          tooltipDataAttrs={(value) => ({
+            'data-tooltip': value
+              ? `${value.date}: ${value.count} page view${value.count !== 1 ? 's' : ''}`
+              : 'No data',
+          })}
           showWeekdayLabels={true}
           onClick={(value) => {
             if (value) {
@@ -218,7 +212,6 @@ const PortfolioDashboard: React.FC = () => {
         />
 
         <div style={{ display: 'flex', gap: '2rem' }}>
-          {/* Stock Dashboard */}
           <div style={{ flex: 2, backgroundColor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden' }}>
             <StockDashboard
               onBuy={(symbol) => handleTransaction('BUY', symbol)}
@@ -230,7 +223,6 @@ const PortfolioDashboard: React.FC = () => {
 
       {/* Main Content */}
       <div style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-        {/* Header */}
         <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           {user && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '4rem' }}>
@@ -241,9 +233,9 @@ const PortfolioDashboard: React.FC = () => {
                 </span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   {portfolioChange >= 0 ? (
-                    <TrendingUp size={20} color="#34D399" /> // Green for increase
+                    <TrendingUp size={20} color="#34D399" />
                   ) : (
-                    <TrendingDown size={20} color="#EF4444" /> // Red for decrease
+                    <TrendingDown size={20} color="#EF4444" />
                   )}
                   <span
                     style={{
@@ -261,18 +253,13 @@ const PortfolioDashboard: React.FC = () => {
           )}
         </header>
 
-        {/* Holdings Table */}
         <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
           <div style={{ padding: '1.5rem' }}>
             <h2 style={{ fontSize: '1.125rem', fontWeight: '500', color: '#fff' }}>Holdings</h2>
           </div>
-          <PortfolioTable
-            data={portfolio}
-            
-          />
+          <PortfolioTable data={portfolio} />
         </div>
 
-        {/* Watchlist Manager */}
         <div style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden' }}>
           <WatchlistManager
             watchlist={[]}
@@ -282,13 +269,11 @@ const PortfolioDashboard: React.FC = () => {
           />
         </div>
 
-        {/* Trending Stocks */}
         <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '1.5rem' }}>
           <TrendingStocks />
         </div>
       </div>
 
-      {/* Transaction Modal */}
       <TransactionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -298,7 +283,6 @@ const PortfolioDashboard: React.FC = () => {
         onSubmit={handleTransaction}
       />
 
-      {/* Buy Modal */}
       {buyModalStock && (
         <BuyModal
           stock={{
@@ -324,8 +308,8 @@ const PortfolioDashboard: React.FC = () => {
 
 const calculatePortfolioValue = (portfolio: Portfolio[]) => {
   return portfolio.reduce((total, holding) => {
-    const value = holding.value || 0; 
-    return total + value; 
+    const value = holding.value || 0;
+    return total + value;
   }, 0);
 };
 

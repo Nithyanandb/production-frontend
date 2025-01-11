@@ -47,6 +47,84 @@ const useAuth = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Register function
+  const register = async ({ email, password, name }: { email: string; password: string; name: string }) => {
+    setIsAuthenticating(true);
+    try {
+      const response = await fetch('http://localhost:2000/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, name }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Registration failed');
+      }
+  
+      const data = await response.json();
+      console.log('Backend response:', data); // Debugging
+  
+      if (!data.token || !data.email || !data.name) {
+        throw new Error('Invalid response from server');
+      }
+  
+      // Update user state and store token
+      setUser({ email: data.email, name: data.name });
+      setToken(data.token);
+      localStorage.setItem('auth', JSON.stringify({
+        token: data.token,
+        user: { email: data.email, name: data.name },
+        expiresAt: new Date().getTime() + (3600 * 1000), // 1 hour
+      }));
+      toast.success(data.message || 'User registered successfully');
+    } catch (error) {
+      console.error('Registration error:', error); // Debugging
+      toast.error(error instanceof Error ? error.message : 'Registration failed');
+      throw error;
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
+
+  // Login function
+  const login = async ({ email, password }: { email: string; password: string }) => {
+    setIsAuthenticating(true);
+    try {
+      const response = await fetch('http://localhost:2000/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const data = await response.json();
+      console.log('Backend response:', data); // Debugging
+
+      if (!data.token || !data.email || !data.name) {
+        throw new Error('Invalid response from server');
+      }
+
+      // Update user state and store token
+      setUser({ email: data.email, name: data.name });
+      setToken(data.token);
+      localStorage.setItem('auth', JSON.stringify({
+        token: data.token,
+        user: { email: data.email, name: data.name },
+        expiresAt: new Date().getTime() + (3600 * 1000), // 1 hour
+      }));
+      toast.success(data.message || 'User logged in successfully');
+    } catch (error) {
+      console.error('Login error:', error); // Debugging
+      toast.error(error instanceof Error ? error.message : 'Login failed');
+      throw error;
+    } finally {
+      setIsAuthenticating(false);
+    }
+  };
+
   const handleOAuthPopup = (url: string) => {
     setIsAuthenticating(true);
     const width = 950;
@@ -77,7 +155,7 @@ const useAuth = () => {
             localStorage.setItem('auth', JSON.stringify({
               token,
               user,
-              expiresAt: new Date().getTime() + (3600 * 1000) // 1 hour
+              expiresAt: new Date().getTime() + (3600 * 1000), // 1 hour
             }));
             setIsAuthenticating(false);
             popup.close();
@@ -98,31 +176,32 @@ const useAuth = () => {
   };
 
   const loginWithGoogle = () => {
-    handleOAuthPopup('https://production-backend-production.up.railway.app/oauth2/authorization/google');
+    handleOAuthPopup('http://localhost:2000/oauth2/authorization/google');
   };
 
   const loginWithGithub = () => {
-    handleOAuthPopup('https://production-backend-production.up.railway.app/oauth2/authorization/github');
+    handleOAuthPopup('http://localhost:2000/oauth2/authorization/github');
   };
+
   const logout = useCallback(async () => {
     try {
       const authData = localStorage.getItem('auth');
       if (authData) {
         const { token } = JSON.parse(authData);
-        const response = await fetch('https://production-backend-production.up.railway.app/auth/logout', {
+        const response = await fetch('http://localhost:2000/auth/logout', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
-          credentials: 'include'
+          credentials: 'include',
         });
-  
+
         if (!response.ok) {
           throw new Error('Logout failed');
         }
       }
-      
+
       // Clear auth state regardless of API response
       setUser(null);
       setToken(null);
@@ -141,10 +220,12 @@ const useAuth = () => {
   return {
     ...context,
     isAuthenticating,
+    register,
+    login,
     loginWithGoogle,
     loginWithGithub,
-    logout
+    logout,
   };
-}; 
+};
 
 export default useAuth;

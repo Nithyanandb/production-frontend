@@ -80,7 +80,7 @@ const Hero: React.FC = () => {
                       <span className="ml-4 text-white">Loading...</span>
                     </div>
                   ) : (
-                    <div className="lg:p-6">
+                    <div className="lg:p-2">
                       <MarketGraph symbol={currentSymbol} />
                     </div>
                   )}
