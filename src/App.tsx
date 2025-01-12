@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Route, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AuthProvider from './components/Auth/AuthContext';
 import MarketProvider from './context/MarketContext';
@@ -16,6 +16,7 @@ import TradingStrategiesPage from './components/Header/Navigation/TradingStrateg
 import Hero from './components/Hero/Hero';
 import Settings from './components/Header/Settings';
 import Chatbot from './Chatbot';
+import PrivacyPolicy from './PrivacyPolicy';
 
 const Features = React.lazy(() => import('./components/Features/Features'));
 const Security = React.lazy(() => import('./components/Security/Security'));
@@ -29,7 +30,7 @@ const BuyStocks = React.lazy(() => import('./components/pages/BuyStocks/BuyStock
 const StockMarket = React.lazy(() => import('./components/Stock/StocksPage/StockMarket'));
 const About = React.lazy(() => import('./components/Header/About/About'));
 const SellStocks = React.lazy(() => import('./components/pages/SellStocks/SellStocks'));
-
+  <Route path="/privacy" element={<PrivacyPolicy />} />
 // Create a QueryClient instance
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,27 +51,13 @@ const router = createBrowserRouter([
         <Hero />
         <Suspense fallback={<LoadingSpinner />}>
           <div className="relative min-h-screen">
-            <div className="relative z-10 overflow-auto custom-scrollbar">
-              <div className="space-y-32 pb-32">
-                <section className="min-h-screen flex-center transition-all duration-1000">
-                  {/* Hero section content */}
-                </section>
-                <section className="min-h-screen flex-center transition-all duration-1000">
-                  <Features />
-                </section>
-                <section className="min-h-screen h-[50%] flex-center transition-all duration-1000">
-                  <Security />
-                </section>
-              </div>
-            </div>
-
-            {/* Premium gradient overlays */}
             <div className="fixed inset-0 pointer-events-none">
               <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-transparent to-black" />
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_black_100%)] opacity-70" />
             </div>
           </div>
         </Suspense>
+       
       </AppLayout>
     ),
   },
@@ -83,6 +70,7 @@ const router = createBrowserRouter([
             <div className="relative">
               <div className="relative z-10">
                 <PortfolioDashboard />
+              
               </div>
             </div>
           </Suspense>
@@ -125,6 +113,8 @@ const router = createBrowserRouter([
   { path: '/trading/spot', element: <SpotTrading /> },
   { path: '/trading/options', element: <OptionsTrading /> },
   { path: '*', element: <NotFound /> },
+  {path: '/privacy', element: <PrivacyPolicy />}
+  
 ]);
 
 // Main App component

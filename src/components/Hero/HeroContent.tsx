@@ -14,7 +14,7 @@ const HeroContent: React.FC = () => {
           className="absolute inset-0"
           animate={{
             background: [
-              'linear-gradient(45deg,rgb(12, 16, 22),rgb(0, 0, 0))',
+              'linear-gradient(45deg,rgb(16, 27, 42),rgb(0, 0, 0))',
             ],
           }}
           transition={{ duration: 0, repeat: Infinity, repeatType: 'mirror' }}

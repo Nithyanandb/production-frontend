@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Logo } from '../Header/Logo';
 
 const Footer = () => (
-  <footer className="relative bg-black pt-16 pb-12 md:pt-24 md:pb-16">
+  <footer className="relative pb-12 md:pb-16">
     {/* Grok-style glow effect */}
     <div className="absolute inset-0">
       <div className="absolute bottom-0 left-1/3 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-black rounded-full blur-[80px] md:blur-[120px]" />

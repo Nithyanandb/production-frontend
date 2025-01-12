@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MarketData } from '../../types/market';
+import { MarketData } from '../types/market';
 
 interface MarketGridProps {
   data: MarketData[];

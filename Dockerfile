@@ -1,12 +1,12 @@
 # Stage 1: Build the application
-FROM node:20-alpine AS builder
+FROM node:21-alpine AS builder
 WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application code
 COPY . .
@@ -17,14 +17,11 @@ RUN npm run build
 # Stage 2: Serve the application
 FROM nginx:alpine
 
-# Set working directory for nginx
-WORKDIR /usr/share/nginx/html
-
 # Remove default nginx static files
-RUN rm -rf ./*
+RUN rm -rf /usr/share/nginx/html/*
 
 # Copy the built application from the builder stage
-COPY --from=builder /app/dist .
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Copy the custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf

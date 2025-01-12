@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
+import Modal from './Modal'; 
 
 export interface Portfolio {
   quantity: number;
@@ -12,31 +13,65 @@ export interface Portfolio {
   averagePrice: number;
   currentPrice: number;
   totalReturn: number;
-  purchaseDate: string;
+  lastUpdated: string;
 }
 
 interface PortfolioTableProps {
   data: Portfolio[];
 }
 
- const PortfolioTable: React.FC<PortfolioTableProps> = ({
+const PortfolioTable: React.FC<PortfolioTableProps> = ({
   data = [],
 }) => {
-  if (!data || data.length === 0) {
+  const [updatedData, setUpdatedData] = useState<Portfolio[]>([]);
+  const [selectedStock, setSelectedStock] = useState<Portfolio | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const updatedDataWithTimestamp = data.map((holding) => ({
+      ...holding,
+      lastUpdated: holding.lastUpdated || new Date().toLocaleString(),
+    }));
+    setUpdatedData(updatedDataWithTimestamp);
+  }, [data]);
+
+  const filteredData = updatedData.filter((holding) => {
+    return (
+      Number.isFinite(holding.averagePrice) &&
+      Number.isFinite(holding.currentPrice) &&
+      Number.isFinite(holding.value) &&
+      Number.isFinite(holding.totalReturn)
+    );
+  });
+
+  const handleRowClick = (holding: Portfolio) => {
+    setSelectedStock(holding);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedStock(null);
+  };
+
+  const formatNumber = (value: number | undefined) => {
+    if (value === undefined || !Number.isFinite(value)) {
+      return 'N/A';
+    }
+    return value.toFixed(2);
+  };
+
+  if (!filteredData || filteredData.length === 0) {
     return (
       <div className="text-center py-12 ">
-        <p className="text-gray-400 text-lg font-medium">No holdings found</p>
+        <p className="text-gray-400 text-lg font-medium">No valid holdings found</p>
         <p className="text-gray-500 text-sm mt-2">Start your investment journey today</p>
       </div>
     );
   }
 
-  const formatNumber = (value: number | undefined) => {
-    return value?.toFixed(2) ?? '0.00';
-  };
-
   return (
-    <div className="overflow-hidden backdrop-blur-xl ">
+    <div className="overflow-hidden backdrop-blur-xl">
       <table className="w-full">
         <thead>
           <tr className="border-b border-white/10">
@@ -50,8 +85,12 @@ interface PortfolioTableProps {
           </tr>
         </thead>
         <tbody className="divide-y divide-white/5">
-          {data.map((holding) => (
-            <tr key={holding.id} className="hover:bg-white/5 transition-colors">
+          {filteredData.map((holding) => (
+            <tr
+              key={holding.id}
+              className="hover:bg-white/5 transition-colors cursor-pointer"
+              onClick={() => handleRowClick(holding)}
+            >
               <td className="py-4 px-6">
                 <div>
                   <div className="font-medium text-white">{holding.symbol}</div>
@@ -79,12 +118,28 @@ interface PortfolioTableProps {
                 </div>
               </td>
               <td className="py-4 px-6 text-right font-mono text-white">
-                {holding.purchaseDate}
+                {holding.lastUpdated}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        {selectedStock && (
+          <div>
+            <h2 className="text-xl font-bold text-white">{selectedStock.name} ({selectedStock.symbol})</h2>
+            <div className="mt-4 space-y-2">
+              <p className="text-gray-400">Quantity: {selectedStock.shares}</p>
+              <p className="text-gray-400">Average Price: ₹{formatNumber(selectedStock.averagePrice)}</p>
+              <p className="text-gray-400">Current Price: ₹{formatNumber(selectedStock.currentPrice)}</p>
+              <p className="text-gray-400">Current Value: ₹{formatNumber(selectedStock.value)}</p>
+              <p className="text-gray-400">Total Return: ₹{formatNumber(selectedStock.totalReturn)}</p>
+              <p className="text-gray-400">Last Updated: {selectedStock.lastUpdated}</p>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

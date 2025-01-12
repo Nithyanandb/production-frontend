@@ -1,8 +1,146 @@
-/* Custom styles for react-calendar-heatmap */
-.react-calendar-heatmap {
-  width: 100%;
-  max-width: 800px;
+/* Modern GitHub AI/Apple inspired styles */
+.portfolio-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #000000, #111111);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 4rem;
+}
+
+.dashboard-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  max-width: 1800px;
   margin: 0 auto;
+  width: 100%;
+}
+
+.main-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.welcome-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.welcome-text {
+  font-size: 2.5rem;
+  font-weight: 600;
+  background: linear-gradient(90deg, #fff 0%, #a8a8a8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+}
+
+.portfolio-stats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.portfolio-value {
+  font-size: 1.125rem;
+  color: #8b949e;
+  font-weight: 500;
+}
+
+.portfolio-change {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+/* GitHub-inspired heatmap container */
+.heatmap-container {
+  background: rgba(13, 17, 23, 0.8);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.heatmap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.heatmap-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #e6edf3;
+  letter-spacing: -0.02em;
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #8b949e;
+}
+
+.legend-item {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 0.25rem;
+}
+
+/* Calendar heatmap customization */
+.react-calendar-heatmap {
+  font-size: 10px;
 }
 
 .react-calendar-heatmap .color-empty {
@@ -10,88 +148,63 @@
 }
 
 .react-calendar-heatmap .color-custom-0 {
-  fill: #0e4429;
+  fill: #161b22;
 }
 
 .react-calendar-heatmap .color-custom-1 {
-  fill: #006d32;
+  fill: #0e4429;
 }
 
 .react-calendar-heatmap .color-custom-2 {
-  fill: #26a641;
+  fill: #006d32;
 }
 
 .react-calendar-heatmap .color-custom-3 {
-  fill: #39d353;
+  fill: #26a641;
 }
 
 .react-calendar-heatmap .color-custom-4 {
-  fill: #7ee787;
+  fill: #39d353;
 }
 
 .react-calendar-heatmap text {
-  font-size: 10px;
   fill: #8b949e;
+  font-size: 0.75rem;
 }
 
-.react-calendar-heatmap .react-calendar-heatmap-small-text {
-  font-size: 5px;
+.react-calendar-heatmap rect {
+  rx: 2px;
+  ry: 2px;
+  stroke: rgba(27, 31, 35, 0.06);
+  stroke-width: 1px;
+  transition: all 0.2s ease;
 }
 
 .react-calendar-heatmap rect:hover {
-  stroke: #8b949e;
-  stroke-width: 1px;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 2px;
 }
 
-/* portfolioDashboard.css */
-.grid-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
+/* Tooltip */
+[data-tooltip] {
+  position: relative;
 }
 
-@media (min-width: 1024px) {
-  .grid-container {
-    grid-template-columns: 2fr 1fr;
-  }
-}
-
-/* Enhanced styling for the dashboard */
-.activity-card {
-  background-color: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  border-radius: 1rem;
+[data-tooltip]:hover:after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(22, 27, 34, 0.95);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1.5rem;
-  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
-.activity-card:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.activity-heatmap {
-  display: grid;
-  grid-template-columns: repeat(53, 1fr);
-  gap: 0.25rem;
-}
-
-.activity-cell {
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 0.125rem;
-  transition: background-color 0.2s ease;
-}
-
-/* Custom color scheme for heatmap */
-.activity-level-0 { background-color: rgba(255, 255, 255, 0.05); }
-.activity-level-1 { background-color: rgba(0, 109, 50, 0.5); }
-.activity-level-2 { background-color: rgba(38, 166, 65, 0.5); }
-.activity-level-3 { background-color: rgba(57, 211, 83, 0.5); }
-.activity-level-4 { background-color: rgba(126, 231, 135, 0.5); }
-
-/* Enhanced chart styling */
-.activity-chart {
-  height: 300px;
-  width: 100%;
-}

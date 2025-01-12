@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -64,6 +64,9 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
 }) => {
   const [timeframe, setTimeframe] = useState('1D');
   const [showVolume, setShowVolume] = useState(true);
+  const [currentData, setCurrentData] = useState(generateMarketData('1D'));
+  const [nextData, setNextData] = useState<typeof currentData | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
 
   // Generate data based on symbol
   const basePrice = {
@@ -74,32 +77,31 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
     'NVDA': 800
   }[symbol] || 100;
 
-  const stockData = generateMarketData(timeframe, basePrice);
-  const globalData = showGlobalComparison ? generateMarketData(timeframe, basePrice * 0.8) : null;
+  useEffect(() => {
+    // Fetch new data in the background when timeframe changes
+    setIsFetching(true);
+    const newData = generateMarketData(timeframe, basePrice);
+    setNextData(newData);
+    setIsFetching(false);
+  }, [timeframe, basePrice]);
+
+  useEffect(() => {
+    // Swap currentData with nextData once nextData is ready
+    if (nextData && !isFetching) {
+      setCurrentData(nextData);
+      setNextData(null);
+    }
+  }, [nextData, isFetching]);
 
   const handleTimeframeChange = (tf: string) => {
     setTimeframe(tf);
     onTimeframeChange?.(tf);
   };
 
-  const priceChange = stockData[stockData.length - 1].close - stockData[0].close;
-  const priceChangePercent = ((priceChange / stockData[0].close) * 100).toFixed(2);
+  const priceChange = currentData[currentData.length - 1].close - currentData[0].close;
+  const priceChangePercent = ((priceChange / currentData[0].close) * 100).toFixed(2);
 
   const timeframes = ['1D', '1W', '1M', '3M', '1Y', '5Y'];
-
-  const [stockLoading] = useState(false);
-
-  if (stockLoading) {
-    return (
-      <div className="h-[400px] flex items-center justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-8 h-8 border-2 border-white border-t-transparent rounded-full"
-        />
-      </div>
-    );
-  }
 
   return (
     <motion.div
@@ -145,11 +147,11 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
 
       {/* Chart */}
       <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={stockData}>
+        <ComposedChart data={currentData}>
           <defs>
             <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#60A5FA" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#60A5FA" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
             </linearGradient>
           </defs>
           
@@ -198,7 +200,7 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
             yAxisId="price"
             type="monotone"
             dataKey="close"
-            stroke="#60A5FA"
+            stroke="#3B82F6"
             fill="url(#colorPrice)"
             strokeWidth={2}
           />
@@ -212,12 +214,12 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
             />
           )}
           
-          {showGlobalComparison && globalData && (
+          {showGlobalComparison && (
             <Line
               yAxisId="price"
               type="monotone"
               dataKey="marketIndex"
-              stroke="#34D399"
+              stroke="#10B981"
               strokeWidth={1.5}
               dot={false}
             />
@@ -228,7 +230,7 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
       {/* Legend */}
       <div className="flex items-center gap-6 mt-4">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-blue-400" />
+          <div className="w-3 h-3 rounded-full bg-blue-500" />
           <span className="text-sm text-white/60">{symbol}</span>
         </div>
         {showGlobalComparison && (

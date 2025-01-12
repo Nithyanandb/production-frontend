@@ -54,7 +54,7 @@ const Hero: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="lg:p-6 overflow-hidden transition-all duration-500"
+                className="lg:pl-6 overflow-hidden transition-all duration-500"
               >
                 <MarketWatch />
               </motion.div>

@@ -117,37 +117,7 @@ const PortfolioDashboard: React.FC = () => {
     return data.filter((entry) => new Date(entry.date) >= oneYearAgo);
   };
 
-  const handleBuy = async (transactionData: {
-    stockSymbol: string;
-    stockName: string;
-    quantity: number;
-    price: number;
-  }) => {
-    try {
-      const response = await fetch('http://localhost:2000/transaction/buy', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(transactionData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to process transaction');
-      }
-
-      console.log('Transaction successful');
-    } catch (error) {
-      console.error('Transaction failed:', error);
-    }
-  };
-
-  const handleTransaction = (type: 'BUY' | 'SELL', symbol: string) => {
-    setTransactionType(type);
-    setSelectedStock(symbol);
-    setIsModalOpen(true);
-  };
+  
 
   if (!isAuthenticated) {
     return (
@@ -176,8 +146,8 @@ const PortfolioDashboard: React.FC = () => {
   return (
     <div className='pt-32' style={{ minHeight: '100vh', backgroundColor: '#000', color: '#fff', display: 'flex' }}>
       {/* Sidebar */}
-      <div style={{ width: '650px', backgroundColor: '#111', padding: '1.5rem', borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#fff', marginBottom: '1.5rem' }}>Page Views</h2>
+      <div style={{ width: '450px', backgroundColor: '#111', padding: '1.5rem', borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#fff', marginBottom: '1.5rem' }}>Login Activity</h2>
         <CalendarHeatmap
           startDate={new Date(new Date().setFullYear(new Date().getFullYear() - 1))}
           endDate={new Date()}
@@ -211,13 +181,13 @@ const PortfolioDashboard: React.FC = () => {
           }}
         />
 
-        <div style={{ display: 'flex', gap: '2rem' }}>
-          <div style={{ flex: 2, backgroundColor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden' }}>
-            <StockDashboard
-              onBuy={(symbol) => handleTransaction('BUY', symbol)}
-              onSell={(symbol) => handleTransaction('SELL', symbol)}
-            />
-          </div>
+<div style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden' }}>
+          <WatchlistManager
+            watchlist={[]}
+            onRemove={async (id) => {}}
+            onUpdate={async (id, data) => {}}
+            onAdd={async (symbol) => {}}
+          />
         </div>
       </div>
 
@@ -228,26 +198,10 @@ const PortfolioDashboard: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '4rem' }}>
               <span style={{ fontSize: '1.875rem', fontWeight: '600', color: '#f3f4f6' }}>Welcome, {user.name}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: '500', color: '#f3f4f6' }}>
-                  Portfolio Value: ${portfolioValue.toFixed(2)}
+                <span style={{ fontSize: '1.25rem', fontWeight: '500'}} className='text-green-400'>
+                  Portfolio Value: ₹{portfolioValue.toFixed(2)}
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  {portfolioChange >= 0 ? (
-                    <TrendingUp size={20} color="#34D399" />
-                  ) : (
-                    <TrendingDown size={20} color="#EF4444" />
-                  )}
-                  <span
-                    style={{
-                      fontSize: '1rem',
-                      fontWeight: '500',
-                      color: portfolioChange >= 0 ? '#34D399' : '#EF4444',
-                    }}
-                  >
-                    {portfolioChange >= 0 ? '+' : ''}
-                    {portfolioChangePercent}%
-                  </span>
-                </div>
+            
               </div>
             </div>
           )}
@@ -260,57 +214,21 @@ const PortfolioDashboard: React.FC = () => {
           <PortfolioTable data={portfolio} />
         </div>
 
-        <div style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden' }}>
-          <WatchlistManager
-            watchlist={[]}
-            onRemove={async (id) => {}}
-            onUpdate={async (id, data) => {}}
-            onAdd={async (symbol) => {}}
-          />
-        </div>
+        
 
-        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)', padding: '1.5rem' }}>
-          <TrendingStocks />
-        </div>
+       
       </div>
 
-      <TransactionModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        type={transactionType}
-        symbol={selectedStock}
-        currentPrice={portfolio.find((p) => p.symbol === selectedStock)?.currentPrice}
-        onSubmit={handleTransaction}
-      />
-
-      {buyModalStock && (
-        <BuyModal
-          stock={{
-            symbol: buyModalStock.symbol,
-            name: buyModalStock.name,
-            price: typeof buyModalStock.price === 'number' ? buyModalStock.price : 0,
-          }}
-          onClose={() => setBuyModalStock(null)}
-          onSuccess={() => {
-            handleBuy({
-              stockSymbol: buyModalStock.symbol,
-              stockName: buyModalStock.name,
-              quantity: 1,
-              price: typeof buyModalStock.price === 'number' ? buyModalStock.price : 0,
-            });
-            setBuyModalStock(null);
-          }}
-        />
-      )}
+    
     </div>
   );
 };
 
-const calculatePortfolioValue = (portfolio: Portfolio[]) => {
-  return portfolio.reduce((total, holding) => {
-    const value = holding.value || 0;
-    return total + value;
-  }, 0);
-};
+  const calculatePortfolioValue = (portfolio: Portfolio[]) => {
+    return portfolio.reduce((total, holding) => {
+      const value = holding.value || 0;
+      return total + value;
+    }, 0);
+  };
 
 export default PortfolioDashboard;

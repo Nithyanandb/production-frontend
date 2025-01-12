@@ -51,7 +51,7 @@ const useAuth = () => {
   const register = async ({ email, password, name }: { email: string; password: string; name: string }) => {
     setIsAuthenticating(true);
     try {
-      const response = await fetch('http://localhost:2000/auth/register', {
+      const response = await fetch('https://production-backend-production.up.railway.app/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
@@ -90,7 +90,7 @@ const useAuth = () => {
   const login = async ({ email, password }: { email: string; password: string }) => {
     setIsAuthenticating(true);
     try {
-      const response = await fetch('http://localhost:2000/auth/login', {
+      const response = await fetch('https://production-backend-production.up.railway.app/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -176,11 +176,11 @@ const useAuth = () => {
   };
 
   const loginWithGoogle = () => {
-    handleOAuthPopup('http://localhost:2000/oauth2/authorization/google');
+    handleOAuthPopup('https://production-backend-production.up.railway.app/oauth2/authorization/google');
   };
 
   const loginWithGithub = () => {
-    handleOAuthPopup('http://localhost:2000/oauth2/authorization/github');
+    handleOAuthPopup('https://production-backend-production.up.railway.app/oauth2/authorization/github');
   };
 
   const logout = useCallback(async () => {
@@ -188,7 +188,7 @@ const useAuth = () => {
       const authData = localStorage.getItem('auth');
       if (authData) {
         const { token } = JSON.parse(authData);
-        const response = await fetch('http://localhost:2000/auth/logout', {
+        const response = await fetch('https://production-backend-production.up.railway.app/auth/logout', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

@@ -80,13 +80,13 @@ module.exports = {
     extend: {
       colors: {
         'stock-green': {
-          DEFAULT: '#26a69a', // Zerodha green
-          light: '#26a69a20', // With opacity for backgrounds
+          DEFAULT: '#26a69a', 
+          light: '#26a69a20',
           hover: '#00897b'
         },
         'stock-red': {
-          DEFAULT: '#ef5350', // Zerodha red
-          light: '#ef535020', // With opacity for backgrounds
+          DEFAULT: '#ef5350',
+          light: '#ef535020', 
           hover: '#e53935'
         }
       }
