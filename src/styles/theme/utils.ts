@@ -29,10 +29,7 @@ export const hexToRgb = (
     : null;
 };
 
-// Media query helper
-export const mediaQuery = (breakpoint: keyof Theme['breakpoints']): string => {
-  return `@media (min-width: ${theme.breakpoints[breakpoint]})`;
-};
+
 
 export const getRGBA = (color: string, opacity: number) => {
   const rgb = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);

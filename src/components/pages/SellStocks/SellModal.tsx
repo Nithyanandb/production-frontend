@@ -8,10 +8,10 @@ interface SellModalProps {
     symbol: string;
     name: string;
     price: number;
-    quantity: number; // Add quantity to the stock interface
+    quantity: number;
   };
   onClose: () => void;
-  onSuccess: (quantity: number) => void; // Update onSuccess to accept quantity
+  onSuccess: (quantity: number) => void;
 }
 
 const SellModal: React.FC<SellModalProps> = ({ stock, onClose, onSuccess }) => {
@@ -26,7 +26,6 @@ const SellModal: React.FC<SellModalProps> = ({ stock, onClose, onSuccess }) => {
       return;
     }
 
-    // Validate the quantity
     if (quantity <= 0) {
       setError('Quantity must be greater than 0.');
       return;
@@ -37,30 +36,27 @@ const SellModal: React.FC<SellModalProps> = ({ stock, onClose, onSuccess }) => {
       return;
     }
 
-    // Clear any previous errors
     setError(null);
-
-    // Call the onSuccess callback with the quantity
     onSuccess(quantity);
-
-    // Close the modal
     onClose();
   };
 
-  // If stock is undefined, return null or a fallback UI
   if (!stock) {
-    return null; // Or return a fallback UI like <div>No stock selected.</div>
+    return null;
   }
 
   return (
     <>
-      <div className="fixed inset-0 bg-white/5 backdrop-blur-xl z-50 flex items-center justify-center">
-        <div className="bg-black backdrop-blur-xl rounded-2xl p-8 bg-black w-[30%] h-auto max-w-xl shadow-2xl">
-          <div className="flex justify-between items-center bg-black mb-8">
-            <h2 className="text-2xl font-semibold bg-black text-white">{stock.name}</h2>
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-50 flex items-center justify-center">
+        <div className="bg-[#111111] backdrop-blur-xl rounded-2xl p-8 w-full max-w-md mx-4 border border-white/10">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h2 className="text-2xl font-medium text-white">{stock.name}</h2>
+              <p className="text-white/60 text-sm">{stock.symbol}</p>
+            </div>
             <button
               onClick={onClose}
-              className="text-white transition-colors"
+              className="text-white/60 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5"
             >
               <XIcon size={24} />
             </button>
@@ -68,53 +64,56 @@ const SellModal: React.FC<SellModalProps> = ({ stock, onClose, onSuccess }) => {
 
           <div className="space-y-8">
             <div className="flex flex-col items-center space-y-4">
-              <span className="text-sm text-white">Select Quantity</span>
+              <span className="text-sm text-white/60">Quantity</span>
               <div className="flex items-center space-x-6">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-black transition-colors"
+                  className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white border border-white/10 transition-all"
                 >
                   <MinusIcon size={20} />
                 </button>
-                <span className="text-3xl font-medium text-white w-12 text-center">
+                <span className="text-4xl font-light text-white w-16 text-center">
                   {quantity}
                 </span>
                 <button
                   onClick={() => setQuantity(Math.min(stock.quantity, quantity + 1))}
-                  className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-black transition-colors"
+                  className="w-12 h-12 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white border border-white/10 transition-all"
                 >
                   <PlusIcon size={20} />
                 </button>
               </div>
+              <p className="text-white/40 text-sm">
+                Available: {stock.quantity} shares
+              </p>
             </div>
 
-            <div className="space-y-3 border-t border-gray-200 pt-6">
-              <div className="flex justify-between text-sm text-white">
-                <span>Price per share</span>
-                <span>₹{stock.price?.toFixed(2)}</span> {/* Optional chaining */}
+            <div className="space-y-4 border-t border-white/10 pt-6">
+              <div className="flex justify-between text-sm">
+                <span className="text-white/60">Price per share</span>
+                <span className="text-white font-medium">₹{stock.price?.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-xl font-medium text-white">
-                <span>Total</span>
-                <span>₹{(stock.price * quantity).toFixed(2)}</span>
+              <div className="flex justify-between text-xl">
+                <span className="text-white/80">Total Amount</span>
+                <span className="text-white font-medium">₹{(stock.price * quantity).toFixed(2)}</span>
               </div>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-100 rounded-lg p-4 text-red-600 text-sm">
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-red-400 text-sm">
                 {error}
               </div>
             )}
 
-            <div className="space-y-3">
+            <div className="space-y-3 pt-4">
               <button
                 onClick={handleSell}
-                className="w-full py-4 bg-red-500 text-white rounded-full font-medium hover:bg-red-600 transition-colors"
+                className="w-full py-4 bg-red-500 text-white rounded-full font-medium hover:bg-red-600 transition-all text-sm uppercase tracking-wide"
               >
                 Sell Now
               </button>
               <button
                 onClick={onClose}
-                className="w-full py-4 text-white font-medium hover:text-white/80 transition-colors"
+                className="w-full py-4 text-white/60 font-medium hover:text-white transition-colors text-sm uppercase tracking-wide"
               >
                 Cancel
               </button>
@@ -128,7 +127,7 @@ const SellModal: React.FC<SellModalProps> = ({ stock, onClose, onSuccess }) => {
         onClose={() => setShowAuthModal(false)}
         onSuccess={() => {
           setShowAuthModal(false);
-          if (!stock) return; // Ensure stock is defined
+          if (!stock) return;
           handleSell();
         }}
       />

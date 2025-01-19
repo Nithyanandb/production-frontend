@@ -412,11 +412,11 @@ const MarketDashboard: React.FC = () => {
 
   
   return (
-    <div className="-ml-[20px] mr-10 flex min-h-screen text-white">
+    <div className="-ml-[20px] w-full mr-10 flex min-h-screen text-white">
       {/* Main Content */}
       <div className="flex-1 pl-6 overflow-y-auto">
         {/* Indices Table */}
-        <div className="mb-6">
+        <div className="mb-6 sm:block hidden">
           <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
             <BarChart2 className="w-5 h-5" /> Indices
           </h2>
@@ -525,7 +525,7 @@ const MarketDashboard: React.FC = () => {
           <div className="space-y-3 mt-8">
             {cryptocurrencies.map((crypto, index) => (
               <div key={index} className="p-4 bg-white/[0.05] rounded-lg hover:bg-white/[0.1] transition-colors">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center mb-8">
                   <div className="flex items-center gap-2">
                     {crypto.icon}
                     <span className="text-sm text-white">{crypto.name}</span>

@@ -49,16 +49,16 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
   }, []);
 
   // If stock is not defined, return null or a fallback UI
-    if (loading || !stock) {
-      return (
-        <div className="flex items-center justify-center h-full text-white/60">
-          <div className="text-center">
-            <Globe size={48} className="mx-auto mb-4 opacity-60" />
-            <p className="text-xl">Select a stock to view details</p>
-          </div>
+  if (loading || !stock) {
+    return (
+      <div className="flex items-center justify-center h-full text-white/60">
+        <div className="text-center">
+          <Globe size={48} className="mx-auto mb-4 opacity-60" />
+          <p className="text-xl">Select a stock to view details</p>
         </div>
-      );
-    }
+      </div>
+    );
+  }
 
   const timeFrames = ['1D', '1W', '1M', '3M', '1Y', 'ALL'];
 
@@ -77,7 +77,7 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className="flex flex-col h-full bg-black/40 backdrop-blur-xl p-4 lg:p-6"
+        className="flex flex-col h-full bg-black/40 backdrop-blur-xl p-4 lg:p-4"
       >
         {/* Compact Header */}
         <div className="flex items-center justify-between mb-2">

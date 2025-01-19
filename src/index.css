@@ -3,7 +3,11 @@
 @tailwind components;
 @tailwind utilities;
 
-
+/* Custom CSS Variables */
+:root {
+  --card-dark: rgba(31, 31, 31, 0.8);
+  --border-color: rgba(255, 255, 255, 0.1);
+}
 
 /* Tailwind Layers - Utilities */
 @layer utilities {
@@ -26,13 +30,10 @@
   animation: float 6s ease-in-out infinite;
 }
 
-
 /* Smooth Scroll */
 html {
   scroll-behavior: smooth;
 }
-
-
 
 /* Gradient Animation */
 @keyframes gradient {
@@ -40,7 +41,6 @@ html {
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
-
 
 /* Remove Snap Scrolling */
 .space-y-32 > :not([hidden]) ~ :not([hidden]) {
@@ -55,3 +55,12 @@ html {
   transition: scroll-behavior 0.8s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
+/* Hide Scrollbar */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+}

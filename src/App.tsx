@@ -1,13 +1,13 @@
 import React, { Suspense } from 'react';
-import { createBrowserRouter, Route, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AuthProvider from './components/Auth/AuthContext';
 import MarketProvider from './components/routes/MarketContext';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
-import ProtectedRoute from "./components/routes/ProtectedRoute";
+import ProtectedRoute from './components/routes/ProtectedRoute';
 import AppLayout from './components/Layout/AppLayout';
 import CookieConsent from './Asserts/CookieConsent';
-import LoadingSpinner from '../src/components/ui/LoadingSpinner'; 
+import LoadingSpinner from '../src/components/ui/LoadingSpinner';
 import LearnPage from './components/Header/Navigation/LearnPage';
 import PortfolioDashboard from './components/portfolio/PortfolioDashboard';
 import FundamentalAnalysisPage from './components/Header/Navigation/FundamentalAnalysisPage';
@@ -18,6 +18,7 @@ import Settings from './components/Header/Settings';
 import Chatbot from './Chatbot';
 import PrivacyPolicy from './Asserts/PrivacyPolicy';
 
+// Lazy-loaded components
 const OAuthCallback = React.lazy(() => import('./components/Auth/OAuthCallback'));
 const NotFound = React.lazy(() => import('./components/ErrorBoundary/NotFound'));
 const FuturesTrading = React.lazy(() => import('./components/Header/Navigation/FuturesTrading'));
@@ -28,7 +29,7 @@ const BuyStocks = React.lazy(() => import('./components/pages/BuyStocks/BuyStock
 const StockMarket = React.lazy(() => import('./components/pages/AllStocks/StockMarket'));
 const About = React.lazy(() => import('./components/Header/About/About'));
 const SellStocks = React.lazy(() => import('./components/pages/SellStocks/SellStocks'));
-  <Route path="/privacy" element={<PrivacyPolicy />} />
+
 // Create a QueryClient instance
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,10 +46,8 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <AppLayout d={undefined}>
+      <AppLayout d={undefined} >
         <Hero />
-       
-       
       </AppLayout>
     ),
   },
@@ -56,12 +55,11 @@ const router = createBrowserRouter([
     path: '/portfolio',
     element: (
       <ProtectedRoute>
-        <AppLayout d={undefined}  >
+        <AppLayout d={undefined} >
           <Suspense fallback={<LoadingSpinner />}>
             <div className="relative">
               <div className="relative z-10">
                 <PortfolioDashboard />
-              
               </div>
             </div>
           </Suspense>
@@ -72,13 +70,13 @@ const router = createBrowserRouter([
   {
     path: '/settings',
     element: (
- 
-            <div className="relative">
-              <div className="relative z-10">
-              <Settings />
-              </div>
-            </div>
-
+      <AppLayout d={undefined} >
+        <div className="relative">
+          <div className="relative z-10">
+            <Settings />
+          </div>
+        </div>
+      </AppLayout>
     ),
   },
   { path: '/auth/callback', element: <OAuthCallback /> },
@@ -93,25 +91,24 @@ const router = createBrowserRouter([
     ),
   },
   { path: '/stock/buy', element: <BuyStocks /> },
-  { path: '/learn/basics', element: <LearnPage /> },
   { path: '/stock/sell', element: <SellStocks /> },
+  { path: '/learn/basics', element: <LearnPage /> },
   { path: '/learn/strategies', element: <TradingStrategiesPage /> },
   { path: '/learn/technical', element: <TechnicalAnalysisPage /> },
   { path: '/learn/fundamental', element: <FundamentalAnalysisPage /> },
   { path: '/trading/futures', element: <FuturesTrading /> },
   { path: '/trading/margin', element: <MarginTrading /> },
-  { path: '/about', element: <About /> },
   { path: '/trading/spot', element: <SpotTrading /> },
   { path: '/trading/options', element: <OptionsTrading /> },
-  { path: '*', element: <NotFound /> },
-  {path: '/privacy', element: <PrivacyPolicy />}
-  
+  { path: '/about', element: <About /> },
+  { path: '/privacy', element: <PrivacyPolicy /> },
+  { path: '*', element: <NotFound /> }, // 404 route
 ]);
 
 // Main App component
 function App() {
   return (
-    <div className=" min-h-screen overflow-hidden">
+    <div className="min-h-screen overflow-hidden">
       <ErrorBoundary>
         <CookieConsent />
         <QueryClientProvider client={queryClient}>
@@ -129,4 +126,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;

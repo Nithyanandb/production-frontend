@@ -31,14 +31,14 @@ const Header: React.FC = () => {
 
   return (
     <motion.header
-      className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-lg border-b border-white/10"
+      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200"
       style={{
         opacity: headerOpacity,
         backdropFilter: `blur(${headerBlur}px)`,
       }}
     >
       <div className="container mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between h-14"> {/* Reduced height to h-14 */}
+        <div className="flex items-center justify-between h-14">
           {/* Logo */}
           <Logo />
 
@@ -47,6 +47,8 @@ const Header: React.FC = () => {
             <NavigationMenu
               isAuthModalOpen={isAuthModalOpen}
               setIsAuthModalOpen={setIsAuthModalOpen}
+              isMobileMenuOpen={isMobileMenuOpen}
+              setIsMobileMenuOpen={setIsMobileMenuOpen}
             />
 
             {/* Search and User Menu */}
@@ -61,7 +63,7 @@ const Header: React.FC = () => {
                   onMouseLeave={() => setIsUserMenuOpen(false)}
                 >
                   <motion.button
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-white hover:text-white/80 transition-colors duration-200"
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-black hover:text-black/80 transition-colors duration-200"
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                   >
@@ -81,7 +83,7 @@ const Header: React.FC = () => {
                         initial={{ opacity: 0, y: 8, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                        className="absolute mt-2 right-0 w-64 py-2 bg-white/95 backdrop-blur-lg rounded-lg shadow-lg border border-white/10"
+                        className="absolute mt-2 right-0 w-64 py-2 bg-white/95 backdrop-blur-lg rounded-lg shadow-lg border border-gray-200"
                       >
                         {user?.roles?.includes('ADMIN') && (
                           <div className="px-4 py-2 mb-1">
@@ -94,7 +96,7 @@ const Header: React.FC = () => {
                         <div className="px-2">
                           <motion.button
                             onClick={handleProfileClick}
-                            className="w-full px-4 py-2 text-sm text-black hover:bg-black/5 rounded-md transition-colors flex items-center gap-3"
+                            className="w-full px-4 py-2 text-sm text-black hover:bg-gray-100 rounded-md transition-colors flex items-center gap-3"
                           >
                             <Briefcase className="w-4 h-4 opacity-70" />
                             <span>Portfolio</span>
@@ -102,19 +104,19 @@ const Header: React.FC = () => {
 
                           <motion.button
                             onClick={handleSettingsClick}
-                            className="w-full px-4 py-2 text-sm text-black hover:bg-black/5 rounded-md transition-colors flex items-center gap-3"
+                            className="w-full px-4 py-2 text-sm text-black hover:bg-gray-100 rounded-md transition-colors flex items-center gap-3"
                           >
                             <Settings className="w-4 h-4 opacity-70" />
                             <span>Settings</span>
                           </motion.button>
                         </div>
 
-                        <div className="my-2 border-t border-white/10" />
+                        <div className="my-2 border-t border-gray-200" />
 
                         <div className="px-2">
                           <motion.button
                             onClick={logout}
-                            className="w-full px-4 py-2 text-sm text-black hover:text-red-600 hover:bg-black/5 rounded-md transition-colors flex items-center gap-3"
+                            className="w-full px-4 py-2 text-sm text-black hover:text-red-600 hover:bg-gray-100 rounded-md transition-colors flex items-center gap-3"
                           >
                             <LogOut className="w-4 h-4 opacity-70" />
                             <span>Sign Out</span>
@@ -129,7 +131,7 @@ const Header: React.FC = () => {
                   whileHover={{ scale: 1 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setIsAuthModalOpen(true)}
-                  className="px-6  text-white/90 text-sm font-medium tracking-wide hover:text-white transition-all duration-300"
+                  className="px-6 text-black/90 text-sm font-medium tracking-wide hover:text-black transition-all duration-300"
                 >
                   Sign In
                 </motion.button>
@@ -146,14 +148,14 @@ const Header: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[90] flex items-center justify-center bg-black/90 backdrop-blur-xl"
+            className="fixed inset-0 z-[90] flex items-center justify-center bg-white/90 backdrop-blur-xl"
           >
-            <div className="bg-black/95 p-8 rounded-xl text-center">
-              <Loader2 className="w-12 h-12 animate-spin text-white mx-auto mb-4" />
-              <h2 className="text-xl text-white font-light tracking-wider">
+            <div className="bg-white/95 p-8 rounded-xl text-center">
+              <Loader2 className="w-12 h-12 animate-spin text-black mx-auto mb-4" />
+              <h2 className="text-xl text-black font-light tracking-wider">
                 Authenticating...
               </h2>
-              <p className="text-white/60 mt-2">
+              <p className="text-black/60 mt-2">
                 Connecting to your credentials
               </p>
             </div>
@@ -169,15 +171,14 @@ const Header: React.FC = () => {
 
       {/* Success Modal */}
       <AnimatePresence>
-       {showSuccessModal && (
- <div className='mt-32 flex justify-center items-center bg-black/90 backdrop-blur-lg text-white text-2xl font-bold '> 
-          <SuccessModal
-            message="Successfully signed out!"
-            onClose={() => setShowSuccessModal(false)}
-          />
-     </div>
+        {showSuccessModal && (
+          <div className="mt-32 flex justify-center items-center bg-white/90 backdrop-blur-lg text-black text-2xl font-bold">
+            <SuccessModal
+              message="Successfully signed out!"
+              onClose={() => setShowSuccessModal(false)}
+            />
+          </div>
         )}
-
       </AnimatePresence>
     </motion.header>
   );

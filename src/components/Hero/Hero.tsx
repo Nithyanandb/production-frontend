@@ -118,7 +118,7 @@ const Hero: React.FC = () => {
             </div>
 
             <div className="lg:col-span-4">
-              <div className="sticky top-24 space-y-4 lg:space-y-8">
+              <div className="sticky top-24 space-y-4 lg:space-y-4">
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}

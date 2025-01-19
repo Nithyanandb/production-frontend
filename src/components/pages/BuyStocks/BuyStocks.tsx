@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useTransition } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Search, ArrowUp, ArrowDown, Globe, DollarSign, Check } from 'lucide-react';
 import BuyModal from './BuyModal';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,6 +9,24 @@ import emailjs from 'emailjs-com';
 import useAuth from '../../hooks/useAuth';
 import { useLocation } from 'react-router-dom';
 import { symbols } from '../AllStocks/symbols';
+import { FixedSizeList as List } from 'react-window';
+
+// Debounce hook
+const useDebounce = (value: string, delay: number) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
 
 export const BuyStocks: React.FC = () => {
   const { user } = useAuth();
@@ -23,7 +41,9 @@ export const BuyStocks: React.FC = () => {
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [email, setEmail] = useState(user?.email || '');
   const location = useLocation();
-  const [isPending, startTransition] = useTransition();
+
+  // Debounced search term
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   // Set user email on component mount or when user changes
   useEffect(() => {
@@ -35,10 +55,8 @@ export const BuyStocks: React.FC = () => {
   // Handle selected stock from navigation state
   useEffect(() => {
     if (location.state?.selectedStock) {
-      startTransition(() => {
-        setSelectedStock(location.state.selectedStock);
-        setSelectedStockDetail(location.state.selectedStock);
-      });
+      setSelectedStock(location.state.selectedStock);
+      setSelectedStockDetail(location.state.selectedStock);
     }
   }, [location.state]);
 
@@ -55,10 +73,8 @@ export const BuyStocks: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     const timer = setTimeout(() => {
-      startTransition(() => {
-        setStocks(symbols);
-        setLoading(false);
-      });
+      setStocks(symbols);
+      setLoading(false);
     }, 4000);
 
     return () => clearTimeout(timer); // Cleanup timer
@@ -67,26 +83,24 @@ export const BuyStocks: React.FC = () => {
   // Simulate live price updates
   useEffect(() => {
     const interval = setInterval(() => {
-      startTransition(() => {
-        setStocks((prevStocks) =>
-          prevStocks.map((stock) => {
-            const change = (Math.random() - 0.5) * 2;
-            const newPrice = (stock.price || 100) + change;
+      setStocks((prevStocks) =>
+        prevStocks.map((stock) => {
+          const change = (Math.random() - 0.5) * 2;
+          const newPrice = (stock.price || 100) + change;
 
-            setPriceChanges((prev) => ({
-              ...prev,
-              [stock.symbol]: change,
-            }));
+          setPriceChanges((prev) => ({
+            ...prev,
+            [stock.symbol]: change,
+          }));
 
-            return {
-              ...stock,
-              price: newPrice,
-              change,
-              changePercent: (change / (stock.price || 100)) * 100,
-            };
-          })
-        );
-      });
+          return {
+            ...stock,
+            price: newPrice,
+            change,
+            changePercent: (change / (stock.price || 100)) * 100,
+          };
+        })
+      );
     }, 5000);
 
     return () => clearInterval(interval); // Cleanup interval
@@ -95,15 +109,11 @@ export const BuyStocks: React.FC = () => {
   // Handle stock selection
   const handleStockSelect = async (stock: typeof symbols[0]) => {
     setStockDetailLoading(true);
-    startTransition(() => {
-      setSelectedStockDetail(stock);
-    });
+    setSelectedStockDetail(stock);
 
     try {
       const detailedStock = { ...stock };
-      startTransition(() => {
-        setSelectedStockDetail(detailedStock);
-      });
+      setSelectedStockDetail(detailedStock);
     } catch (error) {
       console.error('Failed to load stock details:', error);
       setError('Failed to load stock details');
@@ -114,23 +124,16 @@ export const BuyStocks: React.FC = () => {
 
   // Handle successful transaction
   const handleTransactionSuccess = async (stock: typeof symbols[0], quantity: number, totalPrice: number) => {
-    // Validate totalPrice
     if (typeof totalPrice !== 'number' || isNaN(totalPrice)) {
       console.error('Invalid totalPrice:', totalPrice);
       return;
     }
 
-    // Show success popup
-    startTransition(() => {
-      setShowSuccessPopup(true);
-    });
+    setShowSuccessPopup(true);
     setTimeout(() => {
-      startTransition(() => {
-        setShowSuccessPopup(false);
-      });
+      setShowSuccessPopup(false);
     }, 3000);
 
-    // Send email notification
     if (user?.email) {
       try {
         const templateParams = {
@@ -157,15 +160,59 @@ export const BuyStocks: React.FC = () => {
     }
   };
 
-  // Filter stocks based on search term
-  const filteredStocks = stocks.filter(
-    (stock) =>
-      stock.symbol.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      stock.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter stocks based on debounced search term
+  const filteredStocks = useMemo(() => {
+    return stocks.filter(
+      (stock) =>
+        stock.symbol.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        stock.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+    );
+  }, [debouncedSearchTerm, stocks]);
+
+  // Virtualized list row renderer
+  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+    const stock = filteredStocks[index];
+    return (
+      <motion.div
+        style={style}
+        layout
+        className={`p-4 w-98${
+          selectedStockDetail?.symbol === stock.symbol
+            ? 'bg-white/10'
+            : 'bg-black/20 hover:bg-white/5'
+        }`}
+        onClick={() => handleStockSelect(stock)}
+      >
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="font-medium">{stock.symbol}</h3>
+            <p className="text-sm text-white/60">{stock.name}</p>
+          </div>
+          <motion.div
+            animate={{
+              color: (stock.changePercent || 0) >= 0
+                ? '#16a34a' // Green for positive change
+                : '#dc2626', // Red for negative change
+            }}
+            className="text-right"
+          >
+            <p className="font-medium">₹{(stock.price || 0).toFixed(2)}</p>
+            <p className="text-sm flex items-center gap-1">
+              {(stock.changePercent !== undefined) && (
+                <>
+                  {(stock.changePercent >= 0) ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+                  {Math.abs(stock.changePercent).toFixed(2)}%
+                </>
+              )}
+            </p>
+          </motion.div>
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-900 to-black text-white">
+    <div className="min-h-screen  text-white">
       <Header />
       <div>
         <div className="mt-32 absolute flex z-20 px-8 justify-end w-full">
@@ -181,7 +228,7 @@ export const BuyStocks: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex h-screen pt-20">
+      <div className="flex h-screen pt-20 ">
         <div className="w-98 bg-black/30 border-r border-white/10 overflow-hidden">
           <div className="p-6">
             <div className="relative mb-6">
@@ -195,53 +242,24 @@ export const BuyStocks: React.FC = () => {
               />
             </div>
 
-            <div className="space-y-4 overflow-y-auto w-[400px] h-[calc(100vh-200px)]">
+            <div className="space-y-4 overflow-y-auto w-[400px] hide-scrollbar">
               {loading ? (
                 <LoadingSpinner />
               ) : (
-                filteredStocks.map((stock) => (
-                  <motion.div
-                    key={stock.symbol}
-                    layout
-                    className={`p-4 rounded-xl cursor-pointer transition-all ${
-                      selectedStockDetail?.symbol === stock.symbol
-                        ? 'bg-white/10'
-                        : 'bg-black/20 hover:bg-white/5'
-                    }`}
-                    onClick={() => handleStockSelect(stock)}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-medium">{stock.symbol}</h3>
-                        <p className="text-sm text-white/60">{stock.name}</p>
-                      </div>
-                      <motion.div
-                        animate={{
-                          color: (stock.changePercent || 0) >= 0
-                            ? '#16a34a' // Green for positive change
-                            : '#dc2626', // Red for negative change
-                        }}
-                        className="text-right"
-                      >
-                        <p className="font-medium">₹{(stock.price || 0).toFixed(2)}</p>
-                        <p className="text-sm flex items-center gap-1">
-                          {(stock.changePercent !== undefined) && (
-                            <>
-                              {(stock.changePercent >= 0) ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
-                              {Math.abs(stock.changePercent).toFixed(2)}%
-                            </>
-                          )}
-                        </p>
-                      </motion.div>
-                    </div>
-                  </motion.div>
-                ))
+                <List
+                  height={600}
+                  itemCount={filteredStocks.length}
+                  itemSize={80}
+                  width={400}
+                >
+                  {Row}
+                </List>
               )}
             </div>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1">
           {stockDetailLoading ? (
             <LoadingSpinner />
           ) : selectedStockDetail ? (
@@ -269,7 +287,7 @@ export const BuyStocks: React.FC = () => {
             exit={{ opacity: 0, y: -50 }}
             className="fixed inset-0 flex items-center justify-center z-50"
           >
-            <div className="bg-black/50 backdrop-blur-sm fixed inset-0" /> 
+            <div className="bg-black/50 backdrop-blur-sm fixed inset-0" />
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
