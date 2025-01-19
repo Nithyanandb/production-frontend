@@ -4,33 +4,26 @@ import BuyModal from './BuyModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header/Header';
 import { StockDetail } from './StockDetail';
-import { symbols } from '../AllStocks/symbols';
 import LoadingSpinner from '../../ui/LoadingSpinner';
 import emailjs from 'emailjs-com';
 import useAuth from '../../hooks/useAuth';
 import { useLocation } from 'react-router-dom';
-import { Stock } from './types';
+import { symbols } from '../AllStocks/symbols';
 
 export const BuyStocks: React.FC = () => {
   const { user } = useAuth();
-  const [stocks, setStocks] = useState<Stock[]>(
-    symbols.map((stock) => ({
-      ...stock,
-      price: 0, // Default value for `price`
-      changePercent: 0, // Default value for `changePercent`
-    }))
-  );
+  const [stocks, setStocks] = useState(symbols);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
-  const [selectedStockDetail, setSelectedStockDetail] = useState<Stock | null>(null);
-  const [, setPriceChanges] = useState<Record<string, number>>({});
+  const [selectedStock, setSelectedStock] = useState<typeof symbols[0] | null>(null);
+  const [selectedStockDetail, setSelectedStockDetail] = useState<typeof symbols[0] | null>(null);
+  const [priceChanges, setPriceChanges] = useState<Record<string, number>>({});
   const [stockDetailLoading, setStockDetailLoading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [, setEmail] = useState(user?.email || '');
+  const [email, setEmail] = useState(user?.email || '');
   const location = useLocation();
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   // Set user email on component mount or when user changes
   useEffect(() => {
@@ -63,13 +56,7 @@ export const BuyStocks: React.FC = () => {
     setLoading(true);
     const timer = setTimeout(() => {
       startTransition(() => {
-        setStocks(
-          symbols.map((stock) => ({
-            ...stock,
-            price: 0, // Default value for `price`
-            changePercent: 0, // Default value for `changePercent`
-          }))
-        );
+        setStocks(symbols);
         setLoading(false);
       });
     }, 4000);
@@ -84,7 +71,7 @@ export const BuyStocks: React.FC = () => {
         setStocks((prevStocks) =>
           prevStocks.map((stock) => {
             const change = (Math.random() - 0.5) * 2;
-            const newPrice = stock.price ? stock.price + change : 0; // Handle undefined price
+            const newPrice = (stock.price || 100) + change;
 
             setPriceChanges((prev) => ({
               ...prev,
@@ -95,7 +82,7 @@ export const BuyStocks: React.FC = () => {
               ...stock,
               price: newPrice,
               change,
-              changePercent: stock.price ? (change / stock.price) * 100 : 0, // Handle undefined price
+              changePercent: (change / (stock.price || 100)) * 100,
             };
           })
         );
@@ -106,7 +93,7 @@ export const BuyStocks: React.FC = () => {
   }, []);
 
   // Handle stock selection
-  const handleStockSelect = async (stock: Stock) => {
+  const handleStockSelect = async (stock: typeof symbols[0]) => {
     setStockDetailLoading(true);
     startTransition(() => {
       setSelectedStockDetail(stock);
@@ -126,7 +113,7 @@ export const BuyStocks: React.FC = () => {
   };
 
   // Handle successful transaction
-  const handleTransactionSuccess = async (stock: Stock, quantity: number, totalPrice: number) => {
+  const handleTransactionSuccess = async (stock: typeof symbols[0], quantity: number, totalPrice: number) => {
     // Validate totalPrice
     if (typeof totalPrice !== 'number' || isNaN(totalPrice)) {
       console.error('Invalid totalPrice:', totalPrice);
@@ -236,7 +223,7 @@ export const BuyStocks: React.FC = () => {
                         }}
                         className="text-right"
                       >
-                        <p className="font-medium">₹{stock.price?.toFixed(2) ?? 'N/A'}</p>
+                        <p className="font-medium">₹{(stock.price || 0).toFixed(2)}</p>
                         <p className="text-sm flex items-center gap-1">
                           {(stock.changePercent !== undefined) && (
                             <>

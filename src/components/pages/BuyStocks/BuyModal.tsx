@@ -3,10 +3,13 @@ import { MinusIcon, PlusIcon, XIcon } from 'lucide-react';
 import { useBuyStock } from './useBuyStock';
 import useAuth from '../../hooks/useAuth';
 import AuthModal from '../../Auth/AuthModal';
-import { Stock } from './types';
 
 interface BuyModalProps {
-  stock?: Stock;
+  stock?: {
+    symbol: string;
+    name: string;
+    price: number;
+  };
   onClose: () => void;
   onSuccess: (quantity: number, totalPrice: number) => void;
 }
@@ -17,7 +20,7 @@ const BuyModal: React.FC<BuyModalProps> = ({ stock, onClose, onSuccess }) => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { isProcessing, error, handlePurchase } = useBuyStock({
     onSuccess: () => {
-      if (!stock || !stock.price) return; // Ensure stock and price are defined
+      if (!stock) return; // Ensure stock is defined
       const totalPrice = stock.price * quantity;
       onSuccess(quantity, totalPrice);
       onClose();
@@ -29,15 +32,8 @@ const BuyModal: React.FC<BuyModalProps> = ({ stock, onClose, onSuccess }) => {
       setShowAuthModal(true);
       return;
     }
-    if (!stock) {
-      console.error('Stock is undefined');
-      return;
-    }
-    const stockWithPrice = {
-      ...stock,
-      price: stock.price ?? 0, // Provide a default value if `price` is undefined
-    };
-    await handlePurchase(stockWithPrice, quantity);
+    if (!stock) return; // Ensure stock is defined
+    await handlePurchase(stock, quantity);
   };
 
   // If stock is undefined, return null or a fallback UI
@@ -84,11 +80,11 @@ const BuyModal: React.FC<BuyModalProps> = ({ stock, onClose, onSuccess }) => {
             <div className="space-y-3 border-t border-gray-200 pt-6">
               <div className="flex justify-between text-sm text-white">
                 <span>Price per share</span>
-                <span>₹{stock.price?.toFixed(2) ?? 'N/A'}</span> {/* Handle undefined price */}
+                <span>₹{stock.price?.toFixed(2)}</span> {/* Optional chaining */}
               </div>
               <div className="flex justify-between text-xl font-medium text-white">
                 <span>Total</span>
-                <span>₹{(stock.price ? stock.price * quantity : 0).toFixed(2)}</span> {/* Handle undefined price */}
+                <span>₹{(stock.price * quantity).toFixed(2)}</span>
               </div>
             </div>
 
@@ -122,7 +118,7 @@ const BuyModal: React.FC<BuyModalProps> = ({ stock, onClose, onSuccess }) => {
         onClose={() => setShowAuthModal(false)}
         onSuccess={() => {
           setShowAuthModal(false);
-          if (!stock) return; 
+          if (!stock) return; // Ensure stock is defined
           handlePurchase(stock, quantity);
         }}
       />

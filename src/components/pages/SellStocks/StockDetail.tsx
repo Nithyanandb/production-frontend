@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowUp, ArrowDown, Clock, TrendingUp, BarChart2, Activity, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import StockChart from './StockChart';
+import { Portfolio } from '@/components/portfolio/PortfolioTable';
 
 interface StockDetailProps {
   stock: Portfolio | null;
@@ -105,22 +106,7 @@ const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }
           </div>
         </div>
 
-        {/* Compact Stats Grid */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          {[
-            { icon: <Activity size={16} />, label: 'Volume', value: (stock.volume || 0).toLocaleString() },
-            { icon: <TrendingUp size={16} />, label: 'High', value: `₹${(stock.high || 0).toFixed(2)}` },
-            { icon: <BarChart2 size={16} />, label: 'Low', value: `₹${(stock.low || 0).toFixed(2)}` }
-          ].map((stat, index) => (
-            <div key={index} className="bg-white/5 backdrop-blur-sm rounded-xl p-3">
-              <div className="flex items-center gap-1 text-white/60 mb-1 text-xs">
-                {stat.icon}
-                <span className="font-medium">{stat.label}</span>
-              </div>
-              <p className="text-lg font-medium truncate">{stat.value}</p>
-            </div>
-          ))}
-        </div>
+     
 
         {/* Recommendation Trends Section */}
         <div className="bg-black/20 rounded-xl p-4 backdrop-blur-sm">

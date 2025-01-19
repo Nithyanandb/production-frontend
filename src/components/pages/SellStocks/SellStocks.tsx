@@ -6,7 +6,6 @@ import Header from '@/components/Header/Header';
 import LoadingSpinner from '../../ui/LoadingSpinner';
 import useAuth from '@/components/hooks/useAuth';
 import StockDetail from './StockDetail';
-import PortfolioTable from '../../portfolio/PortfolioTable';
 import { formatMoney, formatPercent, Portfolio } from '@/components/portfolio/Asserts/Portfolio';
 import emailjs from 'emailjs-com';
 
