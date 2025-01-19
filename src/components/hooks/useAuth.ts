@@ -19,6 +19,7 @@ interface AuthData {
 const useAuth = () => {
   const context = useContext(AuthContext);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // State for success modal
 
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
@@ -51,7 +52,7 @@ const useAuth = () => {
   const register = async ({ email, password, name }: { email: string; password: string; name: string }) => {
     setIsAuthenticating(true);
     try {
-      const response = await fetch('https://production-backend-production.up.railway.app/auth/register', {
+      const response = await fetch('https://production-backend-final.onrender.com/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, name }),
@@ -90,7 +91,7 @@ const useAuth = () => {
   const login = async ({ email, password }: { email: string; password: string }) => {
     setIsAuthenticating(true);
     try {
-      const response = await fetch('https://production-backend-production.up.railway.app/auth/login', {
+      const response = await fetch('https://production-backend-final.onrender.com/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -155,7 +156,7 @@ const useAuth = () => {
             localStorage.setItem('auth', JSON.stringify({
               token,
               user,
-              expiresAt: new Date().getTime() + (3600 * 1000), // 1 hour
+              expiresAt: new Date().getTime() + (3600 * 1000), 
             }));
             setIsAuthenticating(false);
             popup.close();
@@ -176,11 +177,11 @@ const useAuth = () => {
   };
 
   const loginWithGoogle = () => {
-    handleOAuthPopup('https://production-backend-production.up.railway.app/oauth2/authorization/google');
+    handleOAuthPopup('https://production-backend-final.onrender.com/oauth2/authorization/google');
   };
 
   const loginWithGithub = () => {
-    handleOAuthPopup('https://production-backend-production.up.railway.app/oauth2/authorization/github');
+    handleOAuthPopup('https://production-backend-final.onrender.com/oauth2/authorization/github');
   };
 
   const logout = useCallback(async () => {
@@ -188,7 +189,7 @@ const useAuth = () => {
       const authData = localStorage.getItem('auth');
       if (authData) {
         const { token } = JSON.parse(authData);
-        const response = await fetch('https://production-backend-production.up.railway.app/auth/logout', {
+        const response = await fetch('https://production-backend-final.onrender.com/auth/logout', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -206,6 +207,7 @@ const useAuth = () => {
       setUser(null);
       setToken(null);
       localStorage.removeItem('auth');
+      setShowSuccessModal(true); // Show success modal
       toast.success('Successfully signed out!');
     } catch (error) {
       console.error('Logout error:', error);
@@ -220,6 +222,8 @@ const useAuth = () => {
   return {
     ...context,
     isAuthenticating,
+    showSuccessModal, // Return success modal state
+    setShowSuccessModal, // Return function to control modal
     register,
     login,
     loginWithGoogle,

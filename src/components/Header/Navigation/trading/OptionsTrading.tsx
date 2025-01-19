@@ -4,7 +4,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import Header from '../../Header';
 import TradingChart from './TradingChart';
 import RiskWarning from './RiskWarning';
-import { tradingApi } from '../../../../services/tradingApi';
+import { tradingApi } from './tradingApi';
 
 const OptionsTrading = () => {
   const [selectedExpiry, setSelectedExpiry] = useState('2024-03-29');

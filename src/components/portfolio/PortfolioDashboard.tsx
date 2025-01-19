@@ -2,34 +2,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import PortfolioTable from './PortfolioTable';
-import TransactionModal from './TransactionModal';
-import portfolioApi from './portfolioApi';
-import WatchlistManager from '../Hero/WatchlistManager';
-import StockDashboard from '../Stock/StockDashboard';
-import TrendingStocks from '../Hero/TrendingStocks';
-import { Portfolio, PortfolioStats } from './Portfolio';
+import portfolioApi from './Asserts/portfolioApi';
+import WatchlistManager from './Asserts/WatchlistManager';
+import { Portfolio, PortfolioStats } from './Asserts/Portfolio';
 import useAuth from '../hooks/useAuth';
-import BuyModal from '../pages/BuyStocks/BuyModal';
-import { TrendingUp, TrendingDown } from 'lucide-react';
 import './portfolioDashboard.css';
 
 const PortfolioDashboard: React.FC = () => {
   const [portfolio, setPortfolio] = useState<Portfolio[]>([]);
-  const [stats, setStats] = useState<PortfolioStats | null>(null);
   const [pageViews, setPageViews] = useState<{ date: string; count: number }[]>([]);
   const [weeklyPageViews, setWeeklyPageViews] = useState<{ date: string; count: number }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedStock, setSelectedStock] = useState<string>('');
-  const [transactionType, setTransactionType] = useState<'BUY' | 'SELL'>('BUY');
-  const [buyModalStock, setBuyModalStock] = useState<{ symbol: string; name: string; price: number } | null>(null);
+  const [] = useState(false);
+
   const { isAuthenticated, user, token } = useAuth();
 
   const prevPortfolioValueRef = useRef<number>(0);
   const portfolioValue = calculatePortfolioValue(portfolio);
-  const portfolioChange = portfolioValue - prevPortfolioValueRef.current;
-  const portfolioChangePercent = ((portfolioChange / prevPortfolioValueRef.current) * 100).toFixed(2);
 
   useEffect(() => {
     prevPortfolioValueRef.current = portfolioValue;
@@ -58,7 +48,7 @@ const PortfolioDashboard: React.FC = () => {
       fetchData();
     } else {
       setPortfolio([]);
-      setStats(null);
+      
       setPageViews([]);
       setWeeklyPageViews([]);
       setIsLoading(false);
@@ -78,7 +68,7 @@ const PortfolioDashboard: React.FC = () => {
 
       if (portfolioRes.data?.success && statsRes.data?.success) {
         setPortfolio(portfolioRes.data.data || []);
-        setStats(statsRes.data.data || null);
+      
       } else {
         setError('Failed to fetch portfolio data');
       }
@@ -168,11 +158,11 @@ const PortfolioDashboard: React.FC = () => {
               return 'color-custom-4';
             }
           }}
-          tooltipDataAttrs={(value) => ({
-            'data-tooltip': value
-              ? `${value.date}: ${value.count} page view${value.count !== 1 ? 's' : ''}`
-              : 'No data',
-          })}
+          // tooltipDataAttrs={(value) => ({
+          //   'data-tooltip': value
+          //     ? `${value.date}: ${value.count} page view${value.count !== 1 ? 's' : ''}`
+          //     : 'No data',
+          // })}
           showWeekdayLabels={true}
           onClick={(value) => {
             if (value) {
@@ -184,9 +174,9 @@ const PortfolioDashboard: React.FC = () => {
 <div style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden' }}>
           <WatchlistManager
             watchlist={[]}
-            onRemove={async (id) => {}}
-            onUpdate={async (id, data) => {}}
-            onAdd={async (symbol) => {}}
+            onRemove={async () => {}}
+            onUpdate={async () => {}}
+            onAdd={async () => {}}
           />
         </div>
       </div>

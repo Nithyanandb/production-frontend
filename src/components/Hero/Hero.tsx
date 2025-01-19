@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import MarketWatch from './MarketWatch';
-import WatchlistManager from './WatchlistManager';
-import HeroContent from './HeroContent';
-import MarketMetrics from './MarketMetrics';
-import MarketDashboard from './MarketDashboard';
-import { WorldIndices } from '../market/WorldIndices';
-import MarketGraph from './MarketGraph';
-import { symbols } from '../Stock/StocksPage/symbols';
-import EarningsSurprise from './EarningsSurprise';
-import SectorPerformance from './SectorPerformance';
+import MarketWatch from './Hero_Components/MarketWatch';
+import HeroContent from './Hero_Components/HeroContent';
+import MarketMetrics from './Hero_Components/MarketMetrics';
+import MarketDashboard from './SideBar/MarketDashboard';
+import { WorldIndices } from './WorldIndices/WorldIndices';
+import MarketGraph from './Hero_Components/MarketGraph';
+import { symbols } from '../pages/AllStocks/symbols';
+import EarningsSurprise from './Hero_Components/EarningsSurprise';
+import SectorPerformance from './Hero_Components/SectorPerformance';
 
 const Hero: React.FC = () => {
   const [currentSymbol, setCurrentSymbol] = useState(symbols[0].symbol);
@@ -34,7 +33,7 @@ const Hero: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
+    <div className="relative min-h-screen w-full overflow-hidden -mt-4">
       {/* Content */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -42,7 +41,7 @@ const Hero: React.FC = () => {
         className="relative z-10"
       >
         <div className="container px-0 sm:px-0 lg:px-0 mx-auto">
-          <div className="flex justify-center items-center min-h-screen">
+          <div className="flex justify-center items-center ">
             <div className="w-full max-w-full">
               <HeroContent />
             </div>
@@ -114,7 +113,7 @@ const Hero: React.FC = () => {
                 transition={{ delay: 0.5 }}
                 className="lg:p-6 overflow-hidden transition-all duration-500 hidden sm:block"
               >
-                <WorldIndices isLoading={false} />
+                <WorldIndices/>
               </motion.div>
             </div>
 
@@ -129,19 +128,8 @@ const Hero: React.FC = () => {
                   <MarketDashboard />
                 </motion.div>
 
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="overflow-hidden transition-all duration-500"
-                >
-                  <WatchlistManager
-                    watchlist={[]}
-                    onRemove={async () => {}}
-                    onUpdate={async () => {}}
-                    onAdd={async () => {}}
-                  />
-                </motion.div>
+              
+               
               </div>
             </div>
           </div>

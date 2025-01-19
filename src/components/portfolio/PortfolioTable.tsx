@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
-import Modal from './Modal'; 
+import Modal from './Asserts/Modal'; 
 
 export interface Portfolio {
   quantity: number;

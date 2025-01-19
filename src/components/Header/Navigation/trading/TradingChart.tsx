@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { tradingApi } from '../../../../services/tradingApi';
+import { tradingApi } from './tradingApi';
 import { createChart, IChartApi } from 'lightweight-charts';
 
 interface TradingChartProps {

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { buyStock, TransactionRequest } from './transactions';
 import  useAuth  from '../../hooks/useAuth';
 
 interface UseBuyStockProps {
@@ -21,7 +20,7 @@ export function useBuyStock({ onSuccess }: UseBuyStockProps) {
     setError(null);
 
     try {
-      const response = await fetch('https://production-backend-production.up.railway.app/transaction/buy', {
+      const response = await fetch('https://production-backend-final.onrender.com/transaction/buy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

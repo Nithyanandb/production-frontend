@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://production-backend-production.up.railway.app';
+export const API_BASE_URL = 'https://production-backend-final.onrender.com';
 
 export const API_ENDPOINTS = {
   transactions: {

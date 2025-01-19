@@ -1,9 +1,12 @@
 # Stage 1: Build the application
-FROM node:21-alpine AS builder
+FROM node:18-alpine AS builder
 WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Install esbuild manually
+RUN npm install -g esbuild
 
 # Install dependencies
 RUN npm install --legacy-peer-deps

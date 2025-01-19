@@ -3,7 +3,7 @@ import { Laptop, Play, Pause, Settings, Code } from 'lucide-react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import Header from '../../Header';
 import RiskWarning from './RiskWarning';
-import { tradingApi } from '../../../../services/tradingApi';
+import { tradingApi } from './tradingApi';
 
 const AlgoTrading = () => {
   const [selectedStrategy, setSelectedStrategy] = useState('ma_crossover');

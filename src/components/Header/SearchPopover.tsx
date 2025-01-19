@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search } from 'lucide-react';
 import { Popover, Transition } from '@headlessui/react';
 import { useDebounce } from '../hooks/useDebounce';
-import { SearchResult } from '../types/index';
+import { SearchResult } from './index';
 import { motion } from 'framer-motion';
 
 export const SearchPopover: React.FC = () => {

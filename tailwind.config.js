@@ -81,3 +81,23 @@ module.exports = {
     require('@tailwindcss/typography'), // For typography utilities
   ],
 };
+
+
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      // ... other extensions
+      backdropBlur: {
+        'custom-blur': '24px', // Custom backdrop blur value
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+  ],
+};

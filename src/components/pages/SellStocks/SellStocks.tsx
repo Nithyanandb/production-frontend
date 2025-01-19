@@ -7,7 +7,7 @@ import LoadingSpinner from '../../ui/LoadingSpinner';
 import useAuth from '@/components/hooks/useAuth';
 import StockDetail from './StockDetail';
 import PortfolioTable from '../../portfolio/PortfolioTable';
-import { formatMoney, formatPercent, Portfolio } from '@/components/portfolio/Portfolio';
+import { formatMoney, formatPercent, Portfolio } from '@/components/portfolio/Asserts/Portfolio';
 import emailjs from 'emailjs-com';
 
 export const SellStocks: React.FC = () => {
@@ -34,7 +34,7 @@ export const SellStocks: React.FC = () => {
   useEffect(() => {
     const fetchPortfolio = async () => {
       try {
-        const response = await fetch('https://production-backend-production.up.railway.app/portfolio', {
+        const response = await fetch('https://production-backend-final.onrender.com/portfolio', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -122,7 +122,7 @@ export const SellStocks: React.FC = () => {
   // Handle selling stock
   const handleSell = async (symbol: string, quantity: number) => {
     try {
-      const response = await fetch('https://production-backend-production.up.railway.app/transaction/sell', {
+      const response = await fetch('https://production-backend-final.onrender.com/transaction/sell', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -2,11 +2,11 @@ import React, { Suspense } from 'react';
 import { createBrowserRouter, Route, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AuthProvider from './components/Auth/AuthContext';
-import MarketProvider from './context/MarketContext';
+import MarketProvider from './components/routes/MarketContext';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import ProtectedRoute from "./components/routes/ProtectedRoute";
 import AppLayout from './components/Layout/AppLayout';
-import CookieConsent from './CookieConsent';
+import CookieConsent from './Asserts/CookieConsent';
 import LoadingSpinner from '../src/components/ui/LoadingSpinner'; 
 import LearnPage from './components/Header/Navigation/LearnPage';
 import PortfolioDashboard from './components/portfolio/PortfolioDashboard';
@@ -16,10 +16,8 @@ import TradingStrategiesPage from './components/Header/Navigation/TradingStrateg
 import Hero from './components/Hero/Hero';
 import Settings from './components/Header/Settings';
 import Chatbot from './Chatbot';
-import PrivacyPolicy from './PrivacyPolicy';
+import PrivacyPolicy from './Asserts/PrivacyPolicy';
 
-const Features = React.lazy(() => import('./components/Features/Features'));
-const Security = React.lazy(() => import('./components/Security/Security'));
 const OAuthCallback = React.lazy(() => import('./components/Auth/OAuthCallback'));
 const NotFound = React.lazy(() => import('./components/ErrorBoundary/NotFound'));
 const FuturesTrading = React.lazy(() => import('./components/Header/Navigation/FuturesTrading'));
@@ -27,7 +25,7 @@ const MarginTrading = React.lazy(() => import('./components/Header/Navigation/Ma
 const SpotTrading = React.lazy(() => import('./components/Header/Navigation/SpotTrading'));
 const OptionsTrading = React.lazy(() => import('./components/Header/Navigation/trading/OptionsTrading'));
 const BuyStocks = React.lazy(() => import('./components/pages/BuyStocks/BuyStocks'));
-const StockMarket = React.lazy(() => import('./components/Stock/StocksPage/StockMarket'));
+const StockMarket = React.lazy(() => import('./components/pages/AllStocks/StockMarket'));
 const About = React.lazy(() => import('./components/Header/About/About'));
 const SellStocks = React.lazy(() => import('./components/pages/SellStocks/SellStocks'));
   <Route path="/privacy" element={<PrivacyPolicy />} />
@@ -47,16 +45,9 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <AppLayout>
+      <AppLayout d={undefined}>
         <Hero />
-        <Suspense fallback={<LoadingSpinner />}>
-          <div className="relative min-h-screen">
-            <div className="fixed inset-0 pointer-events-none">
-              <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-transparent to-black" />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_black_100%)] opacity-70" />
-            </div>
-          </div>
-        </Suspense>
+       
        
       </AppLayout>
     ),
@@ -65,7 +56,7 @@ const router = createBrowserRouter([
     path: '/portfolio',
     element: (
       <ProtectedRoute>
-        <AppLayout>
+        <AppLayout d={undefined}  >
           <Suspense fallback={<LoadingSpinner />}>
             <div className="relative">
               <div className="relative z-10">
@@ -120,7 +111,7 @@ const router = createBrowserRouter([
 // Main App component
 function App() {
   return (
-    <div className="global-background min-h-screen overflow-hidden">
+    <div className=" min-h-screen overflow-hidden">
       <ErrorBoundary>
         <CookieConsent />
         <QueryClientProvider client={queryClient}>
@@ -138,4 +129,4 @@ function App() {
   );
 }
 
-export default App;
+export default App; 

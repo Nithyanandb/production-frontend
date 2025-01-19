@@ -4,12 +4,13 @@ import { CheckIcon, X as CloseIcon } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
 import useAuth from '../hooks/useAuth';
-import { cn } from '../../utils/cn';
+import { cn } from './cn';
 import SecureConnection from './SecureConnection';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
@@ -149,20 +150,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </motion.div>
           ) : (
             <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
+              initial={{ scale: 1, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               className={cn(
-                "relative z-0 w-full h-full rounded-2xl overflow-hidden flex",
+                "relative z-0 w-full h-full rounded-2xl overflow-hidden flex flex-col md:flex-row",
                 "bg-black backdrop-blur-0",
                 (isAuthenticating || success) && "opacity-0"
               )}
             >
-              {/* Left Side: Background Image */}
+              {/* Left Side: Background Image (Hidden on Mobile) */}
               <div
-                className="w-1/2 h-full bg-cover bg-center"
+                className="hidden md:block w-full md:w-1/2 h-1/3 md:h-full bg-cover bg-center"
                 style={{
-                  backgroundImage: `url('https://images.unsplash.com/photo-1732823267576-38b408c43809?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwzNDB8fHxlbnwwfHx8fHw%3D')`,
+                  backgroundImage: `url('https://images.unsplash.com/photo-1732866145584-6d9b00095b74?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8YmxhY2slMjBnbGl0dGVyfGVufDB8fDB8fHww')`,
                 }}
               >
                 <div className="absolute inset-0 bg-black/50 flex items-end p-8">
@@ -174,12 +175,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               </div>
 
               {/* Right Side: Login/Register Form */}
-              <div className="w-1/2 h-full flex items-center justify-center p-12 relative z-10">
+              <div className="w-full md:w-1/2 h-full flex items-center justify-center p-6 md:p-12 relative z-10">
                 <div className="w-full max-w-md">
                   {/* Close Button */}
                   <button
                     onClick={handleClose} // Use handleClose instead of onClose
-                    className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
+                    className="absolute top-3 right-20 text-white/50 hover:text-white transition-colors"
                   >
                     <CloseIcon className="w-6 h-6" />
                   </button>
@@ -188,7 +189,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   <motion.h2
                     initial={{ y: -5, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="text-3xl font-medium text-white mb-2"
+                    className="text-2xl md:text-3xl font-medium text-white mb-2"
                   >
                     {authMode === 'login' ? 'Hello User' : 'Create Account'}
                   </motion.h2>
@@ -198,7 +199,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     initial={{ y: 0, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.1 }}
-                    className="text-white/60 mb-8"
+                    className="text-white/60 mb-6 md:mb-8 text-sm md:text-base"
                   >
                     {authMode === 'login'
                       ? 'Sign in to continue to your account'
@@ -210,7 +211,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     <motion.div
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm"
+                      className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm"
                     >
                       {error}
                     </motion.div>
@@ -221,7 +222,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-500 text-sm flex items-center gap-2"
+                      className="mb-4 p-4 bg-green-500/10 border border-green-500/20 rounded-lg text-green-500 text-sm flex items-center gap-2"
                     >
                       <CheckIcon className="w-4 h-4" />
                       {authMode === 'login' ? 'Successfully logged in!' : 'Account created successfully!'}
@@ -229,7 +230,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   )}
 
                   {/* Form */}
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                  <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                     {/* Name Input (for register mode) */}
                     {authMode === 'register' && (
                       <div>
@@ -318,19 +319,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   </form>
 
                   {/* OAuth Buttons */}
-                  <div className="mt-8">
+                  <div className="mt-6">
                     <div className="relative">
                       <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-white/10"></div>
+                        <div className="w-full border-t border-white/20"></div>
                       </div>
                       <div className="relative flex justify-center text-sm">
-                        <span className="px-4 bg-[#1d1d1f] text-white/60">
+                        <span className="px-3 py-1 rounded-full bg-[#1d1d1f] text-white/60">
                           Or continue with
                         </span>
                       </div>
                     </div>
 
-                    <div className="mt-6 grid grid-cols-2 gap-4">
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Google Button */}
                       <motion.button
                         whileHover={{ scale: 1.02 }}
