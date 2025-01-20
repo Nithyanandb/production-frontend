@@ -1,11 +1,12 @@
-/* Modern GitHub AI/Apple inspired styles */
+/* Modern Apple-inspired styles with white background */
 .portfolio-dashboard {
   min-height: 100vh;
-  background: linear-gradient(to bottom, #000000, #111111);
-  color: #fff;
+  background: #ffffff; /* White background */
+  color: #000000; /* Black text */
   display: flex;
   flex-direction: column;
   padding: 2rem 4rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Apple's system font */
 }
 
 .dashboard-container {
@@ -35,7 +36,7 @@
   align-items: center;
   margin-bottom: 3rem;
   padding: 1rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Light black border */
 }
 
 .welcome-section {
@@ -47,7 +48,7 @@
 .welcome-text {
   font-size: 2.5rem;
   font-weight: 600;
-  background: linear-gradient(90deg, #fff 0%, #a8a8a8 100%);
+  background: linear-gradient(90deg, #000000 0%, #555555 100%); /* Black to gray gradient */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.02em;
@@ -61,7 +62,7 @@
 
 .portfolio-value {
   font-size: 1.125rem;
-  color: #8b949e;
+  color: #555555; /* Dark gray text */
   font-weight: 500;
 }
 
@@ -71,43 +72,45 @@
   gap: 0.5rem;
   padding: 0.25rem 0.75rem;
   border-radius: 2rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.05); /* Light black background */
   backdrop-filter: blur(10px);
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Light black border */
+  border-radius: 12px; /* Slightly rounded corners */
   overflow: hidden;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Subtle shadow */
 }
 
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
 }
 
 .card-header {
   padding: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Light black border */
 }
 
 .card-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #fff;
+  color: #000000; /* Black text */
   letter-spacing: -0.02em;
 }
 
-/* GitHub-inspired heatmap container */
+/* Heatmap container */
 .heatmap-container {
-  background: rgba(13, 17, 23, 0.8);
-  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.95); /* Slightly transparent white */
+  border-radius: 12px; /* Slightly rounded corners */
   padding: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Light black border */
   backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Subtle shadow */
 }
 
 .heatmap-header {
@@ -120,7 +123,7 @@
 .heatmap-title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #e6edf3;
+  color: #000000; /* Black text */
   letter-spacing: -0.02em;
 }
 
@@ -129,7 +132,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: #8b949e;
+  color: #555555; /* Dark gray text */
 }
 
 .legend-item {
@@ -144,44 +147,44 @@
 }
 
 .react-calendar-heatmap .color-empty {
-  fill: #161b22;
+  fill: #f0f0f0; /* Light gray for empty cells */
 }
 
 .react-calendar-heatmap .color-custom-0 {
-  fill: #161b22;
+  fill: #f0f0f0; /* Light gray */
 }
 
 .react-calendar-heatmap .color-custom-1 {
-  fill: #0e4429;
+  fill: #c6e48b; /* Light green */
 }
 
 .react-calendar-heatmap .color-custom-2 {
-  fill: #006d32;
+  fill: #7bc96f; /* Medium green */
 }
 
 .react-calendar-heatmap .color-custom-3 {
-  fill: #26a641;
+  fill: #239a3b; /* Dark green */
 }
 
 .react-calendar-heatmap .color-custom-4 {
-  fill: #39d353;
+  fill: #196127; /* Very dark green */
 }
 
 .react-calendar-heatmap text {
-  fill: #8b949e;
+  fill: #555555; /* Dark gray text */
   font-size: 0.75rem;
 }
 
 .react-calendar-heatmap rect {
-  rx: 2px;
-  ry: 2px;
-  stroke: rgba(27, 31, 35, 0.06);
+  rx: 4px; /* Rounded corners */
+  ry: 4px; /* Rounded corners */
+  stroke: rgba(0, 0, 0, 0.05); /* Light black stroke */
   stroke-width: 1px;
   transition: all 0.2s ease;
 }
 
 .react-calendar-heatmap rect:hover {
-  stroke: rgba(255, 255, 255, 0.1);
+  stroke: rgba(0, 0, 0, 0.1); /* Slightly darker stroke on hover */
   stroke-width: 2px;
 }
 
@@ -196,15 +199,14 @@
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(22, 27, 34, 0.95);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.95); /* White background */
+  color: #000000; /* Black text */
   padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 8px; /* Slightly rounded corners */
   font-size: 0.875rem;
   white-space: nowrap;
   z-index: 10;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Light black border */
   backdrop-filter: blur(10px);
 }
-

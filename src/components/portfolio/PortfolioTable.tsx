@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowUp, ArrowDown } from 'lucide-react';
-import Modal from './Asserts/Modal'; 
+import Modal from './Asserts/Modal';
 
 export interface Portfolio {
   quantity: number;
@@ -63,61 +63,61 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({
 
   if (!filteredData || filteredData.length === 0) {
     return (
-      <div className="text-center py-12 ">
-        <p className="text-gray-400 text-lg font-medium">No valid holdings found</p>
+      <div className="text-center py-12">
+        <p className="text-gray-600 text-lg font-medium">No valid holdings found</p>
         <p className="text-gray-500 text-sm mt-2">Start your investment journey today</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden backdrop-blur-xl">
+    <div className="overflow-hidden rounded-lg shadow-sm">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-white/10">
-            <th className="py-4 px-6 text-xs font-medium text-gray-400 text-left">Instrument</th>
-            <th className="py-4 px-6 text-xs font-medium text-gray-400 text-right">Qty.</th>
-            <th className="py-4 px-6 text-xs font-medium text-gray-400 text-right">Avg. Price</th>
-            <th className="py-4 px-6 text-xs font-medium text-gray-400 text-right">Current Price</th>
-            <th className="py-4 px-6 text-xs font-medium text-gray-400 text-right">Current Value</th>
-            <th className="py-4 px-6 text-xs font-medium text-gray-400 text-right">P&L</th>
-            <th className="py-4 px-6 text-xs font-medium text-gray-400 text-center">Last Updated</th>
+          <tr className="bg-gray-50">
+            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-left uppercase tracking-wider">Instrument</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-right uppercase tracking-wider">Qty.</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-right uppercase tracking-wider">Avg. Price</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-right uppercase tracking-wider">Current Price</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-right uppercase tracking-wider">Current Value</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-right uppercase tracking-wider">P&L</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-center uppercase tracking-wider">Last Updated</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/5">
+        <tbody className="divide-y divide-gray-100">
           {filteredData.map((holding) => (
             <tr
               key={holding.id}
-              className="hover:bg-white/5 transition-colors cursor-pointer"
+              className="hover:bg-gray-50 transition-colors cursor-pointer"
               onClick={() => handleRowClick(holding)}
             >
               <td className="py-4 px-6">
                 <div>
-                  <div className="font-medium text-white">{holding.symbol}</div>
-                  <div className="text-xs text-gray-400">{holding.name}</div>
+                  <div className="font-medium text-gray-900">{holding.symbol}</div>
+                  <div className="text-sm text-gray-500">{holding.name}</div>
                 </div>
               </td>
-              <td className="py-4 px-6 text-right font-mono text-white">
+              <td className="py-4 px-6 text-right font-mono text-gray-900">
                 {holding.shares}
               </td>
-              <td className="py-4 px-6 text-right font-mono text-white">
+              <td className="py-4 px-6 text-right font-mono text-gray-900">
                 ${formatNumber(holding.averagePrice)}
               </td>
-              <td className="py-4 px-6 text-right font-mono text-white">
+              <td className="py-4 px-6 text-right font-mono text-gray-900">
                 ${formatNumber(holding.currentPrice)}
               </td>
-              <td className="py-4 px-6 text-right font-mono text-white">
+              <td className="py-4 px-6 text-right font-mono text-gray-900">
                 ${formatNumber(holding.value)}
               </td>
               <td className="py-4 px-6 text-right">
                 <div className={`flex items-center justify-end gap-1.5 font-mono
-                  ${(holding.totalReturn ?? 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}
+                  ${(holding.totalReturn ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                 >
                   {(holding.totalReturn ?? 0) >= 0 ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
-                  <span>₹{formatNumber(Math.abs(holding.totalReturn ?? 0))}</span>
+                  <span>${formatNumber(Math.abs(holding.totalReturn ?? 0))}</span>
                 </div>
               </td>
-              <td className="py-4 px-6 text-right font-mono text-white">
+              <td className="py-4 px-6 text-right font-mono text-gray-900">
                 {holding.lastUpdated}
               </td>
             </tr>
@@ -127,15 +127,35 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({
 
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         {selectedStock && (
-          <div>
-            <h2 className="text-xl font-bold text-white">{selectedStock.name} ({selectedStock.symbol})</h2>
-            <div className="mt-4 space-y-2">
-              <p className="text-gray-400">Quantity: {selectedStock.shares}</p>
-              <p className="text-gray-400">Average Price: ${formatNumber(selectedStock.averagePrice)}</p>
-              <p className="text-gray-400">Current Price: ${formatNumber(selectedStock.currentPrice)}</p>
-              <p className="text-gray-400">Current Value: ${formatNumber(selectedStock.value)}</p>
-              <p className="text-gray-400">Total Return: ${formatNumber(selectedStock.totalReturn)}</p>
-              <p className="text-gray-400">Last Updated: {selectedStock.lastUpdated}</p>
+          <div className="p-6">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">{selectedStock.name} ({selectedStock.symbol})</h2>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Quantity:</span>
+                <span className="text-gray-900 font-medium">{selectedStock.shares}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Average Price:</span>
+                <span className="text-gray-900 font-medium">${formatNumber(selectedStock.averagePrice)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Current Price:</span>
+                <span className="text-gray-900 font-medium">${formatNumber(selectedStock.currentPrice)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Current Value:</span>
+                <span className="text-gray-900 font-medium">${formatNumber(selectedStock.value)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Total Return:</span>
+                <span className={`font-medium ${(selectedStock.totalReturn ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  ${formatNumber(selectedStock.totalReturn)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Last Updated:</span>
+                <span className="text-gray-900 font-medium">{selectedStock.lastUpdated}</span>
+              </div>
             </div>
           </div>
         )}

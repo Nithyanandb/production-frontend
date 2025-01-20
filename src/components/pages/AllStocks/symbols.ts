@@ -1,52 +1,51 @@
-// symbols.ts
 export const symbols = [
-  { symbol: 'AAPL', quantity: 10, name: 'Apple Inc.' }, // Apple Inc. (Technology)
-  { symbol: 'MSFT', quantity: 5, name: 'Microsoft Corporation' }, // Microsoft Corporation (Technology)
-  { symbol: 'GOOGL', quantity: 3, name: 'Alphabet Inc.' }, // Alphabet Inc. (Technology)
-  { symbol: 'AMZN', quantity: 2, name: 'Amazon.com Inc.' }, // Amazon.com Inc. (Consumer Discretionary)
-  { symbol: 'TSLA', quantity: 4, name: 'Tesla Inc.' }, // Tesla Inc. (Automotive)
-  { symbol: 'META', quantity: 6, name: 'Meta Platforms Inc.' }, // Meta Platforms Inc. (Technology)
-  { symbol: 'JNJ', quantity: 8, name: 'Johnson & Johnson' }, // Johnson & Johnson (Pharmaceuticals)
-  { symbol: 'PFE', quantity: 7, name: 'Pfizer Inc.' }, // Pfizer Inc. (Pharmaceuticals)
-  { symbol: 'WMT', quantity: 9, name: 'Walmart Inc.' }, // Walmart Inc. (Consumer Staples)
-  { symbol: 'KO', quantity: 7, name: 'Coca-Cola Co.' }, // Coca-Cola Co. (Consumer Staples)
-  { symbol: 'BA', quantity: 187, name: 'Boeing Co.' }, // Boeing Co. (Industrials)
-  { symbol: 'NOC', quantity: 190, name: 'Northrop Grumman Corp.' }, // Northrop Grumman Corp. (Industrials)
-  { symbol: 'SPR', quantity: 197, name: 'Spirit AeroSystems Holdings Inc.' }, // Spirit AeroSystems Holdings Inc. (Industrials)
-  { symbol: 'HXL', quantity: 199, name: 'Hexcel Corp.' }, // Hexcel Corp. (Industrials)
-  { symbol: 'V', quantity: 12, name: 'Visa Inc.' }, // Visa Inc. (Financials)
-  { symbol: 'MA', quantity: 11, name: 'Mastercard Inc.' }, // Mastercard Inc. (Financials)
-  { symbol: 'JPM', quantity: 15, name: 'JPMorgan Chase & Co.' }, // JPMorgan Chase & Co. (Financials)
-  { symbol: 'GS', quantity: 10, name: 'Goldman Sachs Group Inc.' }, // Goldman Sachs Group Inc. (Financials)
-  { symbol: 'DIS', quantity: 8, name: 'The Walt Disney Company' }, // The Walt Disney Company (Entertainment)
-  { symbol: 'NFLX', quantity: 6, name: 'Netflix Inc.' }, // Netflix Inc. (Entertainment)
-  { symbol: 'T', quantity: 20, name: 'AT&T Inc.' }, // AT&T Inc. (Telecommunications)
-  { symbol: 'VZ', quantity: 18, name: 'Verizon Communications Inc.' }, // Verizon Communications Inc. (Telecommunications)
-  { symbol: 'CVX', quantity: 14, name: 'Chevron Corporation' }, // Chevron Corporation (Energy)
-  { symbol: 'XOM', quantity: 16, name: 'Exxon Mobil Corporation' }, // Exxon Mobil Corporation (Energy)
-  { symbol: 'BP', quantity: 12, name: 'BP plc' }, // BP plc (Energy)
-  { symbol: 'COP', quantity: 10, name: 'ConocoPhillips' }, // ConocoPhillips (Energy)
-  { symbol: 'PG', quantity: 9, name: 'Procter & Gamble Co.' }, // Procter & Gamble Co. (Consumer Staples)
-  { symbol: 'CL', quantity: 8, name: 'Colgate-Palmolive Co.' }, // Colgate-Palmolive Co. (Consumer Staples)
-  { symbol: 'PEP', quantity: 7, name: 'PepsiCo Inc.' }, // PepsiCo Inc. (Consumer Staples)
-  { symbol: 'MDLZ', quantity: 6, name: 'Mondelez International Inc.' }, // Mondelez International Inc. (Consumer Staples)
-  { symbol: 'UNH', quantity: 5, name: 'UnitedHealth Group Inc.' }, // UnitedHealth Group Inc. (Healthcare)
-  { symbol: 'CVS', quantity: 7, name: 'CVS Health Corporation' }, // CVS Health Corporation (Healthcare)
-  { symbol: 'ABT', quantity: 8, name: 'Abbott Laboratories' }, // Abbott Laboratories (Healthcare)
-  { symbol: 'MRK', quantity: 9, name: 'Merck & Co. Inc.' }, // Merck & Co. Inc. (Healthcare)
-  { symbol: 'BMY', quantity: 6, name: 'Bristol-Myers Squibb Company' }, // Bristol-Myers Squibb Company (Healthcare)
-  { symbol: 'LLY', quantity: 5, name: 'Eli Lilly and Company' }, // Eli Lilly and Company (Healthcare)
-  { symbol: 'HD', quantity: 10, name: 'The Home Depot Inc.' }, // The Home Depot Inc. (Consumer Discretionary)
-  { symbol: 'LOW', quantity: 8, name: "Lowe's Companies Inc." }, // Lowe's Companies Inc. (Consumer Discretionary)
-  { symbol: 'TGT', quantity: 7, name: 'Target Corporation' }, // Target Corporation (Consumer Discretionary)
-  { symbol: 'COST', quantity: 6, name: 'Costco Wholesale Corporation' }, // Costco Wholesale Corporation (Consumer Staples)
-  { symbol: 'SBUX', quantity: 5, name: 'Starbucks Corporation' }, // Starbucks Corporation (Consumer Discretionary)
-  { symbol: 'MCD', quantity: 4, name: "McDonald's Corporation" }, // McDonald's Corporation (Consumer Discretionary)
-  { symbol: 'YUM', quantity: 3, name: 'Yum! Brands Inc.' }, // Yum! Brands Inc. (Consumer Discretionary)
-  { symbol: 'CMG', quantity: 2, name: 'Chipotle Mexican Grill Inc.' }, // Chipotle Mexican Grill Inc. (Consumer Discretionary)
-  { symbol: 'NKE', quantity: 5, name: 'Nike Inc.' }, // Nike Inc. (Consumer Discretionary)
-  { symbol: 'UA', quantity: 4, name: 'Under Armour Inc.' }, // Under Armour Inc. (Consumer Discretionary)
-  { symbol: 'LULU', quantity: 3, name: 'Lululemon Athletica Inc.' }, // Lululemon Athletica Inc. (Consumer Discretionary)
-  { symbol: 'DECK', quantity: 2, name: 'Deckers Outdoor Corporation' }, // Deckers Outdoor Corporation (Consumer Discretionary)
-  { symbol: 'UAA', quantity: 1, name: 'Under Armour Inc. Class A' }, // Under Armour Inc. Class A (Consumer Discretionary)
+  { symbol: 'AAPL', quantity: 10, name: 'Apple Inc.' },
+  { symbol: 'MSFT', quantity: 5, name: 'Microsoft Corporation' },
+  { symbol: 'GOOGL', quantity: 3, name: 'Alphabet Inc.' },
+  { symbol: 'AMZN', quantity: 2, name: 'Amazon.com Inc.' },
+  { symbol: 'TSLA', quantity: 4, name: 'Tesla Inc.' },
+  { symbol: 'META', quantity: 6, name: 'Meta Platforms Inc.' },
+  { symbol: 'JNJ', quantity: 8, name: 'Johnson & Johnson' },
+  { symbol: 'PFE', quantity: 7, name: 'Pfizer Inc.' },
+  { symbol: 'WMT', quantity: 9, name: 'Walmart Inc.' },
+  { symbol: 'KO', quantity: 7, name: 'Coca-Cola Co.' },
+  { symbol: 'BA', quantity: 187, name: 'Boeing Co.' },
+  { symbol: 'NOC', quantity: 190, name: 'Northrop Grumman Corp.' },
+  { symbol: 'SPR', quantity: 197, name: 'Spirit AeroSystems Holdings Inc.' },
+  { symbol: 'HXL', quantity: 199, name: 'Hexcel Corp.' },
+  { symbol: 'V', quantity: 12, name: 'Visa Inc.' },
+  { symbol: 'MA', quantity: 11, name: 'Mastercard Inc.' },
+  { symbol: 'JPM', quantity: 15, name: 'JPMorgan Chase & Co.' },
+  { symbol: 'GS', quantity: 10, name: 'Goldman Sachs Group Inc.' },
+  { symbol: 'DIS', quantity: 8, name: 'The Walt Disney Company' },
+  { symbol: 'NFLX', quantity: 6, name: 'Netflix Inc.' },
+  { symbol: 'T', quantity: 20, name: 'AT&T Inc.' },
+  { symbol: 'VZ', quantity: 18, name: 'Verizon Communications Inc.' },
+  { symbol: 'CVX', quantity: 14, name: 'Chevron Corporation' },
+  { symbol: 'XOM', quantity: 16, name: 'Exxon Mobil Corporation' },
+  { symbol: 'BP', quantity: 12, name: 'BP plc' },
+  { symbol: 'COP', quantity: 10, name: 'ConocoPhillips' },
+  { symbol: 'PG', quantity: 9, name: 'Procter & Gamble Co.' },
+  { symbol: 'CL', quantity: 8, name: 'Colgate-Palmolive Co.' },
+  { symbol: 'PEP', quantity: 7, name: 'PepsiCo Inc.' },
+  { symbol: 'MDLZ', quantity: 6, name: 'Mondelez International Inc.' },
+  { symbol: 'UNH', quantity: 5, name: 'UnitedHealth Group Inc.' },
+  { symbol: 'CVS', quantity: 7, name: 'CVS Health Corporation' },
+  { symbol: 'ABT', quantity: 8, name: 'Abbott Laboratories' },
+  { symbol: 'MRK', quantity: 9, name: 'Merck & Co. Inc.' },
+  { symbol: 'BMY', quantity: 6, name: 'Bristol-Myers Squibb Company' },
+  { symbol: 'LLY', quantity: 5, name: 'Eli Lilly and Company' },
+  { symbol: 'HD', quantity: 10, name: 'The Home Depot Inc.' },
+  { symbol: 'LOW', quantity: 8, name: "Lowe's Companies Inc." },
+  { symbol: 'TGT', quantity: 7, name: 'Target Corporation' },
+  { symbol: 'COST', quantity: 6, name: 'Costco Wholesale Corporation' },
+  { symbol: 'SBUX', quantity: 5, name: 'Starbucks Corporation' },
+  { symbol: 'MCD', quantity: 4, name: "McDonald's Corporation" },
+  { symbol: 'YUM', quantity: 3, name: 'Yum! Brands Inc.' },
+  { symbol: 'CMG', quantity: 2, name: 'Chipotle Mexican Grill Inc.' },
+  { symbol: 'NKE', quantity: 5, name: 'Nike Inc.' },
+  { symbol: 'UA', quantity: 4, name: 'Under Armour Inc.' },
+  { symbol: 'LULU', quantity: 3, name: 'Lululemon Athletica Inc.' },
+  { symbol: 'DECK', quantity: 2, name: 'Deckers Outdoor Corporation' },
+  { symbol: 'UAA', quantity: 1, name: 'Under Armour Inc. Class A' },
 ];

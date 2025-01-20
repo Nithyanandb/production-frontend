@@ -126,7 +126,7 @@ export const StockChart: React.FC<StockChartProps> = ({
       const price = payload[0].value;
       
       return (
-        <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-lg p-4 shadow-xl">
+        <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-lg p-4  shadow-xl">
           <p className="text-gray-600 text-sm mb-1">
             {timeFrame === '1D' 
               ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })

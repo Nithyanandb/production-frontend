@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowUp, ArrowDown, Clock, TrendingUp, BarChart2, Activity, Globe } from 'lucide-react';
+import { ArrowUp, ArrowDown, Globe, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import StockChart from './StockChart';
-import { Portfolio } from '@/components/portfolio/PortfolioTable';
+import { StockChart } from './StockChart';
+import { Portfolio } from '@/components/portfolio/Asserts/Portfolio';
+
+const API_KEY = "ctre6q9r01qhb16mmh70ctre6q9r01qhb16mmh7g"; // Replace with your API key
 
 interface StockDetailProps {
   stock: Portfolio | null;
@@ -10,12 +12,36 @@ interface StockDetailProps {
   loading?: boolean;
 }
 
-const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }) => {
+export const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }) => {
   const [timeFrame, setTimeFrame] = useState<string>('1D');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [recommendationTrends, setRecommendationTrends] = useState<any[]>([]);
   const [trendsLoading, setTrendsLoading] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // State to control modal visibility
 
+  // Fetch recommendation trends when stock changes
+  useEffect(() => {
+    const fetchRecommendationTrends = async () => {
+      if (stock?.symbol) {
+        setTrendsLoading(true);
+        try {
+          const response = await fetch(
+            `https://finnhub.io/api/v1/stock/recommendation?symbol=${stock.symbol}&token=${API_KEY}`
+          );
+          const data = await response.json();
+          setRecommendationTrends(data);
+        } catch (error) {
+          console.error('Failed to fetch recommendation trends:', error);
+        } finally {
+          setTrendsLoading(false);
+        }
+      }
+    };
+
+    fetchRecommendationTrends();
+  }, [stock?.symbol]);
+
+  // Update current time every second
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -23,12 +49,13 @@ const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }
     return () => clearInterval(timer);
   }, []);
 
+  // If stock is not defined, return null or a fallback UI
   if (loading || !stock) {
     return (
-      <div className="h-full flex items-center justify-center text-gray-600">
+      <div className="flex items-center justify-center h-full text-gray-600">
         <div className="text-center">
           <Globe size={48} className="mx-auto mb-4 opacity-60" />
-          <p className="text-xl font-light">Select a stock to view details</p>
+          <p className="text-xl">Select a stock to view details</p>
         </div>
       </div>
     );
@@ -36,12 +63,23 @@ const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }
 
   const timeFrames = ['1D', '1W', '1M', '3M', '1Y', 'ALL'];
 
+  // Color scheme for recommendation trends
   const trendColors = {
-    strongBuy: '#22c55e',
-    buy: '#4ade80',
-    hold: '#facc15',
-    sell: '#f87171',
-    strongSell: '#ef4444',
+    strongBuy: '#16a34a', // Bright green
+    buy: '#4ade80',      // Light green
+    hold: '#facc15',     // Yellow
+    sell: '#f87171',     // Light red
+    strongSell: '#dc2626', // Bright red
+  };
+
+  // Function to open the modal
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Function to close the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -50,43 +88,46 @@ const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className="flex flex-col h-full bg-white rounded-2xl p-6 lg:p-8 shadow-sm"
+        className="flex -mt-6 flex-col h-full bg-white backdrop-blur-xl p-4 lg:p-4"
       >
-        <div className="flex items-center justify-between mb-6">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between mb-2">
           <div>
-            <h1 className="text-3xl font-light text-black mb-1">{stock.name}</h1>
-            <div className="flex items-center gap-3 text-sm">
+            <h1 className="text-2xl font-semibold text-black">{stock.name}</h1>
+            <div className="flex items-center gap-2 text-sm">
               <span className="text-gray-600">{stock.symbol}</span>
-              <span className="text-gray-300">•</span>
-              <span className="text-gray-600 font-light">{currentTime.toLocaleTimeString()}</span>
+              <span className="text-gray-600">•</span>
+              <span className="text-gray-600">{currentTime.toLocaleTimeString()}</span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-baseline gap-4 mb-8">
-          <span className="text-5xl font-light text-black">
-            ${stock.currentPrice?.toFixed(2) || 'N/A'}
+        {/* Compact Price Section */}
+        <div className="flex items-center gap-4 mb-4">
+          <span className="text-4xl font-medium text-black">
+            ₹{stock.currentPrice?.toFixed(2) ?? 'N/A'} {/* Use the currentPrice from the selected stock */}
           </span>
           <motion.span
             animate={{
-              color: (stock.totalReturn || 0) >= 0 ? "#22c55e" : "#ef4444"
+              color: (stock.totalReturn || 0) >= 0 ? "rgb(34, 197, 94)" : "rgb(239, 68, 68)"
             }}
-            className="flex items-center text-lg font-light"
+            className="flex items-center text-lg"
           >
             {(stock.totalReturn || 0) >= 0 ? <ArrowUp size={20} /> : <ArrowDown size={20} />}
             {Math.abs(stock.totalReturn || 0).toFixed(2)}%
           </motion.span>
         </div>
 
-        <div className="flex gap-2 mb-8 overflow-x-auto scrollbar-hide">
+        {/* Compact Time Frame Selector */}
+        <div className="flex gap-1 mb-4 overflow-x-auto scrollbar-hide">
           {timeFrames.map((tf) => (
             <button
               key={tf}
               onClick={() => setTimeFrame(tf)}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap ${
                 timeFrame === tf
                   ? 'bg-black text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-black'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
               {tf}
@@ -94,55 +135,132 @@ const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }
           ))}
         </div>
 
-        <div className="flex-1 bg-gray-100 rounded-2xl mb-8 overflow-hidden">
-          <div className="h-full p-4">
+        {/* Chart Container */}
+        <div className="flex-1 bg-gray-100 rounded-xl mt-12 backdrop-blur-sm">
+          <div className="h-full">
             <StockChart stock={stock} timeFrame={timeFrame} />
           </div>
         </div>
 
-        <div className="bg-gray-100 rounded-2xl p-6">
-          <h3 className="text-xl font-light text-black mb-6">Market Analysis</h3>
+        {/* Recommendation Trends Section */}
+        <div
+          className="rounded-xl p-4 backdrop-blur-sm cursor-pointer"
+          onClick={openModal} // Open modal on click
+        >
+          <h3 className="text-lg font-semibold text-black mb-4">Recommendation Trends</h3>
           {trendsLoading ? (
-            <div className="flex justify-center items-center py-8">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full"
-              />
+            <div className="flex justify-center items-center py-4">
+              <span className="text-gray-600">Loading trends...</span>
             </div>
           ) : recommendationTrends.length > 0 ? (
-            <div className="space-y-6">
-              {recommendationTrends.map((trend, index) => (
-                <div key={index} className="bg-white rounded-xl p-6 shadow-sm">
-                  <p className="text-sm text-gray-600 mb-4 font-light">{trend.period}</p>
-                  <div className="grid grid-cols-5 gap-4">
-                    {[
-                      { label: 'Strong Buy', value: trend.strongBuy, color: trendColors.strongBuy },
-                      { label: 'Buy', value: trend.buy, color: trendColors.buy },
-                      { label: 'Hold', value: trend.hold, color: trendColors.hold },
-                      { label: 'Sell', value: trend.sell, color: trendColors.sell },
-                      { label: 'Strong Sell', value: trend.strongSell, color: trendColors.strongSell },
-                    ].map((item, i) => (
-                      <div key={i} className="text-center">
-                        <p className="text-xs text-gray-500 mb-2 font-light">{item.label}</p>
-                        <p className="text-lg font-light" style={{ color: item.color }}>
-                          {item.value}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white rounded-xl shadow-sm">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2 text-xs text-gray-600 text-left">Period</th>
+                    <th className="px-4 py-2 text-xs text-gray-600 text-center">Strong Buy</th>
+                    <th className="px-4 py-2 text-xs text-gray-600 text-center">Buy</th>
+                    <th className="px-4 py-2 text-xs text-gray-600 text-center">Hold</th>
+                    <th className="px-4 py-2 text-xs text-gray-600 text-center">Sell</th>
+                    <th className="px-4 py-2 text-xs text-gray-600 text-center">Strong Sell</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recommendationTrends.slice(0, 1).map((trend, index) => ( // Show only the first row in the preview
+                    <tr key={index} className="border-t border-gray-200">
+                      <td className="px-4 py-3 text-sm text-gray-600">{trend.period}</td>
+                      <td className="px-4 py-3 text-lg font-medium text-center" style={{ color: trendColors.strongBuy }}>
+                        {trend.strongBuy}
+                      </td>
+                      <td className="px-4 py-3 text-lg font-medium text-center" style={{ color: trendColors.buy }}>
+                        {trend.buy}
+                      </td>
+                      <td className="px-4 py-3 text-lg font-medium text-center" style={{ color: trendColors.hold }}>
+                        {trend.hold}
+                      </td>
+                      <td className="px-4 py-3 text-lg font-medium text-center" style={{ color: trendColors.sell }}>
+                        {trend.sell}
+                      </td>
+                      <td className="px-4 py-3 text-lg font-medium text-center" style={{ color: trendColors.strongSell }}>
+                        {trend.strongSell}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
-            <div className="flex justify-center items-center py-8">
-              <span className="text-gray-500 font-light">No market analysis available</span>
+            <div className="flex justify-center items-center py-4">
+              <span className="text-gray-600">No recommendation trends available.</span>
             </div>
           )}
         </div>
+
+        {/* Modal for Recommendation Trends */}
+        <AnimatePresence>
+          {isModalOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+              onClick={closeModal} // Close modal when clicking outside
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: -20 }}
+                className="bg-white rounded-xl w-full max-w-2xl p-6 relative"
+                onClick={(e) => e.stopPropagation()} // Prevent clicks inside the modal from closing it
+              >
+                <button
+                  onClick={closeModal}
+                  className="absolute top-4 right-4 p-2 text-gray-600 hover:text-black"
+                >
+                  <X size={20} />
+                </button>
+                <h3 className="text-lg font-semibold text-black mb-4">Recommendation Trends</h3>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full bg-white rounded-xl shadow-sm">
+                    <thead>
+                      <tr>
+                        <th className="px-4 py-2 text-xs text-gray-600 text-left">Period</th>
+                        <th className="px-4 py-2 text-xs text-gray-600 text-center">Strong Buy</th>
+                        <th className="px-4 py-2 text-xs text-gray-600 text-center">Buy</th>
+                        <th className="px-4 py-2 text-xs text-gray-600 text-center">Hold</th>
+                        <th className="px-4 py-2 text-xs text-gray-600 text-center">Sell</th>
+                        <th className="px-4 py-2 text-xs text-gray-600 text-center">Strong Sell</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recommendationTrends.map((trend, index) => (
+                        <tr key={index} className="border-t border-gray-200">
+                          <td className="px-4 py-3 text-sm text-gray-600">{trend.period}</td>
+                          <td className="px-4 py-3 text-lg font-medium text-center" style={{ color: trendColors.strongBuy }}>
+                            {trend.strongBuy}
+                          </td>
+                          <td className="px-4 py-3 text-lg font-medium text-center" style={{ color: trendColors.buy }}>
+                            {trend.buy}
+                          </td>
+                          <td className="px-4 py-3 text-lg font-medium text-center" style={{ color: trendColors.hold }}>
+                            {trend.hold}
+                          </td>
+                          <td className="px-4 py-3 text-lg font-medium text-center" style={{ color: trendColors.sell }}>
+                            {trend.sell}
+                          </td>
+                          <td className="px-4 py-3 text-lg font-medium text-center" style={{ color: trendColors.strongSell }}>
+                            {trend.strongSell}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
     </AnimatePresence>
   );
 };
-
-export default StockDetail;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Clock } from 'lucide-react';
+import { Clock, LineChart } from 'lucide-react';
 import { SegmentSelector } from './SegmentSelector';
 import { HoldingsTable } from './HoldingsTable';
 import Header from '@/components/Header/Header';
@@ -53,7 +53,7 @@ const StockMarket: React.FC = () => {
           );
 
           // Combine new unique trades with previous trades and limit to 5
-          const updatedTrades = [...prevTrades, ...uniqueTrades].slice(-4);
+          const updatedTrades = [...prevTrades, ...uniqueTrades].slice(-5);
           return updatedTrades;
         });
       }
@@ -64,10 +64,7 @@ const StockMarket: React.FC = () => {
       setError('WebSocket error. Please refresh the page.');
     });
 
-    socket.addEventListener('close', () => {
-      console.log('WebSocket connection closed');
-      setError('WebSocket connection closed. Please refresh the page.');
-    });
+ 
 
     socketRef.current = socket;
   };
@@ -89,36 +86,47 @@ const StockMarket: React.FC = () => {
       <Header />
 
       <div className="flex h-screen pt-20">
-        {/* Sidebar for Trades */}
-        <div className="p-8 space-y-4 overflow-y-auto w-[400px] h-full border-r border-gray-200">
-          <h2 className="text-2xl font-semibold text-black mb-6">Trades - Last Price Updates</h2>
-          {error ? (
-            <div className="flex justify-center items-center py-4">
-              <span className="text-red-500">{error}</span>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="rounded-xl p-0">
-                <h3 className="text-lg font-semibold text-black mb-4">Recent Trades</h3>
-                <div className="space-y-4">
-                  {trades.length > 0 ? (
-                    trades.map((trade, index) => (
-                      <div key={index} className="text-sm text-gray-600 bg-white p-2 rounded-lg">
-                        <p>Symbol: <span className="p-2 text-black font-medium">{trade.symbol}</span></p>
-                        <p>Price: <span className="p-2 text-black font-medium">{trade.price}</span></p>
-                        <p>Volume: <span className="p-2 text-black font-medium">{trade.volume}</span></p>
-                        <p>Time: <span className="p-2 text-black font-medium">{new Date(trade.timestamp).toLocaleTimeString()}</span></p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-600">No trades available yet.</p>
-                  )}
+  {/* Sidebar for Trades */}
+<div className="p-4 ml-2 overflow-y-auto w-[400px] h-full border-r border-gray-200 bg-white">
+  <div className="mb-6">
+    <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
+     Trades - Last Price Updates
+    </h2>
+    {error ? (
+      <div className="flex justify-center items-center py-4">
+        <span className="text-red-500">{error}</span>
+      </div>
+    ) : (
+      <div className="space-y-3 mt-8">
+        {trades.length > 0 ? (
+          trades.map((trade, index) => (
+            <div key={index} className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors">
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-900">{trade.symbol}</span>
+                  <span className="text-xs text-gray-500">{trade.symbol.toUpperCase()}</span>
+                </div>
+                <span className="text-sm text-gray-900">${trade.price.toLocaleString()}</span>
+              </div>
+              <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                <div className="flex items-center gap-1">
+                  <span className="text-gray-500">Volume:</span>
+                  <span className="text-gray-900">{trade.volume.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span className="text-gray-500">Time:</span>
+                  <span className="text-gray-900">{new Date(trade.timestamp).toLocaleTimeString()}</span>
                 </div>
               </div>
             </div>
-          )}
-        </div>
-
+          ))
+        ) : (
+          <p className="text-sm text-gray-600">No trades available yet.</p>
+        )}
+      </div>
+    )}
+  </div>
+</div>
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto">
           <div className="container mx-auto px-8 py-12">

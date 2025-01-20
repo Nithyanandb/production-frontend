@@ -3,7 +3,7 @@ import Header from '../Header';
 import ExperienceSection from './ExperienceSection';
 import HeroSection from './HeroSection';
 import CompanyOverview from './CompanyOverview';
-import { motion } from 'framer-motion';
+import {motion}  from 'framer-motion';
 import { features } from './data';
 import { FeatureBlock } from './FeatureBlock';
 

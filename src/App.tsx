@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AuthProvider from './components/Auth/AuthContext';
@@ -15,9 +15,9 @@ import TechnicalAnalysisPage from './components/Header/Navigation/TechnicalAnaly
 import TradingStrategiesPage from './components/Header/Navigation/TradingStrategiesPage';
 import Hero from './components/Hero/Hero';
 import Settings from './components/Header/Settings';
-import Chatbot from './Chatbot';
 import PrivacyPolicy from './Asserts/PrivacyPolicy';
-import './App.css' 
+import './App.css';
+
 // Lazy-loaded components
 const OAuthCallback = React.lazy(() => import('./components/Auth/OAuthCallback'));
 const NotFound = React.lazy(() => import('./components/ErrorBoundary/NotFound'));
@@ -40,6 +40,16 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Preload function for lazy-loaded components
+const preloadLazyComponents = () => {
+  const componentsToPreload = [
+    () => import('./components/pages/BuyStocks/BuyStocks'),
+    () => import('./components/pages/AllStocks/StockMarket'),
+  ];
+
+  componentsToPreload.forEach((component) => component());
+};
 
 // Router configuration
 const router = createBrowserRouter([
@@ -79,7 +89,14 @@ const router = createBrowserRouter([
       </AppLayout>
     ),
   },
-  { path: '/auth/callback', element: <OAuthCallback /> },
+  {
+    path: '/auth/callback',
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <OAuthCallback />
+      </Suspense>
+    ),
+  },
   {
     path: '/stock/all',
     element: (
@@ -90,23 +107,91 @@ const router = createBrowserRouter([
       </QueryClientProvider>
     ),
   },
-  { path: '/stock/buy', element: <BuyStocks /> },
-  { path: '/stock/sell', element: <SellStocks /> },
+  {
+    path: '/stock/buy',
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <BuyStocks />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/stock/sell',
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <SellStocks />
+      </Suspense>
+    ),
+  },
   { path: '/learn/basics', element: <LearnPage /> },
   { path: '/learn/strategies', element: <TradingStrategiesPage /> },
   { path: '/learn/technical', element: <TechnicalAnalysisPage /> },
   { path: '/learn/fundamental', element: <FundamentalAnalysisPage /> },
-  { path: '/trading/futures', element: <FuturesTrading /> },
-  { path: '/trading/margin', element: <MarginTrading /> },
-  { path: '/trading/spot', element: <SpotTrading /> },
-  { path: '/trading/options', element: <OptionsTrading /> },
-  { path: '/about', element: <About /> },
-  { path: '/privacy', element: <PrivacyPolicy /> },
-  { path: '*', element: <NotFound /> }, // 404 route
+  {
+    path: '/trading/futures',
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <FuturesTrading />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/trading/margin',
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <MarginTrading />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/trading/spot',
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <SpotTrading />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/trading/options',
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <OptionsTrading />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/about',
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <About />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/privacy',
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <PrivacyPolicy />
+      </Suspense>
+    ),
+  },
+  {
+    path: '*',
+    element: (
+      <Suspense fallback={<LoadingSpinner />}>
+        <NotFound />
+      </Suspense>
+    ),
+  },
 ]);
 
 // Main App component
 function App() {
+  useEffect(() => {
+    // Preload the lazy-loaded components when the app starts
+    preloadLazyComponents();
+  }, []);
+
   return (
     <div className="min-h-screen overflow-hidden">
       <ErrorBoundary>
@@ -116,7 +201,6 @@ function App() {
             <MarketProvider>
               <div className="relative min-h-screen bg-white text-gray-900 antialiased font-sans">
                 <RouterProvider router={router} />
-                <Chatbot />
               </div>
             </MarketProvider>
           </AuthProvider>

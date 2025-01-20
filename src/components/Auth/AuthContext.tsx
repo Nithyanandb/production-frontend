@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useState, useCallback, useEffect, startTransition } from 'react';
 
 interface UserProfile {
   email: string;
@@ -25,15 +25,12 @@ interface AuthContextType {
   error: string | null;
   handleOAuthCallback: (authData: AuthData) => void;
   setIsAuthenticating: (value: boolean) => void;
-  login: (credentials: { email: string; password: string }) => Promise<void>;
-  register: (userData: { email: string; password: string; name: string }) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
- const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserProfile | null>(() => {
-    // Initialize from localStorage
     const authData = localStorage.getItem('auth');
     if (authData) {
       try {
@@ -47,7 +44,6 @@ export const AuthContext = createContext<AuthContextType | null>(null);
   });
 
   const [token, setToken] = useState<string | null>(() => {
-    // Initialize from localStorage
     const authData = localStorage.getItem('auth');
     if (authData) {
       try {
@@ -64,23 +60,24 @@ export const AuthContext = createContext<AuthContextType | null>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const handleOAuthPopup = (url: string) => {
-    setIsAuthenticating(true);
+    startTransition(() => {
+      setIsAuthenticating(true);
+    });
+
     const width = 500;
     const height = 600;
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2;
 
-    const popup = window.open(
-      url,
-      'OAuth2',
-      `width=${width},height=${height},left=${left},top=${top}`
-    );
+    const popup = window.open(url, 'OAuth2', `width=${width},height=${height},left=${left},top=${top}`);
 
     if (popup) {
       const checkPopup = setInterval(() => {
         if (!popup || popup.closed) {
           clearInterval(checkPopup);
-          setIsAuthenticating(false);
+          startTransition(() => {
+            setIsAuthenticating(false);
+          });
         }
       }, 1000);
 
@@ -88,10 +85,12 @@ export const AuthContext = createContext<AuthContextType | null>(null);
         if (event.origin === window.location.origin) {
           if (event.data.type === 'AUTH_SUCCESS') {
             const { token, user } = event.data.data;
-            setUser(user);
-            setToken(token);
-            localStorage.setItem('auth', JSON.stringify({ token, user }));
-            setIsAuthenticating(false);
+            startTransition(() => {
+              setUser(user);
+              setToken(token);
+              localStorage.setItem('auth', JSON.stringify({ token, user }));
+              setIsAuthenticating(false);
+            });
             popup.close();
           }
         }
@@ -107,13 +106,11 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
   const handleOAuthCallback = useCallback((authData: AuthData) => {
     const { token, user } = authData;
-    
-    // Update state
-    setUser(user);
-    setToken(token);
-    
-    // Store in localStorage
-    localStorage.setItem('auth', JSON.stringify({ token, user }));
+    startTransition(() => {
+      setUser(user);
+      setToken(token);
+      localStorage.setItem('auth', JSON.stringify({ token, user }));
+    });
   }, []);
 
   const logout = useCallback(async () => {
@@ -122,20 +119,19 @@ export const AuthContext = createContext<AuthContextType | null>(null);
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      
-      // Clear auth data
-      setUser(null);
-      setToken(null);
-      localStorage.removeItem('auth');
+
+      startTransition(() => {
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem('auth');
+      });
     } catch (error) {
       console.error('Logout error:', error);
     }
   }, [token]);
-
-
 
   return (
     <AuthContext.Provider
@@ -152,7 +148,6 @@ export const AuthContext = createContext<AuthContextType | null>(null);
         error,
         handleOAuthCallback,
         setIsAuthenticating,
-        
       }}
     >
       {children}

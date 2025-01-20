@@ -14,7 +14,6 @@ const PortfolioDashboard: React.FC = () => {
   const [weeklyPageViews, setWeeklyPageViews] = useState<{ date: string; count: number }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [] = useState(false);
 
   const { isAuthenticated, user, token } = useAuth();
 
@@ -48,7 +47,6 @@ const PortfolioDashboard: React.FC = () => {
       fetchData();
     } else {
       setPortfolio([]);
-      
       setPageViews([]);
       setWeeklyPageViews([]);
       setIsLoading(false);
@@ -68,7 +66,6 @@ const PortfolioDashboard: React.FC = () => {
 
       if (portfolioRes.data?.success && statsRes.data?.success) {
         setPortfolio(portfolioRes.data.data || []);
-      
       } else {
         setError('Failed to fetch portfolio data');
       }
@@ -107,37 +104,35 @@ const PortfolioDashboard: React.FC = () => {
     return data.filter((entry) => new Date(entry.date) >= oneYearAgo);
   };
 
-  
-
   if (!isAuthenticated) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: '#fff' }}>Please log in to view your portfolio.</div>
+      <div className="flex items-center justify-center min-h-screen bg-white">
+        <div className="text-black">Please log in to view your portfolio.</div>
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ animation: 'spin 1s linear infinite', borderRadius: '50%', height: '8rem', width: '8rem', borderTop: '2px solid #6b7280', borderBottom: '2px solid #6b7280' }} />
+      <div className="flex items-center justify-center min-h-screen bg-white">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-500" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-        <div style={{ color: '#ef4444' }}>{error}</div>
+      <div className="flex items-center justify-center min-h-screen bg-white">
+        <div className="text-red-600">{error}</div>
       </div>
     );
   }
 
   return (
-    <div className='pt-32' style={{ minHeight: '100vh', backgroundColor: '#000', color: '#fff', display: 'flex' }}>
+    <div className="min-h-screen bg-white text-black flex pt-32">
       {/* Sidebar */}
-      <div style={{ width: '450px', backgroundColor: '#111', padding: '1.5rem', borderRight: '1px solid rgba(255, 255, 255, 0.1)' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: '600', color: '#fff', marginBottom: '1.5rem' }}>Login Activity</h2>
+      <div className="w-96 bg-gray-50 p-6 border-r border-gray-200">
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Login Activity</h2>
         <CalendarHeatmap
           startDate={new Date(new Date().setFullYear(new Date().getFullYear() - 1))}
           endDate={new Date()}
@@ -158,11 +153,6 @@ const PortfolioDashboard: React.FC = () => {
               return 'color-custom-4';
             }
           }}
-          // tooltipDataAttrs={(value) => ({
-          //   'data-tooltip': value
-          //     ? `${value.date}: ${value.count} page view${value.count !== 1 ? 's' : ''}`
-          //     : 'No data',
-          // })}
           showWeekdayLabels={true}
           onClick={(value) => {
             if (value) {
@@ -171,7 +161,7 @@ const PortfolioDashboard: React.FC = () => {
           }}
         />
 
-<div style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)', overflow: 'hidden' }}>
+        <div className="mt-6 bg-white rounded-lg shadow-sm p-6 border border-gray-100">
           <WatchlistManager
             watchlist={[]}
             onRemove={async () => {}}
@@ -182,43 +172,34 @@ const PortfolioDashboard: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div style={{ flex: 1, padding: '2rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-        <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="flex-1 p-8">
+        <header className="mb-8">
           {user && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4rem' }}>
-              <span style={{ fontSize: '1.875rem', fontWeight: '600', color: '#f3f4f6' }}>Welcome, {user.name}</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span style={{ fontSize: '1.25rem', fontWeight: '500'}} className='text-green-400'>
+            <div className="flex items-center justify-between">
+              <h1 className="text-3xl font-bold text-gray-900">Welcome, {user.name}</h1>
+              <div className="flex items-center gap-4">
+                <span className="text-xl font-medium text-green-600">
                   Portfolio Value: ${portfolioValue.toFixed(2)}
                 </span>
-            
               </div>
             </div>
           )}
         </header>
 
-        <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', borderRadius: '1rem', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-          <div style={{ padding: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.125rem', fontWeight: '500', color: '#fff' }}>Holdings</h2>
-          </div>
+        <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Holdings</h2>
           <PortfolioTable data={portfolio} />
         </div>
-
-        
-
-       
       </div>
-
-    
     </div>
   );
 };
 
-  const calculatePortfolioValue = (portfolio: Portfolio[]) => {
-    return portfolio.reduce((total, holding) => {
-      const value = holding.value || 0;
-      return total + value;
-    }, 0);
-  };
+const calculatePortfolioValue = (portfolio: Portfolio[]) => {
+  return portfolio.reduce((total, holding) => {
+    const value = holding.value || 0;
+    return total + value;
+  }, 0);
+};
 
 export default PortfolioDashboard;

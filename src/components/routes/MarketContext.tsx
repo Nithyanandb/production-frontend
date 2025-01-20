@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, startTransition } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient({
@@ -19,5 +19,6 @@ const MarketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =
     </QueryClientProvider>
   );
 };
+
 export default MarketProvider;
-export const useMarket = () => useContext(MarketContext); 
+export const useMarket = () => useContext(MarketContext);

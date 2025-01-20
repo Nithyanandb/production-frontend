@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, startTransition } from 'react';
 import { Stock } from './stockApi';
 import { ArrowUp, ArrowDown, Globe, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,17 +23,25 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
   useEffect(() => {
     const fetchRecommendationTrends = async () => {
       if (stock?.symbol) {
-        setTrendsLoading(true);
+        startTransition(() => {
+          setTrendsLoading(true);
+        });
+
         try {
           const response = await fetch(
             `https://finnhub.io/api/v1/stock/recommendation?symbol=${stock.symbol}&token=${API_KEY}`
           );
           const data = await response.json();
-          setRecommendationTrends(data);
+
+          startTransition(() => {
+            setRecommendationTrends(data);
+          });
         } catch (error) {
           console.error('Failed to fetch recommendation trends:', error);
         } finally {
-          setTrendsLoading(false);
+          startTransition(() => {
+            setTrendsLoading(false);
+          });
         }
       }
     };
@@ -45,7 +53,7 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 1000);
+    }, 0);
     return () => clearInterval(timer);
   }, []);
 
@@ -105,7 +113,7 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
         {/* Compact Price Section */}
         <div className="flex items-center gap-4 mb-4">
           <span className="text-4xl font-medium text-black">
-          ₹{stock.price?.toFixed(2) ?? 'N/A'} {/* Use optional chaining */}
+            ₹{stock.price?.toFixed(2) ?? 'N/A'} {/* Use the price from the selected stock */}
           </span>
           <motion.span
             animate={{
@@ -136,7 +144,7 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
         </div>
 
         {/* Chart Container */}
-        <div className="flex-1 bg-gray-100 rounded-xl mt-12 backdrop-blur-sm">
+        <div className="flex-1 bg-gray-100 rounded-xl mt-16 backdrop-blur-sm">
           <div className="h-full">
             <StockChart stock={stock} timeFrame={timeFrame} />
           </div>
