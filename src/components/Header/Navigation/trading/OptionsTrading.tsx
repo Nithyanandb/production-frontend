@@ -89,7 +89,7 @@ const OptionsTrading = () => {
                   >
                     <option value="">Select Strike</option>
                     {optionChain?.strikes.map((strike) => (
-                      <option key={strike} value={strike}>${strike}</option>
+                      <option key={strike} value={strike}>₹{strike}</option>
                     ))}
                   </select>
                 </label>

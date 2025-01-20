@@ -68,51 +68,81 @@ export const SellStocks: React.FC = () => {
     fetchPortfolio();
   }, [token]);
 
-  // Handle successful transaction
-  const handleTransactionSuccess = async (stock: Portfolio, quantity: number, totalPrice: number) => {
-    // Validate totalPrice
-    if (typeof totalPrice !== 'number' || isNaN(totalPrice)) {
-      console.error('Invalid totalPrice:', totalPrice);
-      return;
-    }
+// Handle successful transaction
+const handleTransactionSuccess = async (stock: Portfolio, quantity: number, totalPrice: number) => {
+  // Validate totalPrice
+  if (typeof totalPrice !== 'number' || isNaN(totalPrice)) {
+    console.error('Invalid totalPrice:', totalPrice);
+    return;
+  }
 
-    // Show success popup
+  // Show success popup
+  startTransition(() => {
+    setShowSuccessPopup(true);
+  });
+  setTimeout(() => {
     startTransition(() => {
-      setShowSuccessPopup(true);
+      setShowSuccessPopup(false);
     });
-    setTimeout(() => {
-      startTransition(() => {
-        setShowSuccessPopup(false);
-      });
-    }, 3000);
+  }, 3000);
 
-    // Send email notification
-    if (user?.email) {
-      try {
-        const templateParams = {
-          to_email: user.email,
-          stock_symbol: stock.symbol,
-          stock_name: stock.name,
-          quantity: quantity,
-          total_price: totalPrice.toFixed(2),
-        };
+  // Re-fetch portfolio data
+  try {
+    const response = await fetch('https://production-backend-final.onrender.com/portfolio', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-        await emailjs.send(
-          'service_box535f', // Replace with your EmailJS Service ID
-          'template_l4fugpk', // Replace with your EmailJS Template ID
-          templateParams
-        );
-
-        console.log('Email notification sent successfully!');
-      } catch (error) {
-        console.error('Failed to send email notification:', error);
-      }
-    } else {
-      console.error('User email not found.');
-      alert('User email not found. Please update your email in settings.');
+    if (!response.ok) {
+      throw new Error('Failed to fetch portfolio');
     }
-  };
 
+    const { data } = await response.json();
+    console.log('Backend Response:', data); // Debugging
+
+    // Validate portfolio data
+    if (Array.isArray(data)) {
+      const validPortfolio = data.filter(
+        (holding) => holding?.symbol && holding?.name
+      );
+      setPortfolio(validPortfolio);
+    } else {
+      throw new Error('Invalid portfolio data format');
+    }
+  } catch (error) {
+    console.error('Error fetching portfolio:', error);
+    setError('Failed to load portfolio');
+    setPortfolio([]); // Reset portfolio to an empty array in case of error
+  }
+
+  // Send email notification
+  if (user?.email) {
+    try {
+      const templateParams = {
+        to_email: user.email,
+        stock_symbol: stock.symbol,
+        stock_name: stock.name,
+        quantity: quantity,
+        total_price: totalPrice.toFixed(2),
+      };
+
+      await emailjs.send(
+        'service_box535f', // Replace with your EmailJS Service ID
+        'template_l4fugpk', // Replace with your EmailJS Template ID
+        templateParams
+      );
+
+      console.log('Email notification sent successfully!');
+    } catch (error) {
+      console.error('Failed to send email notification:', error);
+    }
+  } else {
+    console.error('User email not found.');
+    alert('User email not found. Please update your email in settings.');
+  }
+};
   // Handle stock selection
   const handleStockSelect = (stock: Portfolio) => {
     setSelectedStockDetail(stock);
@@ -165,14 +195,14 @@ export const SellStocks: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-900 to-black text-white">
+    <div className="min-h-screen bg-white text-black">
       <Header />
       <div>
         <div className="mt-32 absolute flex z-20 px-8 justify-end w-full">
           {selectedStockDetail && (
             <button
               onClick={() => setSelectedStock(selectedStockDetail)}
-              className="px-8 py-3 bg-white text-black font-medium rounded-full hover:bg-white/90 transition-all flex items-center gap-2"
+              className="px-8 py-3 bg-black text-white font-medium rounded-full hover:bg-black/90 transition-all flex items-center gap-2"
             >
               <DollarSign size={20} />
               Sell {selectedStockDetail.symbol}
@@ -183,23 +213,23 @@ export const SellStocks: React.FC = () => {
 
       <div className="flex h-screen pt-20">
         {/* Sidebar */}
-        <div className="w-98 bg-black/30 border-r border-white/10 overflow-hidden">
+        <div className="w-98 border-r border-gray-200 overflow-hidden">
           <div className="p-6">
             <div className="relative mb-6">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/40" size={20} />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
                 type="text"
                 placeholder="Search stocks..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-white/20"
+                className="w-full bg-white border border-gray-300 rounded-2xl pl-12 pr-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-black/20"
               />
             </div>
 
             {/* Portfolio List */}
             <div className="space-y-4 overflow-y-auto w-[400px] h-[calc(100vh-200px)]">
               {loading ? (
-                <LoadingSpinner />
+                <LoadingSpinner/>
               ) : (
                 filteredPortfolio.map((holding) => (
                   <motion.div
@@ -207,15 +237,15 @@ export const SellStocks: React.FC = () => {
                     layout
                     className={`p-4 rounded-xl cursor-pointer transition-all ${
                       selectedStockDetail?.symbol === holding.symbol
-                        ? 'bg-white/10'
-                        : 'bg-black/20 hover:bg-white/5'
+                        ? 'bg-gray-200'
+                        : 'bg-white hover:bg-gray-100'
                     }`}
                     onClick={() => handleStockSelect(holding)}
                   >
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-medium">{holding.symbol}</h3>
-                        <p className="text-sm text-white/60">{holding.name}</p>
+                        <p className="text-sm text-gray-600">{holding.name}</p>
                       </div>
                       <motion.div
                         animate={{
@@ -250,7 +280,7 @@ export const SellStocks: React.FC = () => {
               loading={loading}
             />
           ) : (
-            <div className="h-full flex items-center justify-center text-white/60">
+            <div className="h-full flex items-center justify-center text-gray-600">
               <div className="text-center">
                 <Globe size={48} className="mx-auto mb-4 opacity-60" />
                 <p className="text-xl">Select a stock to view details</p>
@@ -274,7 +304,7 @@ export const SellStocks: React.FC = () => {
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
-              className="bg-white/90 backdrop-blur-lg rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 border border-white/20"
+              className="bg-white backdrop-blur-lg rounded-xl shadow-2xl p-6 max-w-md w-full mx-4 border border-gray-200"
             >
               <div className="flex flex-col items-center gap-4 text-center">
                 <div className="bg-green-500/10 rounded-full p-3">

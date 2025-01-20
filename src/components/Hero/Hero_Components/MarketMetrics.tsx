@@ -28,39 +28,31 @@ const MarketMetrics: React.FC = () => {
   ];
 
   return (
-    <div className="relative p-6">
-      {/* Premium glass effect */}
-      <div className="absolute inset-0 " />
-      
-      <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="bg-white rounded-3xl  p-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {metrics.map((metric, index) => (
           <motion.div
             key={metric.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="group relative p-2  transition-all duration-300"
+            className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all duration-300"
           >
-            {/* Glow effect on hover */}
-            <div className="absolute inset-0 opacity-0  transition-opacity duration-500" />
-            
-            <div className="relative">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <metric.icon className="w-5 h-5 text-white/60" />
-                  <span className="text-sm text-white/60 font-light tracking-wider">{metric.label}</span>
-                </div>
-                <div className={`flex items-center gap-1 ${metric.positive ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {metric.positive ? (
-                    <TrendingUp className="w-4 h-4" />
-                  ) : (
-                    <TrendingDown className="w-4 h-4" />
-                  )}
-                  <span className="text-sm tracking-wider">{metric.change}</span>
-                </div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <metric.icon className="w-5 h-5 text-gray-700" />
+                <span className="text-sm text-gray-700 font-medium">{metric.label}</span>
               </div>
-              <div className="text-2xl font-light tracking-wider text-white">{metric.value}</div>
+              <div className={`flex items-center gap-1 ${metric.positive ? 'text-green-600' : 'text-red-600'}`}>
+                {metric.positive ? (
+                  <TrendingUp className="w-4 h-4" />
+                ) : (
+                  <TrendingDown className="w-4 h-4" />
+                )}
+                <span className="text-sm">{metric.change}</span>
+              </div>
             </div>
+            <div className="text-2xl font-semibold text-gray-900">{metric.value}</div>
           </motion.div>
         ))}
       </div>

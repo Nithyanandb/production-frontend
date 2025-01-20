@@ -25,7 +25,7 @@ const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }
 
   if (loading || !stock) {
     return (
-      <div className="h-full flex items-center justify-center text-white/60">
+      <div className="h-full flex items-center justify-center text-gray-600">
         <div className="text-center">
           <Globe size={48} className="mx-auto mb-4 opacity-60" />
           <p className="text-xl font-light">Select a stock to view details</p>
@@ -50,22 +50,22 @@ const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className="flex flex-col h-full bg-[#111111]/90 backdrop-blur-xl p-6 lg:p-8"
+        className="flex flex-col h-full bg-white rounded-2xl p-6 lg:p-8 shadow-sm"
       >
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-light text-white mb-1">{stock.name}</h1>
+            <h1 className="text-3xl font-light text-black mb-1">{stock.name}</h1>
             <div className="flex items-center gap-3 text-sm">
-              <span className="text-white/60">{stock.symbol}</span>
-              <span className="text-white/20">•</span>
-              <span className="text-white/60 font-light">{currentTime.toLocaleTimeString()}</span>
+              <span className="text-gray-600">{stock.symbol}</span>
+              <span className="text-gray-300">•</span>
+              <span className="text-gray-600 font-light">{currentTime.toLocaleTimeString()}</span>
             </div>
           </div>
         </div>
 
         <div className="flex items-baseline gap-4 mb-8">
-          <span className="text-5xl font-light text-white">
-            ₹{stock.currentPrice?.toFixed(2) || 'N/A'}
+          <span className="text-5xl font-light text-black">
+            ${stock.currentPrice?.toFixed(2) || 'N/A'}
           </span>
           <motion.span
             animate={{
@@ -85,8 +85,8 @@ const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }
               onClick={() => setTimeFrame(tf)}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
                 timeFrame === tf
-                  ? 'bg-white text-black'
-                  : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                  ? 'bg-black text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-black'
               }`}
             >
               {tf}
@@ -94,27 +94,27 @@ const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }
           ))}
         </div>
 
-        <div className="flex-1 bg-black/40 rounded-2xl backdrop-blur-sm mb-8 overflow-hidden">
+        <div className="flex-1 bg-gray-100 rounded-2xl mb-8 overflow-hidden">
           <div className="h-full p-4">
             <StockChart stock={stock} timeFrame={timeFrame} />
           </div>
         </div>
 
-        <div className="bg-black/40 rounded-2xl p-6 backdrop-blur-sm">
-          <h3 className="text-xl font-light text-white mb-6">Market Analysis</h3>
+        <div className="bg-gray-100 rounded-2xl p-6">
+          <h3 className="text-xl font-light text-black mb-6">Market Analysis</h3>
           {trendsLoading ? (
             <div className="flex justify-center items-center py-8">
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                className="w-8 h-8 border-2 border-white/10 border-t-white/40 rounded-full"
+                className="w-8 h-8 border-2 border-gray-300 border-t-black rounded-full"
               />
             </div>
           ) : recommendationTrends.length > 0 ? (
             <div className="space-y-6">
               {recommendationTrends.map((trend, index) => (
-                <div key={index} className="bg-white/5 rounded-xl p-6">
-                  <p className="text-sm text-white/60 mb-4 font-light">{trend.period}</p>
+                <div key={index} className="bg-white rounded-xl p-6 shadow-sm">
+                  <p className="text-sm text-gray-600 mb-4 font-light">{trend.period}</p>
                   <div className="grid grid-cols-5 gap-4">
                     {[
                       { label: 'Strong Buy', value: trend.strongBuy, color: trendColors.strongBuy },
@@ -124,7 +124,7 @@ const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }
                       { label: 'Strong Sell', value: trend.strongSell, color: trendColors.strongSell },
                     ].map((item, i) => (
                       <div key={i} className="text-center">
-                        <p className="text-xs text-white/40 mb-2 font-light">{item.label}</p>
+                        <p className="text-xs text-gray-500 mb-2 font-light">{item.label}</p>
                         <p className="text-lg font-light" style={{ color: item.color }}>
                           {item.value}
                         </p>
@@ -136,7 +136,7 @@ const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, loading }
             </div>
           ) : (
             <div className="flex justify-center items-center py-8">
-              <span className="text-white/40 font-light">No market analysis available</span>
+              <span className="text-gray-500 font-light">No market analysis available</span>
             </div>
           )}
         </div>

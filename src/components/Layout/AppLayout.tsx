@@ -9,7 +9,7 @@ interface AppLayoutProps {d
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col">
       <ErrorBoundary>
         <Header />
       </ErrorBoundary>

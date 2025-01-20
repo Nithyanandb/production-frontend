@@ -9,19 +9,13 @@ const Footer = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 2000); // 5 seconds
+    }, 2000); // 2 seconds
 
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <footer className="relative mt-12 pb-12 md:pb-16">
-      {/* Grok-style glow effect */}
-      <div className="absolute inset-0">
-        <div className="absolute bottom-0 left-1/3 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-black rounded-full blur-[80px] md:blur-[120px]" />
-        <div className="absolute top-0 right-1/3 w-[300px] h-[300px] md:w-[500px] md:h-[500px]  rounded-full blur-[80px] md:blur-[120px]" />
-      </div>
-
+    <footer className="relative mt-12 pb-12 xs:pl-4 md:pb-16 bg-white">
       {/* Mobile-only message with animation */}
       <AnimatePresence>
         {isVisible && (
@@ -30,7 +24,7 @@ const Footer = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
-            className="md:hidden fixed bottom-0 left-0 right-0 bg-black/90 py-2 px-4 text-center text-sm text-white/80 z-50"
+            className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900/90 py-2 px-4 text-center text-sm text-white/80 z-50"
           >
             For the best experience, please view this site on a desktop device.
           </motion.div>
@@ -49,8 +43,8 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="space-y-4 md:space-y-6">
             <Logo />
-            <p className="text-sm md:text-base text-white/40 leading-relaxed">
-              Elevate your trading experience with AI-powered intelligence
+            <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+              Elevate your experience with cutting-edge technology.
             </p>
           </div>
 
@@ -62,7 +56,7 @@ const Footer = () => {
             transition={{ delay: 0.1 }}
             className="space-y-4 md:space-y-6"
           >
-            <h4 className="text-xs md:text-sm uppercase tracking-wider text-white/40">
+            <h4 className="text-xs md:text-sm uppercase tracking-wider text-gray-500">
               Platform
             </h4>
             <ul className="space-y-2 md:space-y-4">
@@ -70,7 +64,7 @@ const Footer = () => {
                 <li key={link}>
                   <a
                     href="#"
-                    className="text-sm md:text-base text-white/60 hover:text-white transition-colors duration-300"
+                    className="text-sm md:text-base text-gray-700 hover:text-gray-900 transition-colors duration-300"
                   >
                     {link}
                   </a>
@@ -87,7 +81,7 @@ const Footer = () => {
             transition={{ delay: 0.2 }}
             className="space-y-4 md:space-y-6"
           >
-            <h4 className="text-xs md:text-sm uppercase tracking-wider text-white/40">
+            <h4 className="text-xs md:text-sm uppercase tracking-wider text-gray-500">
               Company
             </h4>
             <ul className="space-y-2 md:space-y-4">
@@ -95,7 +89,7 @@ const Footer = () => {
                 <li key={link}>
                   <a
                     href="#"
-                    className="text-sm md:text-base text-white/60 hover:text-white transition-colors duration-300"
+                    className="text-sm md:text-base text-gray-700 hover:text-gray-900 transition-colors duration-300"
                   >
                     {link}
                   </a>
@@ -112,7 +106,7 @@ const Footer = () => {
             transition={{ delay: 0.3 }}
             className="space-y-4 md:space-y-6"
           >
-            <h4 className="text-xs md:text-sm uppercase tracking-wider text-white/40">
+            <h4 className="text-xs md:text-sm uppercase tracking-wider text-gray-500">
               Legal
             </h4>
             <ul className="space-y-2 md:space-y-4">
@@ -120,7 +114,7 @@ const Footer = () => {
                 <li key={link}>
                   <a
                     href="#"
-                    className="text-sm md:text-base text-white/60 hover:text-white transition-colors duration-300"
+                    className="text-sm md:text-base text-gray-700 hover:text-gray-900 transition-colors duration-300"
                   >
                     {link}
                   </a>
@@ -136,12 +130,12 @@ const Footer = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="pt-8 border-t border-white/5"
+          className="pt-8 border-t border-gray-200"
         >
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6">
             {/* Copyright */}
-            <p className="text-xs md:text-sm text-white/40">
-              © 2024 CapX. All rights reserved.
+            <p className="text-xs md:text-sm text-gray-500">
+              © 2024 Capx. All rights reserved.
             </p>
 
             {/* Legal Links */}
@@ -150,7 +144,7 @@ const Footer = () => {
                 <a
                   key={link}
                   href="#"
-                  className="text-xs md:text-sm text-white/40 hover:text-white transition-colors duration-300"
+                  className="text-xs md:text-sm text-gray-500 hover:text-gray-700 transition-colors duration-300"
                 >
                   {link}
                 </a>
@@ -159,7 +153,7 @@ const Footer = () => {
 
             {/* Country Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-xs md:text-sm text-white/40 uppercase tracking-wider">IN</span>
+              <span className="text-xs md:text-sm text-gray-500 uppercase tracking-wider">IN</span>
             </div>
           </div>
         </motion.div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -108,14 +108,14 @@ export const StockChart: React.FC<StockChartProps> = ({
       const price = payload[0].value;
       
       return (
-        <div className="bg-black/90 backdrop-blur-xl border border-white/10 rounded-lg p-4 shadow-xl">
-          <p className="text-white/60 text-sm mb-1">
+        <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-lg p-4 shadow-xl">
+          <p className="text-gray-600 text-sm mb-1">
             {timeframe === '1D' 
               ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
               : date.toLocaleDateString([], { month: 'short', day: 'numeric' })}
           </p>
-          <p className="text-white text-lg font-medium">
-            ₹{price.toFixed(2)}
+          <p className="text-black text-lg font-medium">
+            ${price.toFixed(2)}
           </p>
         </div>
       );
@@ -128,12 +128,12 @@ export const StockChart: React.FC<StockChartProps> = ({
       key={symbol}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="relative h-full bg-black/40 backdrop-blur-xl rounded-2xl p-6"
+      className="relative h-full bg-white rounded-2xl p-6 shadow-sm"
     >
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-2xl font-light text-white">{symbol}</h3>
-          <div className={`text-sm ${priceChange >= 0 ? 'text-green-400' : 'text-red-400'} font-light`}>
+          <h3 className="text-2xl font-light text-black">{symbol}</h3>
+          <div className={`text-sm ${priceChange >= 0 ? 'text-green-600' : 'text-red-600'} font-light`}>
             {priceChange >= 0 ? '+' : ''}{priceChangePercent}%
           </div>
         </div>
@@ -145,8 +145,8 @@ export const StockChart: React.FC<StockChartProps> = ({
               onClick={() => handleTimeframeChange(tf)}
               className={`px-4 py-2 rounded-full text-sm transition-all ${
                 timeframe === tf 
-                  ? 'bg-white text-black font-medium' 
-                  : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                  ? 'bg-black text-white font-medium' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-black'
               }`}
             >
               {tf}
@@ -182,7 +182,7 @@ export const StockChart: React.FC<StockChartProps> = ({
           
           <CartesianGrid 
             strokeDasharray="3 3" 
-            stroke="rgba(255,255,255,0.03)"
+            stroke="rgba(0,0,0,0.05)"
             vertical={false}
           />
           
@@ -195,19 +195,19 @@ export const StockChart: React.FC<StockChartProps> = ({
               }
               return d.toLocaleDateString([], { day: 'numeric', month: 'short' });
             }}
-            stroke="rgba(255,255,255,0.1)"
-            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
-            axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-            tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+            stroke="rgba(0,0,0,0.1)"
+            tick={{ fill: 'rgba(0,0,0,0.4)', fontSize: 11 }}
+            axisLine={{ stroke: 'rgba(0,0,0,0.1)' }}
+            tickLine={{ stroke: 'rgba(0,0,0,0.1)' }}
           />
           
           <YAxis
             domain={['auto', 'auto']}
-            stroke="rgba(255,255,255,0.1)"
-            tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
-            tickFormatter={(value) => `₹${value.toFixed(2)}`}
-            axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-            tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+            stroke="rgba(0,0,0,0.1)"
+            tick={{ fill: 'rgba(0,0,0,0.4)', fontSize: 11 }}
+            tickFormatter={(value) => `$${value.toFixed(2)}`}
+            axisLine={{ stroke: 'rgba(0,0,0,0.1)' }}
+            tickLine={{ stroke: 'rgba(0,0,0,0.1)' }}
             width={65}
           />
           
@@ -235,11 +235,11 @@ export const StockChart: React.FC<StockChartProps> = ({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute top-4 right-4 bg-black/90 backdrop-blur-xl border border-white/10 rounded-lg p-4"
+          className="absolute top-4 right-4 bg-white/90 backdrop-blur-xl border border-gray-200 rounded-lg p-4 shadow-sm"
         >
-          <p className="text-white/60 text-sm">Current Price</p>
-          <p className="text-white text-2xl font-medium">
-            ₹{hoveredData.price.toFixed(2)}
+          <p className="text-gray-600 text-sm">Current Price</p>
+          <p className="text-black text-2xl font-medium">
+            ${hoveredData.price.toFixed(2)}
           </p>
         </motion.div>
       )}

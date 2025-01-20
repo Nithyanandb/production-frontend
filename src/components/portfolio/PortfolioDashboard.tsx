@@ -189,7 +189,7 @@ const PortfolioDashboard: React.FC = () => {
               <span style={{ fontSize: '1.875rem', fontWeight: '600', color: '#f3f4f6' }}>Welcome, {user.name}</span>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <span style={{ fontSize: '1.25rem', fontWeight: '500'}} className='text-green-400'>
-                  Portfolio Value: ₹{portfolioValue.toFixed(2)}
+                  Portfolio Value: ${portfolioValue.toFixed(2)}
                 </span>
             
               </div>

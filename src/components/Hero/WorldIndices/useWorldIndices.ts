@@ -1,3 +1,4 @@
+// useWorldIndices.ts
 import { useQuery } from '@tanstack/react-query';
 import { generateMockMarketData } from './data';
 
@@ -9,7 +10,8 @@ export const useWorldIndices = () => {
       await new Promise(resolve => setTimeout(resolve, 500));
       return generateMockMarketData();
     },
-    refetchInterval: 5000, 
-    staleTime: 2000,
+    refetchInterval: 50000, // Update every second
+    staleTime: 1, // Data is considered fresh for 500ms
+    refetchIntervalInBackground: true, // Keep refetching even when the tab is not active
   });
 };

@@ -53,15 +53,15 @@ const EarningsSurprise: React.FC<EarningsSurpriseProps> = ({ symbol, limit = 4 }
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="backdrop-blur-2xl bg-black/40 rounded-3xl overflow-hidden transition-all duration-500 p-6"
+        className="bg-white rounded-3xl overflow-hidden transition-all duration-500 p-6"
       >
-        <h2 className="text-xl font-bold text-white mb-4">Earnings Surprise for {symbol}</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Earnings Surprise for {symbol}</h2>
         <div className="space-y-4">
           {[...Array(limit)].map((_, index) => (
             <div key={index} className="animate-pulse flex space-x-4">
               <div className="flex-1 space-y-2 py-1">
-                <div className="h-4 bg-gray-700 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-700 rounded w-1/2"></div>
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
               </div>
             </div>
           ))}
@@ -76,9 +76,9 @@ const EarningsSurprise: React.FC<EarningsSurpriseProps> = ({ symbol, limit = 4 }
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="backdrop-blur-2xl bg-black/40 rounded-3xl overflow-hidden transition-all duration-500 p-6"
+        className="bg-white rounded-3xl overflow-hidden transition-all duration-500 p-6"
       >
-        <h2 className="text-xl font-bold text-white mb-4">Earnings Surprise for {symbol}</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Earnings Surprise for {symbol}</h2>
         <div className="text-red-500 text-sm">{error}</div>
       </motion.div>
     );
@@ -89,34 +89,34 @@ const EarningsSurprise: React.FC<EarningsSurpriseProps> = ({ symbol, limit = 4 }
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
-      className="backdrop-blur-2xl bg-black/40 rounded-3xl overflow-hidden transition-all duration-500 p-6"
+      className="bg-white rounded-3xl overflow-hidden transition-all duration-500 p-6"
     >
-      <h2 className="text-xl font-bold text-white mb-4">Earnings Surprise for {symbol}</h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-4">Earnings Surprise for {symbol}</h2>
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-700">
+        <table className="min-w-full divide-y divide-gray-200">
           <thead>
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Period</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actual</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Estimate</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Surprise</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Surprise %</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Period</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actual</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estimate</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Surprise</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Surprise %</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-700">
+          <tbody className="divide-y divide-gray-200">
             {earningsData.map((earning, index) => (
               <motion.tr
                 key={index}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: index * 0.1 }}
-                className="hover:bg-gray-700/50 transition-colors duration-200"
+                className="hover:bg-gray-50 transition-colors duration-200"
               >
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{earning.period}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{earning.actual}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{earning.estimate}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{earning.surprise}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{earning.surprisePercent}%</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{earning.period}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{earning.actual}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{earning.estimate}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{earning.surprise}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{earning.surprisePercent}%</td>
               </motion.tr>
             ))}
           </tbody>

@@ -31,7 +31,7 @@ const Header: React.FC = () => {
 
   return (
     <motion.header
-      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-lg border-b border-gray-200"
+      className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200"
       style={{
         opacity: headerOpacity,
         backdropFilter: `blur(${headerBlur}px)`,

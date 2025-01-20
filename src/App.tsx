@@ -17,7 +17,7 @@ import Hero from './components/Hero/Hero';
 import Settings from './components/Header/Settings';
 import Chatbot from './Chatbot';
 import PrivacyPolicy from './Asserts/PrivacyPolicy';
-
+import './App.css' 
 // Lazy-loaded components
 const OAuthCallback = React.lazy(() => import('./components/Auth/OAuthCallback'));
 const NotFound = React.lazy(() => import('./components/ErrorBoundary/NotFound'));
@@ -46,7 +46,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <AppLayout d={undefined} >
+      <AppLayout>
         <Hero />
       </AppLayout>
     ),
@@ -55,7 +55,7 @@ const router = createBrowserRouter([
     path: '/portfolio',
     element: (
       <ProtectedRoute>
-        <AppLayout d={undefined} >
+        <AppLayout>
           <Suspense fallback={<LoadingSpinner />}>
             <div className="relative">
               <div className="relative z-10">
@@ -70,7 +70,7 @@ const router = createBrowserRouter([
   {
     path: '/settings',
     element: (
-      <AppLayout d={undefined} >
+      <AppLayout>
         <div className="relative">
           <div className="relative z-10">
             <Settings />
@@ -114,7 +114,7 @@ function App() {
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <MarketProvider>
-              <div className="relative min-h-screen bg-black text-white antialiased font-sans">
+              <div className="relative min-h-screen bg-white text-gray-900 antialiased font-sans">
                 <RouterProvider router={router} />
                 <Chatbot />
               </div>

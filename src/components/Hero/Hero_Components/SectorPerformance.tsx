@@ -12,7 +12,6 @@ const SectorPerformance: React.FC = () => {
     { name: 'Healthcare', performance: -0.30, change: '-0.30%' },
   ];
 
-  // Calculate summary statistics
   const bestPerformingSector = sectors.reduce((prev, current) =>
     prev.performance > current.performance ? prev : current
   );
@@ -22,18 +21,16 @@ const SectorPerformance: React.FC = () => {
   const averagePerformance =
     sectors.reduce((sum, sector) => sum + sector.performance, 0) / sectors.length;
 
-  // Custom Tooltip
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="custom-tooltip" style={{ backgroundColor: '#333', padding: '10px', border: '1px solid #555', borderRadius: '4px', color: '#fff' }}>
-          <p className="label" style={{ fontWeight: 'bold' }}>{`${label}`}</p>
-          <p className="intro">{`Performance: ${payload[0].value}%`}</p>
-          <p className="intro">{`Change: ${payload[0].payload.change}`}</p>
+        <div className="bg-white shadow-lg rounded-lg p-4 border border-gray-200">
+          <p className="font-semibold text-gray-900">{label}</p>
+          <p className="text-gray-700">Performance: {payload[0].value}%</p>
+          <p className="text-gray-700">Change: {payload[0].payload.change}</p>
         </div>
       );
     }
-
     return null;
   };
 
@@ -42,13 +39,13 @@ const SectorPerformance: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      style={{ padding: '30px', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}
+      className="bg-white rounded-3xl p-6"
     >
-      <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#fff', fontSize: '24px', fontWeight: '600' }}>Sector Performance</h2>
+      <h2 className="text-2xl font-semibold text-gray-900 text-center mb-6">Sector Performance</h2>
 
       {/* Summary Section */}
-      <div style={{ marginBottom: '30px', color: '#fff' }}>
-        <h3 style={{ fontSize: '20px', fontWeight: '500', marginBottom: '10px' }}>Market Summary</h3>
+      <div className="mb-12 text-gray-700">
+        <h3 className="text-xl font-semibold mb-4">Market Summary</h3>
         <p>
           The best-performing sector is <strong>{bestPerformingSector.name}</strong> with a performance of{' '}
           <strong>{bestPerformingSector.performance}%</strong>.
@@ -62,90 +59,39 @@ const SectorPerformance: React.FC = () => {
         </p>
       </div>
 
-{/* Bar Chart */}
-<ResponsiveContainer width="100%" height={400}>
-  <BarChart
-    data={sectors}
-    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-    aria-label="Sector Performance Chart"
-    role="img"
-  >
-    {/* Dark background for the chart area */}
-    <defs>
-      <linearGradient id="chartBackground" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="5%" stopColor="#000" stopOpacity={0.8} />
-        <stop offset="95%" stopColor="#000" stopOpacity={0.2} />
-      </linearGradient>
-    </defs>
-    <rect x="0" y="0" width="100%" height="100%" fill="url(#chartBackground)" />
-
-    {/* X-Axis */}
-    <XAxis
-      dataKey="name"
-      tick={{ fill: '#fff', fontSize: 12 }}
-      axisLine={{ stroke: '#555' }}
-      tickLine={{ stroke: '#555' }}
-    />
-
-    {/* Y-Axis */}
-    <YAxis
-      domain={[0, 'auto']} // Ensures zero level is consistent
-      tick={{ fill: '#fff', fontSize: 12 }}
-      axisLine={{ stroke: '#555' }}
-      tickLine={{ stroke: '#555' }}
-    />
-
-    {/* Grid Lines */}
-    <CartesianGrid stroke="#444" strokeDasharray="3 3" />
-
-    {/* Tooltip */}
-    <Tooltip
-      content={<CustomTooltip />}
-      cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} // Subtle hover effect
-    />
-
-    {/* Legend */}
-    <Legend
-      wrapperStyle={{ paddingTop: '20px', color: '#fff' }}
-      iconType="circle"
-      iconSize={10}
-    />
-
-    {/* Bar */}
-    <Bar
-      dataKey="performance"
-      name="Performance (%)"
-      isAnimationActive={true}
-      animationDuration={1000} // Smooth animation
-      style={{ cursor: 'default' }} // Disable hover effect
-    >
-      {sectors.map((entry, index) => (
-        <Cell
-          key={`cell-${index}`}
-          fill={entry.performance > 0 ? '#4CAF50' : '#F44336'} // Green for positive, red for negative
-        />
-      ))}
-    </Bar>
-  </BarChart>
-</ResponsiveContainer>
+      {/* Bar Chart */}
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart data={sectors} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+          <XAxis dataKey="name" tick={{ fill: '#666' }} axisLine={{ stroke: '#ddd' }} />
+          <YAxis tick={{ fill: '#666' }} axisLine={{ stroke: '#ddd' }} />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend />
+          <Bar dataKey="performance" name="Performance (%)">
+            {sectors.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry.performance > 0 ? '#4CAF50' : '#F44336'} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
 
       {/* Detailed Table */}
-      <div style={{ marginTop: '30px', color: '#fff' }}>
-        <h3 style={{ fontSize: '20px', fontWeight: '500', marginBottom: '10px' }}>Detailed Sector Performance</h3>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div className="mt-6">
+        <h3 className="text-xl font-semibold mb-4">Detailed Sector Performance</h3>
+        <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: '1px solid #555' }}>
-              <th style={{ padding: '10px', textAlign: 'left' }}>Sector</th>
-              <th style={{ padding: '10px', textAlign: 'left' }}>Performance (%)</th>
-              <th style={{ padding: '10px', textAlign: 'left' }}>Change</th>
+            <tr className="border-b border-gray-200">
+              <th className="p-2 text-left text-gray-700">Sector</th>
+              <th className="p-2 text-left text-gray-700">Performance (%)</th>
+              <th className="p-2 text-left text-gray-700">Change</th>
             </tr>
           </thead>
           <tbody>
             {sectors.map((sector, index) => (
-              <tr key={index} style={{ borderBottom: '1px solid #555' }}>
-                <td style={{ padding: '10px' }}>{sector.name}</td>
-                <td style={{ padding: '10px' }}>{sector.performance}</td>
-                <td style={{ padding: '10px', color: sector.change.startsWith('+') ? '#4CAF50' : '#F44336' }}>
+              <tr key={index} className="border-b border-gray-200">
+                <td className="p-2 text-gray-900">{sector.name}</td>
+                <td className="p-2 text-gray-900">{sector.performance}</td>
+                <td className={`p-2 ${sector.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
                   {sector.change}
                 </td>
               </tr>
@@ -153,16 +99,6 @@ const SectorPerformance: React.FC = () => {
           </tbody>
         </table>
       </div>
-
-      {/* Insights Section */}
-      <div style={{ marginTop: '30px', color: '#fff' }}>
-        <h3 style={{ fontSize: '20px', fontWeight: '500', marginBottom: '10px' }}>Market Insights</h3>
-        <p>
-          The technology sector continues to lead the market with strong performance, driven by innovation and high demand for tech products.
-        </p>
-     
-      </div>
-
     </motion.div>
   );
 };

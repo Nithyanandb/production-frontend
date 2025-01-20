@@ -5,8 +5,9 @@
 
 /* Custom CSS Variables */
 :root {
-  --card-dark: rgba(31, 31, 31, 0.8);
-  --border-color: rgba(255, 255, 255, 0.1);
+  --card-light: rgba(255, 255, 255, 0.9); /* Light theme card background */
+  --border-color: rgba(0, 0, 0, 0.1); /* Light theme border color */
+  --text-color: rgba(0, 0, 0, 0.8); /* Light theme text color */
 }
 
 /* Tailwind Layers - Utilities */
@@ -16,7 +17,7 @@
   }
 
   .glass-effect {
-    @apply backdrop-blur-lg bg-[var(--card-dark)] border border-[var(--border-color)];
+    @apply backdrop-blur-lg bg-[var(--card-light)] border border-[var(--border-color)];
   }
 }
 
@@ -63,4 +64,51 @@ html {
 .hide-scrollbar {
   -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
   scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+/* Apple-inspired Design Adjustments */
+body {
+  @apply bg-white text-[var(--text-color)] font-sans antialiased;
+}
+
+/* Light theme glass effect */
+.glass-effect {
+  @apply backdrop-blur-lg bg-[var(--card-light)] border border-[var(--border-color)] shadow-sm;
+}
+
+/* Subtle hover effects */
+.hover-effect {
+  @apply transition-transform duration-300 ease-in-out hover:scale-105;
+}
+
+/* Apple-like typography */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-semibold tracking-tight;
+}
+
+h1 {
+  @apply text-4xl md:text-5xl;
+}
+
+h2 {
+  @apply text-3xl md:text-4xl;
+}
+
+h3 {
+  @apply text-2xl md:text-3xl;
+}
+
+/* Button styling */
+.button {
+  @apply px-6 py-2 rounded-lg bg-black text-white font-medium hover:bg-opacity-90 transition-colors duration-200;
+}
+
+/* Section spacing */
+.section-spacing {
+  @apply py-20 md:py-32;
+}
+
+/* Gradient background for sections */
+.gradient-section {
+  @apply bg-gradient-to-r from-white to-gray-50;
 }

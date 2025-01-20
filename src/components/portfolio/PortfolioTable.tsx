@@ -101,13 +101,13 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({
                 {holding.shares}
               </td>
               <td className="py-4 px-6 text-right font-mono text-white">
-                ₹{formatNumber(holding.averagePrice)}
+                ${formatNumber(holding.averagePrice)}
               </td>
               <td className="py-4 px-6 text-right font-mono text-white">
-                ₹{formatNumber(holding.currentPrice)}
+                ${formatNumber(holding.currentPrice)}
               </td>
               <td className="py-4 px-6 text-right font-mono text-white">
-                ₹{formatNumber(holding.value)}
+                ${formatNumber(holding.value)}
               </td>
               <td className="py-4 px-6 text-right">
                 <div className={`flex items-center justify-end gap-1.5 font-mono
@@ -131,10 +131,10 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({
             <h2 className="text-xl font-bold text-white">{selectedStock.name} ({selectedStock.symbol})</h2>
             <div className="mt-4 space-y-2">
               <p className="text-gray-400">Quantity: {selectedStock.shares}</p>
-              <p className="text-gray-400">Average Price: ₹{formatNumber(selectedStock.averagePrice)}</p>
-              <p className="text-gray-400">Current Price: ₹{formatNumber(selectedStock.currentPrice)}</p>
-              <p className="text-gray-400">Current Value: ₹{formatNumber(selectedStock.value)}</p>
-              <p className="text-gray-400">Total Return: ₹{formatNumber(selectedStock.totalReturn)}</p>
+              <p className="text-gray-400">Average Price: ${formatNumber(selectedStock.averagePrice)}</p>
+              <p className="text-gray-400">Current Price: ${formatNumber(selectedStock.currentPrice)}</p>
+              <p className="text-gray-400">Current Value: ${formatNumber(selectedStock.value)}</p>
+              <p className="text-gray-400">Total Return: ${formatNumber(selectedStock.totalReturn)}</p>
               <p className="text-gray-400">Last Updated: {selectedStock.lastUpdated}</p>
             </div>
           </div>

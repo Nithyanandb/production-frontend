@@ -127,11 +127,11 @@ const MarginTrading = () => {
                     </div>
                     <div>
                       <span className="text-white/60">Entry Price</span>
-                      <div className="text-white/90 mt-1">${position.entry}</div>
+                      <div className="text-white/90 mt-1">₹{position.entry}</div>
                     </div>
                     <div>
                       <span className="text-white/60">Current Price</span>
-                      <div className="text-white/90 mt-1">${position.current}</div>
+                      <div className="text-white/90 mt-1">₹{position.current}</div>
                     </div>
                   </div>
 

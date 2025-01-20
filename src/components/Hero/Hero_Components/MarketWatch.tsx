@@ -118,12 +118,12 @@ const MarketWatch: React.FC = () => {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[...Array(6)].map((_, index) => (
-          <div key={index} className="bg-white/[0.03] rounded-[5px] animate-pulse">
-            <div className="w-full h-40 bg-gray-700" />
+          <div key={index} className="bg-gray-100 rounded-lg animate-pulse">
+            <div className="w-full h-40 bg-gray-300" />
             <div className="p-4">
-              <div className="h-4 bg-gray-700 rounded mb-2" />
-              <div className="h-4 bg-gray-700 rounded w-3/4 mb-4" />
-              <div className="h-3 bg-gray-700 rounded w-1/2" />
+              <div className="h-4 bg-gray-300 rounded mb-2" />
+              <div className="h-4 bg-gray-300 rounded w-3/4 mb-4" />
+              <div className="h-3 bg-gray-300 rounded w-1/2" />
             </div>
           </div>
         ))}
@@ -132,35 +132,34 @@ const MarketWatch: React.FC = () => {
   }
 
   return (
-    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white">
       <div className="absolute inset-0" />
 
       <div className="relative flex items-center justify-between py-8">
         <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-semibold tracking-tight text-white">Market Watch</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-gray-900">Market Watch</h2>
         </div>
       </div>
 
       <div className="relative flex gap-4 mb-8 overflow-x-auto hide-scrollbar">
-  {/* Hide filters on mobile, show on sm and larger screens */}
-  <div className="hidden sm:flex gap-4">
-    {filters.map(filter => (
-      <motion.button
-        key={filter.id}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={() => setActiveFilter(filter.id)}
-        className={`flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all
-          ${activeFilter === filter.id 
-            ? 'bg-white text-black' 
-            : 'text-white/80 hover:text-white hover:bg-white/10'}`}
-      >
-        <filter.icon className="w-4 h-4" />
-        <span>{filter.label}</span>
-      </motion.button>
-    ))}
-  </div>
-</div>
+        <div className="hidden sm:flex gap-4">
+          {filters.map(filter => (
+            <motion.button
+              key={filter.id}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setActiveFilter(filter.id)}
+              className={`flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all
+                ${activeFilter === filter.id 
+                  ? 'bg-gray-900 text-white' 
+                  : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'}`}
+            >
+              <filter.icon className="w-4 h-4" />
+              <span>{filter.label}</span>
+            </motion.button>
+          ))}
+        </div>
+      </div>
 
       <AnimatePresence mode="wait">
         <motion.div 
@@ -175,8 +174,7 @@ const MarketWatch: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="group relative bg-white/[0.03] hover:bg-white/[0.06] 
-                 rounded-[5px] transition-all duration-300 overflow-hidden cursor-pointer"
+              className="group relative bg-white hover:bg-gray-50 rounded-lg shadow-sm transition-all duration-300 overflow-hidden cursor-pointer"
               onClick={() => openModal(news)}
             >
               {/* Image with hover overlay */}
@@ -203,13 +201,13 @@ const MarketWatch: React.FC = () => {
               {/* Content section */}
               <div className="p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-xs font-medium text-white/60">{news.timestamp}</span>
+                  <span className="text-xs font-medium text-gray-500">{news.timestamp}</span>
                 </div>
 
-                <h3 className="text-lg font-medium text-white mb-2 leading-tight">{news.title}</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2 leading-tight">{news.title}</h3>
 
                 <div className="flex justify-between items-center pt-3">
-                  <span className="text-xs font-medium text-white/60">{news.source}</span>
+                  <span className="text-xs font-medium text-gray-500">{news.source}</span>
                 </div>
               </div>
             </motion.div>
@@ -231,17 +229,17 @@ const MarketWatch: React.FC = () => {
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="bg-black/90 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/10 shadow-lg"
+              className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-lg"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="p-4 sm:p-6 border-b border-white/10 flex justify-between items-center">
-                <h2 className="text-lg sm:text-xl font-semibold text-white">{selectedNews.title}</h2>
+              <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">{selectedNews.title}</h2>
                 <button
                   onClick={closeModal}
-                  className="p-2 rounded-full hover:bg-white/10 transition-colors"
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  <X className="w-5 h-5 text-white" />
+                  <X className="w-5 h-5 text-gray-700" />
                 </button>
               </div>
 
@@ -256,8 +254,8 @@ const MarketWatch: React.FC = () => {
                     loading="lazy"
                   />
                 </div>
-                <p className="text-gray-300 mb-4 text-sm sm:text-base">{selectedNews.description}</p>
-                <div className="text-xs sm:text-sm text-gray-400">
+                <p className="text-gray-600 mb-4 text-sm sm:text-base">{selectedNews.description}</p>
+                <div className="text-xs sm:text-sm text-gray-500">
                   <span>Source: {selectedNews.source}</span>
                   <span className="mx-2">•</span>
                   <span>{selectedNews.timestamp}</span>

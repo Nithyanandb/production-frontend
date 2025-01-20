@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import {
   Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -67,6 +67,9 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
   const [currentData, setCurrentData] = useState(generateMarketData('1D'));
   const [nextData, setNextData] = useState<typeof currentData | null>(null);
   const [isFetching, setIsFetching] = useState(false);
+  const [animatedPrice, setAnimatedPrice] = useState(currentData[currentData.length - 1].close);
+  const [loading, setLoading] = useState(true);
+  const animationRef = useRef<number | null>(null);
 
   // Generate data based on symbol
   const basePrice = {
@@ -76,6 +79,15 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
     'TSLA': 250,
     'NVDA': 800
   }[symbol] || 100;
+
+  useEffect(() => {
+    // Simulate loading delay
+    const loadingTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(loadingTimeout);
+  }, []);
 
   useEffect(() => {
     // Fetch new data in the background when timeframe changes
@@ -93,36 +105,86 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
     }
   }, [nextData, isFetching]);
 
+  useEffect(() => {
+    // Animate the price change
+    const targetPrice = currentData[currentData.length - 1].close;
+    const startPrice = animatedPrice;
+    const duration = 1000; // 1 second for smooth transition
+
+    const startTime = Date.now();
+
+    const animate = () => {
+      const now = Date.now();
+      const progress = Math.min((now - startTime) / duration, 1);
+      const newPrice = startPrice + (targetPrice - startPrice) * progress;
+      setAnimatedPrice(newPrice);
+
+      if (progress < 1) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [currentData]);
+
   const handleTimeframeChange = (tf: string) => {
     setTimeframe(tf);
     onTimeframeChange?.(tf);
   };
 
-  const priceChange = currentData[currentData.length - 1].close - currentData[0].close;
+  const priceChange = animatedPrice - currentData[0].close;
   const priceChangePercent = ((priceChange / currentData[0].close) * 100).toFixed(2);
 
   const timeframes = ['1D', '1W', '1M', '3M', '1Y', '5Y'];
+
+  if (loading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative h-[400px] bg-white rounded-2xl p-6"
+      >
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Market Graph for {symbol}</h2>
+        <div className="space-y-4">
+          {[...Array(4)].map((_, index) => (
+            <div key={index} className="animate-pulse flex space-x-4">
+              <div className="flex-1 space-y-2 py-1">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
       key={symbol}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative h-[400px] bg-black/40 backdrop-blur-xl rounded-2xl p-6"
+      className="relative h-[400px] bg-white rounded-2xl p-6"
     >
       {/* Header with price change */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <div>
-            <h3 className="text-xl font-medium text-white">{symbol}</h3>
-            <div className={`text-sm ${priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            <h3 className="text-xl font-medium text-gray-900">{symbol}</h3>
+            <div className={`text-sm ${priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {priceChange >= 0 ? '+' : ''}{priceChangePercent}%
             </div>
           </div>
           {showGlobalComparison && (
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5">
-              <Globe className="w-4 h-4 text-blue-400" />
-              <span className="text-sm text-blue-400">Global Market</span>
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100">
+              <Globe className="w-4 h-4 text-blue-600" />
+              <span className="text-sm text-blue-600">Global Market</span>
             </div>
           )}
         </div>
@@ -135,8 +197,8 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
               onClick={() => handleTimeframeChange(tf)}
               className={`px-3 py-1 rounded-full text-sm transition-all ${
                 timeframe === tf 
-                  ? 'bg-white/10 text-white' 
-                  : 'text-white/60 hover:text-white'
+                  ? 'bg-gray-900 text-white' 
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
               {tf}
@@ -157,22 +219,22 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
           
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="rgba(255,255,255,0.1)"
+            stroke="#eee"
             vertical={false}
           />
           
           <XAxis
             dataKey="date"
             tickFormatter={(date) => new Date(date).toLocaleDateString()}
-            stroke="rgba(255,255,255,0.5)"
-            tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 12 }}
+            stroke="#999"
+            tick={{ fill: '#666', fontSize: 12 }}
           />
           
           <YAxis
             yAxisId="price"
             domain={['auto', 'auto']}
-            stroke="rgba(255,255,255,0.5)"
-            tick={{ fill: 'rgba(255,255,255,0.5)', fontSize: 12 }}
+            stroke="#999"
+            tick={{ fill: '#666', fontSize: 12 }}
             tickFormatter={(value) => `$${value}`}
           />
           
@@ -180,15 +242,15 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
             <YAxis
               yAxisId="volume"
               orientation="right"
-              stroke="rgba(255,255,255,0.3)"
-              tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 12 }}
+              stroke="#ccc"
+              tick={{ fill: '#999', fontSize: 12 }}
             />
           )}
           
           <Tooltip
             contentStyle={{
-              backgroundColor: 'rgba(0,0,0,0.9)',
-              border: 'none',
+              backgroundColor: 'rgba(255,255,255,0.9)',
+              border: '1px solid #ddd',
               backdropFilter: 'blur(10px)',
               padding: '12px',
               borderRadius: '8px'
@@ -209,7 +271,7 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
             <Bar
               yAxisId="volume"
               dataKey="volume"
-              fill="rgba(255,255,255,0.1)"
+              fill="rgba(0, 0, 0, 0.1)"
               radius={[4, 4, 0, 0]}
             />
           )}
@@ -231,18 +293,18 @@ export const MarketGraph: React.FC<MarketGraphProps> = ({
       <div className="flex items-center gap-6 mt-4">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-blue-500" />
-          <span className="text-sm text-white/60">{symbol}</span>
+          <span className="text-sm text-gray-600">{symbol}</span>
         </div>
         {showGlobalComparison && (
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full bg-green-400" />
-            <span className="text-sm text-white/60">Market Index</span>
+            <span className="text-sm text-gray-600">Market Index</span>
           </div>
         )}
         <button
           onClick={() => setShowVolume(!showVolume)}
           className={`flex items-center gap-2 text-sm ${
-            showVolume ? 'text-white/60' : 'text-white/30'
+            showVolume ? 'text-gray-600' : 'text-gray-900'
           }`}
         >
           <Activity className="w-4 h-4" />

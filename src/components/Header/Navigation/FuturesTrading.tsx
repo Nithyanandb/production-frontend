@@ -83,7 +83,7 @@ const FuturesTrading = () => {
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
                       <span className="text-white/60">Price</span>
-                      <div className="text-white/90">${contract.price}</div>
+                      <div className="text-white/90">₹{contract.price}</div>
                     </div>
                     <div>
                       <span className="text-white/60">Volume</span>

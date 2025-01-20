@@ -126,14 +126,14 @@ export const StockChart: React.FC<StockChartProps> = ({
       const price = payload[0].value;
       
       return (
-        <div className="bg-black/90 backdrop-blur-xl border border-white/10 rounded-lg p-4 shadow-xl">
-          <p className="text-white/60 text-sm mb-1">
+        <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-lg p-4 shadow-xl">
+          <p className="text-gray-600 text-sm mb-1">
             {timeFrame === '1D' 
               ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
               : date.toLocaleDateString([], { month: 'short', day: 'numeric' })}
           </p>
-          <p className="text-white text-lg font-medium">
-            ₹{price.toFixed(2)}
+          <p className="text-black text-lg font-medium">
+            ${price.toFixed(2)}
           </p>
         </div>
       );
@@ -142,16 +142,16 @@ export const StockChart: React.FC<StockChartProps> = ({
   };
 
   return (
-    <div className="h-full relative">
+    <div className="h-full relative bg-white">
       {isLoading ? (
         <div className="h-full flex items-center justify-center">
           <div className="flex flex-col items-center gap-3">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-8 h-8 border-2 border-white/10 border-t-white/40 rounded-full"
+              className="w-8 h-8 border-2 border-gray-200 border-t-gray-400 rounded-full"
             />
-            <span className="text-white/40 text-sm font-medium">Loading chart...</span>
+            <span className="text-gray-400 text-sm font-medium">Loading chart...</span>
           </div>
         </div>
       ) : (
@@ -182,7 +182,7 @@ export const StockChart: React.FC<StockChartProps> = ({
             
             <CartesianGrid 
               strokeDasharray="3 3" 
-              stroke="rgba(255,255,255,0.03)"
+              stroke="rgba(0,0,0,0.05)"
               vertical={false}
             />
             
@@ -195,19 +195,19 @@ export const StockChart: React.FC<StockChartProps> = ({
                 }
                 return d.toLocaleDateString([], { day: 'numeric', month: 'short' });
               }}
-              stroke="rgba(255,255,255,0.1)"
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
-              axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-              tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+              stroke="rgba(0,0,0,0.1)"
+              tick={{ fill: 'rgba(0,0,0,0.6)', fontSize: 11 }}
+              axisLine={{ stroke: 'rgba(0,0,0,0.1)' }}
+              tickLine={{ stroke: 'rgba(0,0,0,0.1)' }}
             />
             
             <YAxis
               domain={['auto', 'auto']}
-              stroke="rgba(255,255,255,0.1)"
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
-              tickFormatter={(value) => `₹${value.toFixed(2)}`}
-              axisLine={{ stroke: 'rgba(255,255,255,0.1)' }}
-              tickLine={{ stroke: 'rgba(255,255,255,0.1)' }}
+              stroke="rgba(0,0,0,0.1)"
+              tick={{ fill: 'rgba(0,0,0,0.6)', fontSize: 11 }}
+              tickFormatter={(value) => `$${value.toFixed(2)}`}
+              axisLine={{ stroke: 'rgba(0,0,0,0.1)' }}
+              tickLine={{ stroke: 'rgba(0,0,0,0.1)' }}
               tickCount={6}
               width={65}
             />
@@ -215,7 +215,7 @@ export const StockChart: React.FC<StockChartProps> = ({
             <Tooltip
               content={<CustomTooltip />}
               cursor={{
-                stroke: 'rgba(255,255,255,0.2)',
+                stroke: 'rgba(0,0,0,0.1)',
                 strokeWidth: 1,
                 strokeDasharray: '4 4'
               }}
@@ -245,11 +245,11 @@ export const StockChart: React.FC<StockChartProps> = ({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute top-4 right-4 bg-black/90 backdrop-blur-xl border border-white/10 rounded-lg p-4"
+          className="absolute top-4 right-4 bg-white/90 backdrop-blur-xl border border-gray-200 rounded-lg p-4"
         >
-          <p className="text-white/60 text-sm">Current Price</p>
-          <p className="text-white text-2xl font-medium">
-            ₹{hoveredData.price.toFixed(2)}
+          <p className="text-gray-600 text-sm">Current Price</p>
+          <p className="text-black text-2xl font-medium">
+            ${hoveredData.price.toFixed(2)}
           </p>
         </motion.div>
       )}

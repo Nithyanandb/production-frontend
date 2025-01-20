@@ -42,8 +42,10 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
   const handleMouseEnter = (menuId: string) => {
     setHoveredMenu(menuId);
   };
-  const handleMouseLeave = () => {
-    setHoveredMenu(null);
+ const handleMouseLeave = () => {
+    if (!hoveredMenu) {
+      setHoveredMenu(null);
+    }
   };
 
   return (
@@ -67,7 +69,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
                 initial={{ opacity: 0, x: 0 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0 }}
-                className="relative aspect-[16/9] overflow-hidden"
+                className="relative aspect-[16/9] overflow-hidden rounded-lg bg-gradient-to-r from-blue-500 to-purple-500"
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               </motion.div>
@@ -76,7 +78,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
             {/* Right Side - Menu Items */}
             <div className="space-y-6 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h3 className="text-sm font-medium text-black/60 uppercase tracking-wider mb-4">
+                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
                   Stock Market
                 </h3>
                 <div className="grid gap-2">
@@ -104,7 +106,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
                 </div>
               </div>
               <div>
-                <h3 className="text-sm font-medium text-black/60 uppercase tracking-wider -mt-[20px] mb-4">
+                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider -mt-[20px] mb-4">
                   Market Indices
                 </h3>
                 <div className="grid gap-2">
@@ -151,7 +153,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
                 initial={{ opacity: 0, x: 0 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0 }}
-                className="relative aspect-[16/9] overflow-hidden rounded-lg"
+                className="relative aspect-[16/9] overflow-hidden rounded-lg bg-gradient-to-r from-green-500 to-teal-500"
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               </motion.div>
@@ -160,7 +162,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
             {/* Right Side - Trading Options */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-sm font-medium text-black/60 uppercase tracking-wider mb-4">
+                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
                   Basic Trading
                 </h3>
                 <div className="space-y-2">
@@ -195,7 +197,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
                 </div>
               </div>
               <div>
-                <h3 className="text-sm font-medium text-black/60 uppercase tracking-wider mb-4">
+                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">
                   Advanced
                 </h3>
                 <div className="space-y-2">
@@ -249,7 +251,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
                 initial={{ opacity: 0, x: 0 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0 }}
-                className="relative aspect-[16/9] overflow-hidden rounded-lg"
+                className="relative aspect-[16/9] overflow-hidden rounded-lg bg-gradient-to-r from-orange-500 to-pink-500"
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               </motion.div>
@@ -292,7 +294,7 @@ export const NavigationMenu: React.FC<NavigationMenuProps> = ({
         {/* About */}
         <SimpleNavLink href="/about">
           <div className="flex items-center gap-1.5">
-            <Info size={18} className="text-black/80 hover:text-black" />
+            <Info size={18} className="text-gray-700 hover:text-black" />
             <span>About</span>
           </div>
         </SimpleNavLink>
@@ -317,8 +319,8 @@ const NavItem: React.FC<{
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <NavigationMenuPrimitive.Trigger className="group flex items-center gap-1.5 text-black/80 hover:text-black transition-colors outline-none">
-        {icon && React.cloneElement(icon, { className: "h-4 w-4 text-black/80 group-hover:text-black" })}
+      <NavigationMenuPrimitive.Trigger className="group flex items-center gap-1.5 text-gray-700 hover:text-black transition-colors outline-none">
+        {icon && React.cloneElement(icon, { className: "h-4 w-4 text-gray-700 group-hover:text-black" })}
         <span className="text-sm font-medium tracking-wide">{label}</span>
         <motion.div animate={{ rotate: isHovered ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown className="h-3.5 w-3.5" />
@@ -370,16 +372,16 @@ const NavLink: React.FC<{
     <motion.a
       href={href}
       className={cn(
-        "group flex flex-col gap-0.5 p-4 rounded-lg hover:bg-gray-900 transition-all duration-200",
+        "group flex flex-col gap-0.5 p-4 rounded-lg hover:bg-gray-100 transition-all duration-200",
         className
       )}
       whileHover={{ x: 0 }}
       onClick={handleClick}
     >
       <div className="flex items-center gap-3">
-        {icon && React.cloneElement(icon, { className: "h-5 w-5 text-black/60 group-hover:text-black" })}
+        {icon && React.cloneElement(icon, { className: "h-5 w-5 text-gray-500 group-hover:text-black" })}
         <div className="flex flex-col">
-          <span className="font-medium text-black/60 group-hover:text-black">{children}</span>
+          <span className="font-medium text-gray-700 group-hover:text-black">{children}</span>
         </div>
       </div>
     </motion.a>
@@ -393,7 +395,7 @@ const SimpleNavLink: React.FC<{ href: string; children: React.ReactNode }> = ({
   <NavigationMenuPrimitive.Item>
     <NavigationMenuPrimitive.Link
       href={href}
-      className="text-sm text-black/70 hover:text-black transition-colors"
+      className="text-sm text-gray-700 hover:text-black transition-colors"
     >
       {children}
     </NavigationMenuPrimitive.Link>
