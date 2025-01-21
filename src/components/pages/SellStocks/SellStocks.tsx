@@ -68,11 +68,23 @@ export const SellStocks: React.FC = () => {
         const { data } = await response.json();
         console.log('Backend Response:', data); // Debugging
 
-        // Validate portfolio data
+        // Validate portfolio data and filter out stocks with zero quantity
         if (Array.isArray(data)) {
-          const validPortfolio = data.filter(
-            (holding) => holding?.symbol && holding?.name
-          );
+          const validPortfolio = data
+            .filter((holding) => {
+              // Ensure all required fields are present and quantity is greater than zero
+              return (
+                holding?.symbol &&
+                holding?.name &&
+                holding.shares > 0 // Only include stocks with quantity > 0
+              );
+            })
+            .map((holding) => ({
+              ...holding,
+              quantity: holding.shares, // Map `shares` to `quantity` if needed
+              currentPrice: holding.value / holding.shares, // Calculate current price if needed
+            }));
+
           setPortfolio(validPortfolio);
         } else {
           throw new Error('Invalid portfolio data format');
@@ -124,7 +136,7 @@ export const SellStocks: React.FC = () => {
       // Validate portfolio data
       if (Array.isArray(data)) {
         const validPortfolio = data.filter(
-          (holding) => holding?.symbol && holding?.name
+          (holding) => holding?.symbol && holding?.name && holding.shares > 0 // Only include stocks with quantity > 0
         );
         setPortfolio(validPortfolio);
       } else {
@@ -191,14 +203,29 @@ export const SellStocks: React.FC = () => {
 
       // Update the portfolio after selling
       setPortfolio((prevPortfolio) =>
-        prevPortfolio.map((holding) => {
-          if (holding.symbol === symbol) {
-            const newQuantity = holding.quantity - quantity;
-            return { ...holding, quantity: newQuantity };
-          }
-          return holding;
-        }).filter((holding) => holding.quantity > 0) // Remove stocks with 0 quantity
+        prevPortfolio
+          .map((holding) => {
+            if (holding.symbol === symbol) {
+              const newQuantity = holding.shares - quantity; // Use `shares` instead of `quantity`
+
+              // Check if the new quantity is valid (finite and not NaN)
+              if (!Number.isFinite(newQuantity) || Number.isNaN(newQuantity)) {
+                console.error(`Invalid quantity for ${symbol}: ${newQuantity}`);
+                return null; // Skip this holding
+              }
+
+              return { ...holding, shares: newQuantity }; // Update `shares`
+            }
+            return holding;
+          })
+          .filter((holding) => holding !== null && holding.shares > 0) // Remove invalid or zero-quantity stocks
       );
+
+      // If the sold stock is the selected stock, clear the selection
+      if (selectedStockDetail?.symbol === symbol) {
+        setSelectedStockDetail(null);
+        setSelectedStock(null);
+      }
 
       handleTransactionSuccess(selectedStockDetail!, quantity, selectedStockDetail!.currentPrice * quantity);
     } catch (error) {
@@ -211,8 +238,9 @@ export const SellStocks: React.FC = () => {
   const filteredPortfolio = useMemo(() => {
     return (Array.isArray(portfolio) ? portfolio : []).filter(
       (holding) =>
-        holding?.symbol?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        holding?.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+        holding?.shares > 0 && // Only include stocks with quantity > 0
+        (holding?.symbol?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+          holding?.name?.toLowerCase().includes(debouncedSearchTerm.toLowerCase()))
     );
   }, [debouncedSearchTerm, portfolio]);
 
@@ -242,10 +270,10 @@ export const SellStocks: React.FC = () => {
           >
             <p className="font-medium text-sm text-black">{formatMoney(holding.currentPrice)}</p>
             <p className="text-xs flex items-center gap-1">
-              {(holding.totalReturn !== undefined) && (
+              {(holding.change !== undefined) && (
                 <>
                   {(holding.totalReturn >= 0) ? <ArrowUp size={10} /> : <ArrowDown size={10} />}
-                  {formatPercent(Math.abs(holding.totalReturn))}
+                  {formatPercent(Math.abs(holding.change))}
                 </>
               )}
             </p>
@@ -311,10 +339,22 @@ export const SellStocks: React.FC = () => {
               loading={loading}
             />
           ) : (
-            <div className="h-full flex items-center justify-center text-gray-600">
-              <div className="text-center">
-                <Globe size={32} className="mx-auto mb-4 opacity-60" />
-                <p className="text-lg">Select a stock to view details</p>
+            <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
+              <div className="text-center max-w-md px-4">
+                {/* Icon with a subtle gradient */}
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-black rounded-2xl shadow-lg mb-6">
+                  <Globe size={28} className="text-white" />
+                </div>
+
+                {/* Subtext */}
+                <p className="text-lg text-gray-600 mb-6">
+                  Select a stock to view details.
+                </p>
+
+                {/* Additional content */}
+                <p className="text-sm text-gray-500 mt-6">
+                  Dive into real-time data, charts, and insights to make informed decisions.
+                </p>
               </div>
             </div>
           )}

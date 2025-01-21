@@ -64,24 +64,24 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({
   if (!filteredData || filteredData.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600 text-lg font-medium">No valid holdings found</p>
+        <p className="text-gray-600 text-lg font-medium">No Valid Holdings found</p>
         <p className="text-gray-500 text-sm mt-2">Start your investment journey today</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-lg shadow-sm">
+    <div className="overflow-hidden rounded-lg shadow-sm bg-white font-sans">
       <table className="w-full">
         <thead>
           <tr className="bg-gray-50">
-            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-left uppercase tracking-wider">Instrument</th>
-            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-right uppercase tracking-wider">Qty.</th>
-            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-right uppercase tracking-wider">Avg. Price</th>
-            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-right uppercase tracking-wider">Current Price</th>
-            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-right uppercase tracking-wider">Current Value</th>
-            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-right uppercase tracking-wider">P&L</th>
-            <th className="py-4 px-6 text-sm font-medium text-gray-500 text-center uppercase tracking-wider">Last Updated</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-900 text-left uppercase tracking-wider">Instrument</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-900 text-right uppercase tracking-wider">Qty.</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-900 text-right uppercase tracking-wider">Avg. Price</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-900 text-right uppercase tracking-wider">Current Price</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-900 text-right uppercase tracking-wider">Current Value</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-900 text-right uppercase tracking-wider">P&L</th>
+            <th className="py-4 px-6 text-sm font-medium text-gray-900 text-center uppercase tracking-wider">Last Updated</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -94,30 +94,30 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({
               <td className="py-4 px-6">
                 <div>
                   <div className="font-medium text-gray-900">{holding.symbol}</div>
-                  <div className="text-sm text-gray-500">{holding.name}</div>
+                  <div className="text-sm text-gray-600">{holding.name}</div>
                 </div>
               </td>
-              <td className="py-4 px-6 text-right font-mono text-gray-900">
+              <td className="py-4 px-6 text-right text-gray-900">
                 {holding.shares}
               </td>
-              <td className="py-4 px-6 text-right font-mono text-gray-900">
-                ${formatNumber(holding.averagePrice)}
+              <td className="py-4 px-6 text-right text-gray-900">
+                ₹{formatNumber(holding.averagePrice)}
               </td>
-              <td className="py-4 px-6 text-right font-mono text-gray-900">
-                ${formatNumber(holding.currentPrice)}
+              <td className="py-4 px-6 text-right text-gray-900">
+                ₹{formatNumber(holding.currentPrice)}
               </td>
-              <td className="py-4 px-6 text-right font-mono text-gray-900">
-                ${formatNumber(holding.value)}
+              <td className="py-4 px-6 text-right text-gray-900">
+                ₹{formatNumber(holding.value)}
               </td>
               <td className="py-4 px-6 text-right">
-                <div className={`flex items-center justify-end gap-1.5 font-mono
+                <div className={`flex items-center justify-end gap-1.5
                   ${(holding.totalReturn ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}
                 >
-                  {(holding.totalReturn ?? 0) >= 0 ? <ArrowUp size={14} /> : <ArrowDown size={14} />}
-                  <span>${formatNumber(Math.abs(holding.totalReturn ?? 0))}</span>
+                  {(holding.totalReturn ?? 0) >= 0 ? <ArrowUp size={14} className="text-green-600" /> : <ArrowDown size={14} className="text-red-600" />}
+                  <span>₹{formatNumber(Math.abs(holding.totalReturn ?? 0))}</span>
                 </div>
               </td>
-              <td className="py-4 px-6 text-right font-mono text-gray-900">
+              <td className="py-4 px-6 text-right text-gray-900">
                 {holding.lastUpdated}
               </td>
             </tr>
@@ -136,20 +136,20 @@ const PortfolioTable: React.FC<PortfolioTableProps> = ({
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Average Price:</span>
-                <span className="text-gray-900 font-medium">${formatNumber(selectedStock.averagePrice)}</span>
+                <span className="text-gray-900 font-medium">₹{formatNumber(selectedStock.averagePrice)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Current Price:</span>
-                <span className="text-gray-900 font-medium">${formatNumber(selectedStock.currentPrice)}</span>
+                <span className="text-gray-900 font-medium">₹{formatNumber(selectedStock.currentPrice)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Current Value:</span>
-                <span className="text-gray-900 font-medium">${formatNumber(selectedStock.value)}</span>
+                <span className="text-gray-900 font-medium">₹{formatNumber(selectedStock.value)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Total Return:</span>
                 <span className={`font-medium ${(selectedStock.totalReturn ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  ${formatNumber(selectedStock.totalReturn)}
+                  ₹{formatNumber(selectedStock.totalReturn)}
                 </span>
               </div>
               <div className="flex justify-between">

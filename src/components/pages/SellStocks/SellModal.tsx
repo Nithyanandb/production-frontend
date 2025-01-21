@@ -90,11 +90,11 @@ const SellModal: React.FC<SellModalProps> = ({ stock, onClose, onSuccess }) => {
             <div className="space-y-4 border-t border-white/10 pt-6">
               <div className="flex justify-between text-sm">
                 <span className="text-white/60">Price per share</span>
-                <span className="text-white font-medium">₹{stock.price?.toFixed(2)}</span>
+                <span className="text-white font-medium">₹{stock.currentPrice?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-xl">
                 <span className="text-white/80">Total Amount</span>
-                <span className="text-white font-medium">₹{(stock.price * quantity).toFixed(2)}</span>
+                <span className="text-white font-medium">₹{(stock.currentPrice * quantity).toFixed(2)}</span>
               </div>
             </div>
 
@@ -107,7 +107,7 @@ const SellModal: React.FC<SellModalProps> = ({ stock, onClose, onSuccess }) => {
             <div className="space-y-3 pt-4">
               <button
                 onClick={handleSell}
-                className="w-full py-4 bg-red-500 text-white rounded-full font-medium hover:bg-red-600 transition-all text-sm uppercase tracking-wide"
+                className="w-full py-4 bg-white text-black rounded-full font-medium hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-wide"
               >
                 Sell Now
               </button>

@@ -4,6 +4,7 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid
 } from 'recharts';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 
 interface StockChartProps {
   stock: {
@@ -14,6 +15,7 @@ interface StockChartProps {
     changePercent: number;
   };
   timeFrame: string;
+  currentPrice: number;
   onTimeframeChange?: (timeframe: string) => void;
 }
 
@@ -68,6 +70,8 @@ const generateInitialData = (timeframe: string, basePrice: number = 100) => {
 export const StockChart: React.FC<StockChartProps> = ({ 
   stock, 
   timeFrame,
+  currentPrice,
+  change,
   onTimeframeChange 
 }) => {
   const [stockData, setStockData] = useState<DataPoint[]>([]);
@@ -98,13 +102,13 @@ export const StockChart: React.FC<StockChartProps> = ({
     setIsLoading(true);
     
     const loadDelay = setTimeout(() => {
-      const initialData = generateInitialData(timeFrame, stock.price);
+      const initialData = generateInitialData(timeFrame, currentPrice); // Use currentPrice here
       setStockData(initialData);
       setIsLoading(false);
     }, 100);
 
     return () => clearTimeout(loadDelay);
-  }, [timeFrame, stock.price]);
+  }, [timeFrame, currentPrice]); // Add currentPrice to dependency array
 
   useEffect(() => {
     if (isLoading || timeFrame !== '1D') return;
@@ -126,15 +130,23 @@ export const StockChart: React.FC<StockChartProps> = ({
       const price = payload[0].value;
       
       return (
-        <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-lg p-4  shadow-xl">
+        <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-lg p-4 shadow-xl">
           <p className="text-gray-600 text-sm mb-1">
             {timeFrame === '1D' 
               ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
               : date.toLocaleDateString([], { month: 'short', day: 'numeric' })}
           </p>
           <p className="text-black text-lg font-medium">
-            ${price.toFixed(2)}
+            ₹{price.toFixed(2)} {/* Display price in rupees */}
           </p>
+          <p className="text-xs flex items-center gap-1">
+              {(stock.change !== undefined) && (
+                <>
+                  {(stock.change >= 0) ? <ArrowUp size={10} /> : <ArrowDown size={10} />}
+                  {Math.abs(stock.change).toFixed(2)}%
+                </>
+              )}
+            </p>
         </div>
       );
     }
@@ -205,7 +217,7 @@ export const StockChart: React.FC<StockChartProps> = ({
               domain={['auto', 'auto']}
               stroke="rgba(0,0,0,0.1)"
               tick={{ fill: 'rgba(0,0,0,0.6)', fontSize: 11 }}
-              tickFormatter={(value) => `$${value.toFixed(2)}`}
+              tickFormatter={(value) => `₹${value.toFixed(2)}`} 
               axisLine={{ stroke: 'rgba(0,0,0,0.1)' }}
               tickLine={{ stroke: 'rgba(0,0,0,0.1)' }}
               tickCount={6}
@@ -249,7 +261,7 @@ export const StockChart: React.FC<StockChartProps> = ({
         >
           <p className="text-gray-600 text-sm">Current Price</p>
           <p className="text-black text-2xl font-medium">
-            ${hoveredData.price.toFixed(2)}
+            ₹{hoveredData.price.toFixed(2)} {/* Display price in rupees */}
           </p>
         </motion.div>
       )}

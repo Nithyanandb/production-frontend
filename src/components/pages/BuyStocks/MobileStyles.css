@@ -1,0 +1,70 @@
+/* General styles for mobile devices */
+@media (max-width: 768px) {
+    .buy-stocks-container {
+      flex-direction: column;
+      padding: 0;
+    }
+  
+    .search-container {
+      width: 100%;
+      padding: 16px;
+    }
+  
+    .stocks-list {
+      width: 100%;
+      height: auto;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  
+    .stock-detail-container {
+      width: 100%;
+      padding: 16px;
+    }
+  
+    .buy-button-container {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 100;
+    }
+  
+    .buy-button {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
+    }
+  
+    .success-popup {
+      width: 90%;
+      max-width: 300px;
+    }
+  
+    .stock-row {
+      padding: 12px;
+    }
+  
+    .stock-row h3 {
+      font-size: 14px;
+    }
+  
+    .stock-row p {
+      font-size: 12px;
+    }
+  
+    .stock-detail {
+      padding: 16px;
+    }
+  
+    .stock-detail h2 {
+      font-size: 18px;
+    }
+  
+    .stock-detail p {
+      font-size: 14px;
+    }
+  
+    .loading-spinner {
+      font-size: 24px;
+    }
+  }

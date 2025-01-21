@@ -8,7 +8,7 @@ interface BuyModalProps {
   stock?: {
     symbol: string;
     name: string;
-    price: number;
+    currentPrice: number;
   };
   onClose: () => void;
   onSuccess: (quantity: number, totalPrice: number) => void;
@@ -82,11 +82,11 @@ const BuyModal: React.FC<BuyModalProps> = ({ stock, onClose, onSuccess }) => {
             <div className="space-y-4 border-t border-white/10 pt-6">
               <div className="flex justify-between text-sm">
                 <span className="text-white/60">Price per share</span>
-                <span className="text-white font-medium">₹{stock.price?.toFixed(2)}</span>
+                <span className="text-white font-medium">₹{stock.currentPrice?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-xl">
                 <span className="text-white/80">Total Amount</span>
-                <span className="text-white font-medium">₹{(stock.price * quantity).toFixed(2)}</span>
+                <span className="text-white font-medium">₹{(stock.currentPrice * quantity).toFixed(2)}</span>
               </div>
             </div>
 

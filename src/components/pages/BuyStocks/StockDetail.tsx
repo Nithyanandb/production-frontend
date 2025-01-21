@@ -113,7 +113,7 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
         {/* Compact Price Section */}
         <div className="flex items-center gap-4 mb-4">
           <span className="text-4xl font-medium text-black">
-            ₹{stock.price?.toFixed(2) ?? 'N/A'} {/* Use the price from the selected stock */}
+            ₹{stock.currentPrice?.toFixed(2) ?? 'N/A'} {/* Use the price from the selected stock */}
           </span>
           <motion.span
             animate={{
@@ -146,7 +146,7 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
         {/* Chart Container */}
         <div className="flex-1 bg-gray-100 rounded-xl mt-16 backdrop-blur-sm">
           <div className="h-full">
-            <StockChart stock={stock} timeFrame={timeFrame} />
+            <StockChart stock={stock} timeFrame={timeFrame} currentPrice={stock.currentPrice} change={stock.change} />
           </div>
         </div>
 

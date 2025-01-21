@@ -6,6 +6,7 @@ import CompanyOverview from './CompanyOverview';
 import {motion}  from 'framer-motion';
 import { features } from './data';
 import { FeatureBlock } from './FeatureBlock';
+import Footer from '@/components/Footer/Footer';
 
 const About: React.FC = () => {
   return (
@@ -53,6 +54,7 @@ const About: React.FC = () => {
 
       {/* Experience Section */}
       <ExperienceSection />
+      <Footer/>
     </div>
   );
 };

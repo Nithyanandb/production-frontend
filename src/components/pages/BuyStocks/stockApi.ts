@@ -3,7 +3,7 @@ export interface Stock {
   [x: string]: any;
   symbol: string;
   name: string;
-  price: number;
+  currentPrice: number;
   change: number;
   percentChange: number;
   high: number;

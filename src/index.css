@@ -112,3 +112,20 @@ h3 {
 .gradient-section {
   @apply bg-gradient-to-r from-white to-gray-50;
 }
+
+/* Add this to your global CSS or a CSS module */
+.hover\:bg-gray-50:hover {
+  background-color: #f9fafb;
+}
+
+.transition-colors {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}

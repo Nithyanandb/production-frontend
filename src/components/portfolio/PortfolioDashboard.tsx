@@ -3,14 +3,57 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import PortfolioTable from './PortfolioTable';
 import portfolioApi from './Asserts/portfolioApi';
-import WatchlistManager from './Asserts/WatchlistManager';
-import { Portfolio, PortfolioStats } from './Asserts/Portfolio';
+import { Portfolio } from './Asserts/Portfolio';
 import useAuth from '../hooks/useAuth';
 import './portfolioDashboard.css';
 
+const CACHE_KEY = 'pageViewsCache';
+
+const getCachedPageViews = (): { date: string; count: number }[] => {
+  const cachedData = localStorage.getItem(CACHE_KEY);
+  return cachedData ? JSON.parse(cachedData) : [];
+};
+
+const setCachedPageViews = (data: { date: string; count: number }[]) => {
+  localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+};
+
+const calculatePortfolioValue = (portfolio: Portfolio[]) => {
+  return portfolio.reduce((total, holding) => {
+    const value = holding.value || 0;
+    return total + value;
+  }, 0);
+};
+
+const aggregateWeeklyPageViews = (data: { date: string; count: number }[]) => {
+  const weeklyData: { [key: string]: number } = {};
+
+  data.forEach((entry) => {
+    const date = new Date(entry.date);
+    const weekStart = new Date(date);
+    weekStart.setDate(date.getDate() - date.getDay());
+    const weekKey = weekStart.toISOString().split('T')[0];
+
+    weeklyData[weekKey] = (weeklyData[weekKey] || 0) + entry.count;
+  });
+
+  return Object.keys(weeklyData).map((weekKey) => ({
+    date: weekKey,
+    count: weeklyData[weekKey],
+  }));
+};
+
+const filterLastYearData = (data: { date: string; count: number }[]) => {
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  return data.filter((entry) => new Date(entry.date) >= oneYearAgo);
+};
+
 const PortfolioDashboard: React.FC = () => {
   const [portfolio, setPortfolio] = useState<Portfolio[]>([]);
-  const [pageViews, setPageViews] = useState<{ date: string; count: number }[]>([]);
+  const [pageViews, setPageViews] = useState<{ date: string; count: number }[]>(() => {
+    return getCachedPageViews();
+  });
   const [weeklyPageViews, setWeeklyPageViews] = useState<{ date: string; count: number }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +70,8 @@ const PortfolioDashboard: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated) {
       const today = new Date().toISOString().split('T')[0];
-      const updatedPageViews = [...pageViews];
+      const cachedPageViews = getCachedPageViews();
+      const updatedPageViews = [...cachedPageViews];
       const existingEntryIndex = updatedPageViews.findIndex((entry) => entry.date === today);
 
       if (existingEntryIndex !== -1) {
@@ -36,11 +80,15 @@ const PortfolioDashboard: React.FC = () => {
         updatedPageViews.push({ date: today, count: 1 });
       }
 
+      setCachedPageViews(updatedPageViews);
       setPageViews(updatedPageViews);
-      const weeklyData = aggregateWeeklyPageViews(updatedPageViews);
-      setWeeklyPageViews(weeklyData);
     }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    const weeklyData = aggregateWeeklyPageViews(pageViews);
+    setWeeklyPageViews(weeklyData);
+  }, [pageViews]);
 
   useEffect(() => {
     if (isAuthenticated && user && token) {
@@ -77,37 +125,10 @@ const PortfolioDashboard: React.FC = () => {
     }
   };
 
-  const aggregateWeeklyPageViews = (data: { date: string; count: number }[]) => {
-    const weeklyData: { [key: string]: number } = {};
-
-    data.forEach((entry) => {
-      const date = new Date(entry.date);
-      const weekStart = new Date(date);
-      weekStart.setDate(date.getDate() - date.getDay());
-      const weekKey = weekStart.toISOString().split('T')[0];
-
-      if (!weeklyData[weekKey]) {
-        weeklyData[weekKey] = 0;
-      }
-      weeklyData[weekKey] += entry.count;
-    });
-
-    return Object.keys(weeklyData).map((weekKey) => ({
-      date: weekKey,
-      count: weeklyData[weekKey],
-    }));
-  };
-
-  const filterLastYearData = (data: { date: string; count: number }[]) => {
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-    return data.filter((entry) => new Date(entry.date) >= oneYearAgo);
-  };
-
   if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-white">
-        <div className="text-black">Please log in to view your portfolio.</div>
+        <div className="text-black">Please log in to view your Portfolio.</div>
       </div>
     );
   }
@@ -160,15 +181,6 @@ const PortfolioDashboard: React.FC = () => {
             }
           }}
         />
-
-        <div className="mt-6 bg-white rounded-lg shadow-sm p-6 border border-gray-100">
-          <WatchlistManager
-            watchlist={[]}
-            onRemove={async () => {}}
-            onUpdate={async () => {}}
-            onAdd={async () => {}}
-          />
-        </div>
       </div>
 
       {/* Main Content */}
@@ -179,7 +191,7 @@ const PortfolioDashboard: React.FC = () => {
               <h1 className="text-3xl font-bold text-gray-900">Welcome, {user.name}</h1>
               <div className="flex items-center gap-4">
                 <span className="text-xl font-medium text-green-600">
-                  Portfolio Value: ${portfolioValue.toFixed(2)}
+                  Portfolio Value: ₹{portfolioValue.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -193,13 +205,6 @@ const PortfolioDashboard: React.FC = () => {
       </div>
     </div>
   );
-};
-
-const calculatePortfolioValue = (portfolio: Portfolio[]) => {
-  return portfolio.reduce((total, holding) => {
-    const value = holding.value || 0;
-    return total + value;
-  }, 0);
 };
 
 export default PortfolioDashboard;

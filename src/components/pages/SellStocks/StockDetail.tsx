@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUp, ArrowDown, Globe, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { StockChart } from './StockChart';
+
 import { Portfolio } from '@/components/portfolio/Asserts/Portfolio';
+import StockChart from './StockChart';
 
 const API_KEY = "ctre6q9r01qhb16mmh70ctre6q9r01qhb16mmh7g"; // Replace with your API key
 
@@ -138,7 +139,7 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onSellClick, lo
         {/* Chart Container */}
         <div className="flex-1 bg-gray-100 rounded-xl mt-12 backdrop-blur-sm">
           <div className="h-full">
-            <StockChart stock={stock} timeFrame={timeFrame} />
+            <StockChart stock={stock} timeFrame={timeFrame} currentPrice={stock.currentPrice} change={stock.change} />
           </div>
         </div>
 

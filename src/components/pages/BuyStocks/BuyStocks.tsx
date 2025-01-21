@@ -10,6 +10,7 @@ import useAuth from '../../hooks/useAuth';
 import { useLocation } from 'react-router-dom';
 import { symbols } from '../AllStocks/symbols';
 import { FixedSizeList as List } from 'react-window';
+import Footer from '@/components/Footer/Footer';
 
 // Debounce hook
 const useDebounce = (value: string, delay: number) => {
@@ -238,7 +239,7 @@ export const BuyStocks: React.FC = () => {
     const isSelected = selectedStockDetail?.symbol === stock.symbol;
 
     // If price is zero, show a skeleton loader
-    if (!stock || stock.price === 0) {
+    if (stock.price === 0) {
       return (
         <motion.div
           style={{ ...style, marginBottom: '16px' }}
@@ -284,7 +285,7 @@ export const BuyStocks: React.FC = () => {
             }}
             className="text-right"
           >
-            <p className="font-medium text-sm text-black">₹{(stock.price || 0).toFixed(2)}</p>
+            <p className="font-medium text-sm text-black">₹{(stock.currentPrice|| 0).toFixed(2)}</p>
             <p className="text-xs flex items-center gap-1">
               {(stock.change !== undefined) && (
                 <>
@@ -348,7 +349,7 @@ export const BuyStocks: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 ">
             {stockDetailLoading ? (
               <LoadingSpinner />
             ) : selectedStockDetail ? (
@@ -358,12 +359,27 @@ export const BuyStocks: React.FC = () => {
                 loading={loading}
               />
             ) : (
-              <div className="h-full flex items-center justify-center text-gray-600">
-                <div className="text-center">
-                  <Globe size={32} className="mx-auto mb-4 opacity-60" />
-                  <p className="text-lg">Select a stock to view details</p>
-                </div>
-              </div>
+              <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
+  <div className="text-center max-w-md px-4">
+    {/* Icon with a subtle gradient */}
+    <div className="inline-flex items-center justify-center w-16 h-16 bg-black rounded-2xl shadow-lg mb-6">
+      <Globe size={28} className="text-white" />
+    </div>
+
+  
+
+    {/* Subtext */}
+    <p className="text-lg text-gray-600 mb-6">
+      Select a stock to view details.
+    </p>
+
+  
+    {/* Additional content */}
+    <p className="text-sm text-gray-500 mt-6">
+      Dive into real-time data, charts, and insights to make informed decisions.
+    </p>
+  </div>
+</div>
             )}
           </div>
         </div>
@@ -415,6 +431,7 @@ export const BuyStocks: React.FC = () => {
           )}
         </AnimatePresence>
       </div>
+      <Footer/>
     </ErrorBoundary>
   );
 };
