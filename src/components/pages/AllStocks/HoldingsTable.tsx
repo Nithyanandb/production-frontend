@@ -3,7 +3,7 @@ import { Search } from 'lucide-react';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { finnhubApi, FinnhubQuote } from './finnhubApi'; // Import the API utility
+import { finnhubApi, FinnhubQuote } from './finnhubApi'; 
 
 interface StockHolding {
   symbol: string;
@@ -42,16 +42,18 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ holdings, onStockS
       try {
         const updated = await Promise.all(
           holdings.map(async (holding) => {
-            // Check if data is already cached and not expired
             const cacheKey = `stockData_${holding.symbol}`;
             const cachedData = localStorage.getItem(cacheKey);
             const cacheTimestamp = localStorage.getItem(`${cacheKey}_timestamp`);
             const now = Date.now();
-
+  
             if (cachedData && cacheTimestamp && now - Number(cacheTimestamp) < CACHE_DURATION) {
-              return JSON.parse(cachedData); // Use cached data if it's still valid
+              const cachedHolding = JSON.parse(cachedData);
+              if (isDataValid(cachedHolding)) {
+                return cachedHolding; // Use cached data if it's still valid and data is valid
+              }
             }
-
+  
             try {
               const quote = await finnhubApi.getQuote(holding.symbol); // Use finnhubApi utility
               const updatedHolding = {
@@ -64,12 +66,44 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ holdings, onStockS
                 openPrice: quote.o || 0,
                 previousClose: quote.pc || 0,
               };
-
-              // Cache the fetched data with a timestamp
-              localStorage.setItem(cacheKey, JSON.stringify(updatedHolding));
-              localStorage.setItem(`${cacheKey}_timestamp`, now.toString());
-
-              return updatedHolding;
+  
+              if (isDataValid(updatedHolding)) {
+                // Cache the fetched data with a timestamp
+                localStorage.setItem(cacheKey, JSON.stringify(updatedHolding));
+                localStorage.setItem(`${cacheKey}_timestamp`, now.toString());
+                return updatedHolding;
+              } else {
+                // If data is invalid, refetch the data
+                const refetchedQuote = await finnhubApi.getQuote(holding.symbol);
+                const refetchedHolding = {
+                  ...holding,
+                  currentPrice: refetchedQuote.c || 0,
+                  change: refetchedQuote.d || 0,
+                  changePercent: refetchedQuote.dp || 0,
+                  highPrice: refetchedQuote.h || 0,
+                  lowPrice: refetchedQuote.l || 0,
+                  openPrice: refetchedQuote.o || 0,
+                  previousClose: refetchedQuote.pc || 0,
+                };
+  
+                if (isDataValid(refetchedHolding)) {
+                  localStorage.setItem(cacheKey, JSON.stringify(refetchedHolding));
+                  localStorage.setItem(`${cacheKey}_timestamp`, now.toString());
+                  return refetchedHolding;
+                } else {
+                  console.error(`Invalid data for ${holding.symbol} after refetch`);
+                  return {
+                    ...holding,
+                    currentPrice: 0,
+                    change: 0,
+                    changePercent: 0,
+                    highPrice: 0,
+                    lowPrice: 0,
+                    openPrice: 0,
+                    previousClose: 0,
+                  };
+                }
+              }
             } catch (err) {
               console.error(`Failed to fetch data for ${holding.symbol}:`, err);
               return {
@@ -85,7 +119,7 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ holdings, onStockS
             }
           })
         );
-
+  
         startTransition(() => {
           setUpdatedHoldings(updated);
         });
@@ -99,18 +133,29 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ holdings, onStockS
         });
       }
     };
-
+  
+    const isDataValid = (holding: StockHolding) => {
+      // Define your criteria for valid data
+      return (
+        holding.currentPrice !== undefined &&
+        holding.change !== undefined &&
+        holding.changePercent !== undefined &&
+        holding.highPrice !== undefined &&
+        holding.lowPrice !== undefined &&
+        holding.openPrice !== undefined &&
+        holding.previousClose !== undefined
+      );
+    };
+  
     if (holdings.length > 0) {
       fetchAllStockData();
     }
-
-    // Set up a timer to periodically refresh the data
+  
     const interval = setInterval(fetchAllStockData, CACHE_DURATION);
-
-    // Clean up the interval when the component unmounts
+  
     return () => clearInterval(interval);
   }, [holdings]);
-
+  
   // Filter holdings based on search term
   const filteredHoldings = updatedHoldings.filter(
     (holding) =>
@@ -196,7 +241,7 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ holdings, onStockS
               <td className="px-5 py-4">{holding.quantity}</td>
               <td className="px-5 py-4">₹{holding.currentPrice?.toFixed(2) ?? '0.00'}</td>
               <td className={`px-5 py-4 ${(holding.change ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                ${holding.change?.toFixed(2) ?? '0.00'}
+                {holding.change?.toFixed(2) ?? '0.00'}
               </td>
               <td className={`px-5 py-4 ${(holding.changePercent ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {holding.changePercent?.toFixed(2) ?? '0.00'}%
@@ -231,3 +276,4 @@ export const HoldingsTable: React.FC<HoldingsTableProps> = ({ holdings, onStockS
     </div>
   );
 };
+

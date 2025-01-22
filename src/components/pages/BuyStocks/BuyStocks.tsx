@@ -12,22 +12,18 @@ import { symbols } from '../AllStocks/symbols';
 import { FixedSizeList as List } from 'react-window';
 import Footer from '@/components/Footer/Footer';
 import { finnhubApi, FinnhubQuote } from './finnhubApi';
+
 const API_KEY = "ctksb2pr01qn6d7jeekgctksb2pr01qn6d7jeel0";
-// Cache duration in milliseconds (30 minutes)
-const CACHE_DURATION = 30 * 60 * 1000;
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+
 const useDebounce = (value: string, delay: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
-
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedValue(value);
     }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
+    return () => clearTimeout(handler);
   }, [value, delay]);
-
   return debouncedValue;
 };
 
@@ -36,15 +32,12 @@ class ErrorBoundary extends React.Component {
     super(props);
     this.state = { hasError: false };
   }
-
   static getDerivedStateFromError(error) {
     return { hasError: true };
   }
-
   componentDidCatch(error, errorInfo) {
     console.error('Error caught by ErrorBoundary:', error, errorInfo);
   }
-
   render() {
     if (this.state.hasError) {
       return <h1>Something went wrong. Please try again later.</h1>;
@@ -52,6 +45,11 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
+
+// Check if stock data is valid
+const isDataValid = (stock) => {
+  return stock.price > 0; // Example: Ensure price is non-zero
+};
 
 // Fetch stock data for all symbols
 const fetchAllStockData = async () => {
@@ -63,7 +61,10 @@ const fetchAllStockData = async () => {
       const now = Date.now();
 
       if (cachedData && cacheTimestamp && now - Number(cacheTimestamp) < CACHE_DURATION) {
-        return JSON.parse(cachedData);
+        const cachedStock = JSON.parse(cachedData);
+        if (isDataValid(cachedStock)) {
+          return cachedStock; // Use cached data if valid
+        }
       }
 
       try {
@@ -79,9 +80,42 @@ const fetchAllStockData = async () => {
           previousClose: quote.pc || 0,
         };
 
-        localStorage.setItem(cacheKey, JSON.stringify(updatedStockData));
-        localStorage.setItem(`${cacheKey}_timestamp`, now.toString());
-        return updatedStockData;
+        if (isDataValid(updatedStockData)) {
+          localStorage.setItem(cacheKey, JSON.stringify(updatedStockData));
+          localStorage.setItem(`${cacheKey}_timestamp`, now.toString());
+          return updatedStockData;
+        } else {
+          // Refetch if data is invalid
+          const refetchedQuote = await finnhubApi.getQuote(stock.symbol);
+          const refetchedStockData = {
+            ...stock,
+            price: refetchedQuote.c || 0,
+            change: refetchedQuote.d || 0,
+            changePercent: refetchedQuote.dp || 0,
+            highPrice: refetchedQuote.h || 0,
+            lowPrice: refetchedQuote.l || 0,
+            openPrice: refetchedQuote.o || 0,
+            previousClose: refetchedQuote.pc || 0,
+          };
+
+          if (isDataValid(refetchedStockData)) {
+            localStorage.setItem(cacheKey, JSON.stringify(refetchedStockData));
+            localStorage.setItem(`${cacheKey}_timestamp`, now.toString());
+            return refetchedStockData;
+          } else {
+            console.error(`Invalid data for ${stock.symbol} after refetch`);
+            return {
+              ...stock,
+              price: 0,
+              change: 0,
+              changePercent: 0,
+              highPrice: 0,
+              lowPrice: 0,
+              openPrice: 0,
+              previousClose: 0,
+            };
+          }
+        }
       } catch (error) {
         console.error(`Failed to fetch data for ${stock.symbol}:`, error);
         return {
@@ -98,7 +132,7 @@ const fetchAllStockData = async () => {
     })
   );
 
-  return updated;
+  return updated.filter(isDataValid); // Filter out invalid data
 };
 
 export const BuyStocks: React.FC = () => {
@@ -114,11 +148,9 @@ export const BuyStocks: React.FC = () => {
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
   const [email, setEmail] = useState(user?.email || '');
   const location = useLocation();
-
-  // Debounced search term
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  // Fetch stock data on component mount
+  // Fetch stock data on component mount and periodically
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -134,99 +166,32 @@ export const BuyStocks: React.FC = () => {
     };
 
     fetchData();
+    const interval = setInterval(fetchData, CACHE_DURATION);
+    return () => clearInterval(interval);
   }, []);
-  // Set user email on component mount or when user changes
-  useEffect(() => {
-    if (user) {
-      setEmail(user.email || '');
-    }
-  }, [user]);
 
-  // Handle selected stock from navigation state
+  // Set selected stock from navigation state or symbol
   useEffect(() => {
     if (location.state?.selectedStock) {
       setSelectedStock(location.state.selectedStock);
       setSelectedStockDetail(location.state.selectedStock);
-    }
-  }, [location.state]);
-
-  // Initialize EmailJS
-  useEffect(() => {
-    try {
-      emailjs.init('eyK87ZsxW822cQvyN'); // Replace with your EmailJS User ID
-    } catch (error) {
-      console.error('Failed to initialize EmailJS:', error);
-    }
-  }, []);
-
-  // Fetch stock data for all symbols
-  useEffect(() => {
-    const fetchAllStockData = async () => {
-      setLoading(true);
-      try {
-        const updated = await Promise.all(
-          symbols.map(async (stock) => {
-            // Check if data is already cached and not expired
-            const cachedData = localStorage.getItem(`stockData_${stock.symbol}`);
-            const cacheTimestamp = localStorage.getItem(`cacheTimestamp_${stock.symbol}`);
-            const now = Date.now();
-
-            if (cachedData && cacheTimestamp && now - Number(cacheTimestamp) < CACHE_DURATION) {
-              return JSON.parse(cachedData); // Use cached data if it's still valid
-            }
-
-            try {
-              const response = await fetch(
-                `https://finnhub.io/api/v1/quote?symbol=${stock.symbol}&token=${API_KEY}`
-              );
-              if (!response.ok) {
-                throw new Error(`Failed to fetch data for ${stock.symbol}`);
-              }
-              const data = await response.json();
-
-              const updatedStockData = {
-                ...stock,
-                price: data.c || 0,
-                change: data.d || 0,
-                changePercent: data.dp || 0,
-                highPrice: data.h || 0,
-                lowPrice: data.l || 0,
-                openPrice: data.o || 0,
-                previousClose: data.pc || 0,
-              };
-
-              // Cache the fetched data with a timestamp
-              localStorage.setItem(`stockData_${stock.symbol}`, JSON.stringify(updatedStockData));
-              localStorage.setItem(`cacheTimestamp_${stock.symbol}`, now.toString());
-
-              return updatedStockData;
-            } catch (error) {
-              console.error(`Failed to fetch data for ${stock.symbol}:`, error);
-              return {
-                ...stock,
-                price: 0,
-                change: 0,
-                changePercent: 0,
-                highPrice: 0,
-                lowPrice: 0,
-                openPrice: 0,
-                previousClose: 0,
-              };
-            }
-          })
-        );
-
-        setStocks(updated);
-      } catch (error) {
-        console.error('Failed to fetch stock data:', error);
-        setError('Failed to fetch stock data');
-      } finally {
-        setLoading(false);
+    } else if (location.state?.symbol) {
+      const stockFromSymbol = stocks.find(stock => stock.symbol === location.state.symbol);
+      if (stockFromSymbol) {
+        setSelectedStock(stockFromSymbol);
+        setSelectedStockDetail(stockFromSymbol);
       }
-    };
+    }
+  }, [location.state, stocks]);
 
-    fetchAllStockData();
-  }, []);
+  // Filter stocks based on debounced search term
+  const filteredStocks = useMemo(() => {
+    return stocks.filter(
+      (stock) =>
+        stock.symbol.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        stock.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+    );
+  }, [debouncedSearchTerm, stocks]);
 
   // Handle stock selection
   const handleStockSelect = async (stock: typeof symbols[0]) => {
@@ -287,20 +252,10 @@ export const BuyStocks: React.FC = () => {
     }
   };
 
-  // Filter stocks based on debounced search term
-  const filteredStocks = useMemo(() => {
-    return stocks.filter(
-      (stock) =>
-        stock.symbol.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-        stock.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-    );
-  }, [debouncedSearchTerm, stocks]);
-
   const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const stock = filteredStocks[index];
     const isSelected = selectedStockDetail?.symbol === stock.symbol;
 
-    // If price is zero, show a skeleton loader
     if (stock.price === 0) {
       return (
         <motion.div
@@ -309,15 +264,11 @@ export const BuyStocks: React.FC = () => {
         >
           <div className="flex justify-between items-start">
             <div>
-              {/* Skeleton for stock symbol */}
               <div className="h-4 w-20 bg-gray-200 rounded mb-2 animate-pulse"></div>
-              {/* Skeleton for stock name */}
               <div className="h-3 w-32 bg-gray-200 rounded animate-pulse"></div>
             </div>
             <div className="text-right">
-              {/* Skeleton for price */}
               <div className="h-4 w-16 bg-gray-200 rounded mb-2 animate-pulse"></div>
-              {/* Skeleton for change percentage */}
               <div className="h-3 w-12 bg-gray-200 rounded animate-pulse"></div>
             </div>
           </div>
@@ -339,15 +290,14 @@ export const BuyStocks: React.FC = () => {
             <h3 className="font-medium text-sm text-black">{stock.symbol}</h3>
             <p className="text-xs text-gray-600">{stock.name}</p>
           </div>
+          
           <motion.div
             animate={{
-              color: (stock.change || 0) >= 0
-                ? '#16a34a' // Green for positive change
-                : '#dc2626', // Red for negative change
+              color: (stock.change || 0) >= 0 ? '#16a34a' : '#dc2626',
             }}
             className="text-right"
           >
-            <p className="font-medium text-sm text-black">₹{(stock.price|| 0).toFixed(2)}</p>
+            <p className="font-medium text-sm text-black">₹{(stock.price || 0).toFixed(2)}</p>
             <p className="text-xs flex items-center gap-1">
               {(stock.change !== undefined) && (
                 <>
@@ -483,7 +433,7 @@ export const BuyStocks: React.FC = () => {
           )}
         </AnimatePresence>
       </div>
-      <Footer/>
+      <Footer />
     </ErrorBoundary>
   );
 };

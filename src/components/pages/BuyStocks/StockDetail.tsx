@@ -124,7 +124,7 @@ export const StockDetail: React.FC<StockDetailProps> = ({ stock, onBuyClick, loa
         {/* Compact Price Section */}
         <div className="flex items-center gap-4 mb-4">
           <span className="text-4xl font-medium text-black">
-            ₹{stock.price?.toFixed(2) ?? 'N/A'} {/* Use the price from the selected stock */}
+            ₹{stock.currentPrice || 'N/A'} {/* Use the price from the selected stock */}
           </span>
           <motion.span
             animate={{
