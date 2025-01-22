@@ -64,7 +64,12 @@ const StockMarket: React.FC = () => {
       setError('WebSocket error. Please refresh the page.');
     });
 
- 
+    socket.addEventListener('close', () => {
+      console.log('WebSocket connection closed');
+      setError('WebSocket connection closed. Reconnecting...');
+      // Attempt to reconnect after 5 seconds
+      setTimeout(() => connectWebSocket(), 5000);
+    });
 
     socketRef.current = socket;
   };
@@ -86,47 +91,48 @@ const StockMarket: React.FC = () => {
       <Header />
 
       <div className="flex h-screen pt-20">
-  {/* Sidebar for Trades */}
-<div className="p-4 ml-2 overflow-y-auto w-[400px] h-full border-r border-gray-200 bg-white">
-  <div className="mb-6">
-    <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
-     Trades - Last Price Updates
-    </h2>
-    {error ? (
-      <div className="flex justify-center items-center py-4">
-        <span className="text-red-500">{error}</span>
-      </div>
-    ) : (
-      <div className="space-y-3 mt-8">
-        {trades.length > 0 ? (
-          trades.map((trade, index) => (
-            <div key={index} className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors">
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-900">{trade.symbol}</span>
-                  <span className="text-xs text-gray-500">{trade.symbol.toUpperCase()}</span>
-                </div>
-                <span className="text-sm text-gray-900">${trade.price.toLocaleString()}</span>
+        {/* Sidebar for Trades */}
+        <div className="p-4 ml-2 overflow-y-auto w-[400px] h-full border-r border-gray-200 bg-white">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
+              Trades - Last Price Updates
+            </h2>
+            {error ? (
+              <div className="flex justify-center items-center py-4">
+                <span className="text-red-500">{error}</span>
               </div>
-              <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-                <div className="flex items-center gap-1">
-                  <span className="text-gray-500">Volume:</span>
-                  <span className="text-gray-900">{trade.volume.toLocaleString()}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <span className="text-gray-500">Time:</span>
-                  <span className="text-gray-900">{new Date(trade.timestamp).toLocaleTimeString()}</span>
-                </div>
+            ) : (
+              <div className="space-y-3 mt-8">
+                {trades.length > 0 ? (
+                  trades.map((trade, index) => (
+                    <div key={index} className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 transition-colors">
+                      <div className="flex justify-between items-center mb-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-900">{trade.symbol}</span>
+                          <span className="text-xs text-gray-500">{trade.symbol.toUpperCase()}</span>
+                        </div>
+                        <span className="text-sm text-gray-900">${trade.price.toLocaleString()}</span>
+                      </div>
+                      <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                        <div className="flex items-center gap-1">
+                          <span className="text-gray-500">Volume:</span>
+                          <span className="text-gray-900">{trade.volume.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-gray-500">Time:</span>
+                          <span className="text-gray-900">{new Date(trade.timestamp).toLocaleTimeString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-600">No trades available yet.</p>
+                )}
               </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-sm text-gray-600">No trades available yet.</p>
-        )}
-      </div>
-    )}
-  </div>
-</div>
+            )}
+          </div>
+        </div>
+
         {/* Main Content */}
         <div className="flex-1 overflow-y-auto">
           <div className="container mx-auto px-8 py-12">

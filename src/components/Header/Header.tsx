@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { LogOut, ChevronDown, Settings, Loader2, Briefcase, Menu } from 'lucide-react';
 import { Logo } from './Logo';
-import { NavigationMenu } from './NavigationMenu';
 import useAuth from '../hooks/useAuth';
 import AuthModal from '../Auth/AuthModal';
 import { SearchPopover } from './SearchPopover';
 import { useNavigate } from 'react-router-dom';
 import SuccessModal from '../Auth/SuccessModal';
+import NavigationMenu from './NavigationBar/NavigationMenu';
 
 const Header: React.FC = () => {
   const { user, logout, isAuthenticated, isAuthenticating, showSuccessModal, setShowSuccessModal } = useAuth();
@@ -44,13 +44,17 @@ const Header: React.FC = () => {
 
           {/* Navigation Menu */}
           <div className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:flex items-center gap-8`}>
+            <nav>
+          <div className="max-w-[980px] mx-auto px-4 h-12 flex items-center justify-between">
             <NavigationMenu
+              className="flex-1 flex justify-center"
               isAuthModalOpen={isAuthModalOpen}
               setIsAuthModalOpen={setIsAuthModalOpen}
               isMobileMenuOpen={isMobileMenuOpen}
               setIsMobileMenuOpen={setIsMobileMenuOpen}
             />
-
+          </div>
+        </nav>
             {/* Search and User Menu */}
             <div className="flex items-center gap-6">
               <SearchPopover />

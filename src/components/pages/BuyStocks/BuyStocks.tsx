@@ -11,8 +11,10 @@ import { useLocation } from 'react-router-dom';
 import { symbols } from '../AllStocks/symbols';
 import { FixedSizeList as List } from 'react-window';
 import Footer from '@/components/Footer/Footer';
-
-// Debounce hook
+import { finnhubApi, FinnhubQuote } from './finnhubApi';
+const API_KEY = "ctksb2pr01qn6d7jeekgctksb2pr01qn6d7jeel0";
+// Cache duration in milliseconds (30 minutes)
+const CACHE_DURATION = 30 * 60 * 1000;
 const useDebounce = (value: string, delay: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -51,6 +53,54 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+// Fetch stock data for all symbols
+const fetchAllStockData = async () => {
+  const updated = await Promise.all(
+    symbols.map(async (stock) => {
+      const cacheKey = `stockData_${stock.symbol}`;
+      const cachedData = localStorage.getItem(cacheKey);
+      const cacheTimestamp = localStorage.getItem(`${cacheKey}_timestamp`);
+      const now = Date.now();
+
+      if (cachedData && cacheTimestamp && now - Number(cacheTimestamp) < CACHE_DURATION) {
+        return JSON.parse(cachedData);
+      }
+
+      try {
+        const quote = await finnhubApi.getQuote(stock.symbol);
+        const updatedStockData = {
+          ...stock,
+          price: quote.c || 0,
+          change: quote.d || 0,
+          changePercent: quote.dp || 0,
+          highPrice: quote.h || 0,
+          lowPrice: quote.l || 0,
+          openPrice: quote.o || 0,
+          previousClose: quote.pc || 0,
+        };
+
+        localStorage.setItem(cacheKey, JSON.stringify(updatedStockData));
+        localStorage.setItem(`${cacheKey}_timestamp`, now.toString());
+        return updatedStockData;
+      } catch (error) {
+        console.error(`Failed to fetch data for ${stock.symbol}:`, error);
+        return {
+          ...stock,
+          price: 0,
+          change: 0,
+          changePercent: 0,
+          highPrice: 0,
+          lowPrice: 0,
+          openPrice: 0,
+          previousClose: 0,
+        };
+      }
+    })
+  );
+
+  return updated;
+};
+
 export const BuyStocks: React.FC = () => {
   const { user } = useAuth();
   const [stocks, setStocks] = useState(symbols);
@@ -59,20 +109,32 @@ export const BuyStocks: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStock, setSelectedStock] = useState<typeof symbols[0] | null>(null);
   const [selectedStockDetail, setSelectedStockDetail] = useState<typeof symbols[0] | null>(null);
-  const [priceChanges, setPriceChanges] = useState<Record<string, number>>({});
   const [stockDetailLoading, setStockDetailLoading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
   const [email, setEmail] = useState(user?.email || '');
   const location = useLocation();
-  const API_KEY = 'cu147s1r01qjiern2jmgcu147s1r01qjiern2jn0'; // Replace with your Finnhub API key
-
-  // Cache duration in milliseconds (30 minutes)
-  const CACHE_DURATION = 30 * 60 * 1000;
 
   // Debounced search term
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
+  // Fetch stock data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const updatedStocks = await fetchAllStockData();
+        setStocks(updatedStocks);
+      } catch (error) {
+        console.error('Failed to fetch stock data:', error);
+        setError('Failed to fetch stock data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
   // Set user email on component mount or when user changes
   useEffect(() => {
     if (user) {
@@ -285,7 +347,7 @@ export const BuyStocks: React.FC = () => {
             }}
             className="text-right"
           >
-            <p className="font-medium text-sm text-black">₹{(stock.currentPrice|| 0).toFixed(2)}</p>
+            <p className="font-medium text-sm text-black">₹{(stock.price|| 0).toFixed(2)}</p>
             <p className="text-xs flex items-center gap-1">
               {(stock.change !== undefined) && (
                 <>
@@ -360,26 +422,16 @@ export const BuyStocks: React.FC = () => {
               />
             ) : (
               <div className="h-full w-full flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
-  <div className="text-center max-w-md px-4">
-    {/* Icon with a subtle gradient */}
-    <div className="inline-flex items-center justify-center w-16 h-16 bg-black rounded-2xl shadow-lg mb-6">
-      <Globe size={28} className="text-white" />
-    </div>
-
-  
-
-    {/* Subtext */}
-    <p className="text-lg text-gray-600 mb-6">
-      Select a stock to view details.
-    </p>
-
-  
-    {/* Additional content */}
-    <p className="text-sm text-gray-500 mt-6">
-      Dive into real-time data, charts, and insights to make informed decisions.
-    </p>
-  </div>
-</div>
+                <div className="text-center max-w-md px-4">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-black rounded-2xl shadow-lg mb-6">
+                    <Globe size={28} className="text-white" />
+                  </div>
+                  <p className="text-lg text-gray-600 mb-6">Select a stock to view details.</p>
+                  <p className="text-sm text-gray-500 mt-6">
+                    Dive into real-time data, charts, and insights to make informed decisions.
+                  </p>
+                </div>
+              </div>
             )}
           </div>
         </div>

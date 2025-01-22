@@ -5,6 +5,7 @@ import {
   CartesianGrid
 } from 'recharts';
 import { ArrowUp, ArrowDown } from 'lucide-react';
+import { finnhubApi } from './finnhubApi'; // Import the API utility
 
 interface StockChartProps {
   stock: {
@@ -24,6 +25,10 @@ interface DataPoint {
   price: number;
 }
 
+// Cache duration in milliseconds (30 minutes)
+const CACHE_DURATION = 30 * 60 * 1000;
+
+// Generate random walk data for initial chart rendering
 const generateRandomWalk = (basePrice: number, steps: number, volatility: number = 0.002) => {
   let prices = [basePrice];
   for (let i = 1; i < steps; i++) {
@@ -34,6 +39,7 @@ const generateRandomWalk = (basePrice: number, steps: number, volatility: number
   return prices;
 };
 
+// Generate initial data for the chart
 const generateInitialData = (timeframe: string, basePrice: number = 100) => {
   const dataPoints: DataPoint[] = [];
   const periods = {
@@ -76,40 +82,61 @@ export const StockChart: React.FC<StockChartProps> = ({
 }) => {
   const [stockData, setStockData] = useState<DataPoint[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [hoveredData, setHoveredData] = useState<DataPoint | null>(null);
-  
+
+  // Fetch historical data with caching
+  const fetchHistoricalData = useCallback(async () => {
+    const cacheKey = `historical_${stock.symbol}_${timeFrame}`;
+    const cachedData = localStorage.getItem(cacheKey);
+    const cacheTimestamp = localStorage.getItem(`${cacheKey}_timestamp`);
+    const now = Date.now();
+
+    if (cachedData && cacheTimestamp && now - Number(cacheTimestamp) < CACHE_DURATION) {
+      setStockData(JSON.parse(cachedData));
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Fetch historical data using finnhubApi (if available)
+      const data = generateInitialData(timeFrame, currentPrice); // Use random data for now
+      localStorage.setItem(cacheKey, JSON.stringify(data));
+      localStorage.setItem(`${cacheKey}_timestamp`, now.toString());
+      setStockData(data);
+    } catch (error) {
+      console.error('Failed to fetch historical data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [stock.symbol, timeFrame, currentPrice]);
+
+  // Fetch historical data on component mount or when timeFrame changes
+  useEffect(() => {
+    fetchHistoricalData();
+  }, [fetchHistoricalData]);
+
+  // Update price for real-time data (only for 1D timeFrame)
   const updatePrice = useCallback(() => {
-    if (stockData.length === 0) return;
-    
+    if (stockData.length === 0 || timeFrame !== '1D') return;
+
     const lastPrice = stockData[stockData.length - 1].price;
     const volatility = 0.0001;
     const trend = stock.changePercent / 100;
     const change = lastPrice * volatility * (Math.random() - 0.5 + trend * 0.3);
     const newPrice = Number((lastPrice + change).toFixed(2));
-    
+
     const newDataPoint = {
       date: new Date().toISOString(),
       price: newPrice
     };
 
-    setStockData(prevData => {
+    setStockData((prevData) => {
       const newData = [...prevData.slice(1), newDataPoint];
       return newData;
     });
-  }, [stockData, stock.changePercent]);
+  }, [stockData, stock.changePercent, timeFrame]);
 
-  useEffect(() => {
-    setIsLoading(true);
-    
-    const loadDelay = setTimeout(() => {
-      const initialData = generateInitialData(timeFrame, currentPrice); // Use currentPrice here
-      setStockData(initialData);
-      setIsLoading(false);
-    }, 100);
-
-    return () => clearTimeout(loadDelay);
-  }, [timeFrame, currentPrice]); // Add currentPrice to dependency array
-
+  // Set up a timer to update prices for 1D timeFrame
   useEffect(() => {
     if (isLoading || timeFrame !== '1D') return;
 
@@ -128,7 +155,7 @@ export const StockChart: React.FC<StockChartProps> = ({
     if (active && payload && payload.length) {
       const date = new Date(label);
       const price = payload[0].value;
-      
+
       return (
         <div className="bg-white/90 backdrop-blur-xl border border-gray-200 rounded-lg p-4 shadow-xl">
           <p className="text-gray-600 text-sm mb-1">
@@ -140,18 +167,21 @@ export const StockChart: React.FC<StockChartProps> = ({
             ₹{price.toFixed(2)} {/* Display price in rupees */}
           </p>
           <p className="text-xs flex items-center gap-1">
-              {(stock.change !== undefined) && (
-                <>
-                  {(stock.change >= 0) ? <ArrowUp size={10} /> : <ArrowDown size={10} />}
-                  {Math.abs(stock.change).toFixed(2)}%
-                </>
-              )}
-            </p>
+            {(stock.change !== undefined) && (
+              <>
+                {(stock.change >= 0) ? <ArrowUp size={10} /> : <ArrowDown size={10} />}
+                {Math.abs(stock.change).toFixed(2)}%
+              </>
+            )}
+          </p>
         </div>
       );
     }
     return null;
   };
+
+  // Get the latest price from stockData
+  const latestPrice = stockData.length > 0 ? stockData[stockData.length - 1].price : currentPrice;
 
   return (
     <div className="h-full relative bg-white">
@@ -170,12 +200,6 @@ export const StockChart: React.FC<StockChartProps> = ({
         <ResponsiveContainer width="95%" height="100%">
           <AreaChart 
             data={stockData}
-            onMouseMove={(data: any) => {
-              if (data.activePayload) {
-                setHoveredData(data.activePayload[0].payload);
-              }
-            }}
-            onMouseLeave={() => setHoveredData(null)}
           >
             <defs>
               <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
@@ -191,13 +215,13 @@ export const StockChart: React.FC<StockChartProps> = ({
                 />
               </linearGradient>
             </defs>
-            
+
             <CartesianGrid 
               strokeDasharray="3 3" 
               stroke="rgba(0,0,0,0.05)"
               vertical={false}
             />
-            
+
             <XAxis
               dataKey="date"
               tickFormatter={(date) => {
@@ -212,7 +236,7 @@ export const StockChart: React.FC<StockChartProps> = ({
               axisLine={{ stroke: 'rgba(0,0,0,0.1)' }}
               tickLine={{ stroke: 'rgba(0,0,0,0.1)' }}
             />
-            
+
             <YAxis
               domain={['auto', 'auto']}
               stroke="rgba(0,0,0,0.1)"
@@ -223,7 +247,7 @@ export const StockChart: React.FC<StockChartProps> = ({
               tickCount={6}
               width={65}
             />
-            
+
             <Tooltip
               content={<CustomTooltip />}
               cursor={{
@@ -232,7 +256,7 @@ export const StockChart: React.FC<StockChartProps> = ({
                 strokeDasharray: '4 4'
               }}
             />
-            
+
             <Area
               type="monotone"
               dataKey="price"
@@ -252,19 +276,7 @@ export const StockChart: React.FC<StockChartProps> = ({
         </ResponsiveContainer>
       )}
 
-      {/* Floating Price Display */}
-      {hoveredData && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute top-4 right-4 bg-white/90 backdrop-blur-xl border border-gray-200 rounded-lg p-4"
-        >
-          <p className="text-gray-600 text-sm">Current Price</p>
-          <p className="text-black text-2xl font-medium">
-            ₹{hoveredData.price.toFixed(2)} {/* Display price in rupees */}
-          </p>
-        </motion.div>
-      )}
+    
     </div>
   );
 };
